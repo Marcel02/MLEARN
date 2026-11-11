@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MLEARN · Material de estudio</title>
+<style>
+:root{--bg:#F4F6F9;--surface:#FFFFFF;--ink:#162030;--ink-2:#465265;--muted:#6A7487;--line:#D6DDE7;--accent:#0A66AD;--accent-soft:#E2EEF8;--ok:#1C7A4B;color-scheme:light}
+@media (prefers-color-scheme: dark){:root{--bg:#0E131A;--surface:#151C26;--ink:#E5E9EF;--ink-2:#B2BBC9;--muted:#8893A5;--line:#2A3442;--accent:#5BA8E6;--accent-soft:#132A3D;--ok:#5CC28A;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left)) 60px max(16px,env(safe-area-inset-right))}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-size:30px;line-height:1.15;margin:.25em 0 .3em}
+p.lede{color:var(--ink-2);font-size:16.5px;margin:0 0 24px;max-width:62ch}
+.list{display:grid;gap:10px}
+.item{display:grid;grid-template-columns:52px 1fr auto;gap:4px 14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-decoration:none;color:inherit}
+.ttl{color:inherit;text-decoration:none}.ttl:hover{color:var(--accent)}
+a.st.on{text-decoration:none}a.st.on:hover{background:var(--ok);color:var(--surface)}
+.num{font:600 22px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);text-align:center}
+.item.off .num{color:var(--muted)}
+.t b{display:block;font-size:16px}
+.t span{color:var(--ink-2);font-size:14px}
+.st{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap;border:1px solid var(--line);color:var(--muted)}
+.st.on{color:var(--ok);border-color:var(--ok)}
+.extra{grid-column:2/-1;font-size:13px}
+.extra a{color:var(--accent)}
+.item.off{opacity:.8}
+footer{margin-top:28px;color:var(--muted);font-size:13px}
+footer a{color:var(--accent)}
+@media (max-width:520px){.item{grid-template-columns:40px 1fr}.st{grid-column:2;justify-self:start}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Ingeniería de Telecomunicaciones · UPC</div>
+  <h1>MLEARN · Material de estudio</h1>
+  <p class="lede">Una plataforma interactiva por tema: teoría paso a paso con la notación de las diapositivas, laboratorios, tests, ejercicios resueltos, flashcards y hoja resumen. El progreso se guarda en tu navegador.</p>
+
+  <div class="list">
+    <div class="item off"><span class="num">2</span><span class="t"><b>Clasificadores gaussianos</b><span>Discriminante lineal y cuadrático</span></span><span class="st">Pendiente</span></div>
+    <div class="item"><span class="num">3</span><span class="t"><b><a class="ttl" href="Tema%203%20-%20Feature%20Selection/index.html">Feature selection</a></b><span>Dimensionalidad, PCA, MDA, enfoques no lineales</span></span><a class="st on" href="Tema%203%20-%20Feature%20Selection/index.html">Abrir</a>
+      <span class="extra">Hoja resumen: <a href="Tema%203%20-%20Feature%20Selection/hoja-resumen.pdf">PDF para imprimir</a> · <a href="Tema%203%20-%20Feature%20Selection/hoja-resumen.html">versión web</a></span></div>
+    <div class="item off"><span class="num">4</span><span class="t"><b>k-NN, SVM, redes y árboles</b><span>k vecinos, lógica difusa, SVM, redes neuronales, árboles de decisión</span></span><span class="st">Pendiente</span></div>
+    <div class="item off"><span class="num">5</span><span class="t"><b>Random forest</b><span>Combinación de K clasificadores</span></span><span class="st">Pendiente</span></div>
+    <div class="item off"><span class="num">6</span><span class="t"><b>K-means y clustering</b><span>Aprendizaje no supervisado</span></span><span class="st">Pendiente</span></div>
+  </div>
+
+  <footer>No es material oficial de la asignatura. Código y fuente en <a href="https://github.com/Marcel02/MLEARN">github.com/Marcel02/MLEARN</a>.</footer>
+</main>
+</body>
+</html>

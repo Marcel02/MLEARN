@@ -16,7 +16,13 @@ Cada tema tiene su propia carpeta con una **plataforma de estudio interactiva**:
 
 La lista de temas pendientes sale del *course overview* de la diapositiva 2 del tema 3. Se irá completando a medida que avance la asignatura.
 
-## Cómo usarlo
+## Abrir online
+
+Con GitHub Pages activado, la portada está en **https://marcel02.github.io/MLEARN/** y cada tema se abre desde ahí sin descargar nada (el tema 3, en https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/).
+
+Para activarlo (una sola vez): **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main`, carpeta `/ (root)` → Save**. En uno o dos minutos el enlace funciona. GitHub Pages es gratis en repositorios públicos; en uno privado necesita un plan de pago, y la web queda pública aunque el repositorio no lo sea.
+
+## Cómo usarlo sin conexión
 
 1. **Descarga el repositorio**: botón verde **Code → Download ZIP** en GitHub, o `git clone`.
 2. **Abre** `index.html` dentro de la carpeta del tema con un doble clic. Funciona en Chrome, Edge, Firefox y Safari, sin conexión.
@@ -41,6 +47,7 @@ Tomando el tema 3 como modelo:
 ```
 MLEARN/
 ├── README.md
+├── index.html              portada con la lista de temas (GitHub Pages)
 ├── Tema 3 - Feature Selection/
 │   ├── index.html          plataforma completa (un solo archivo)
 │   ├── hoja-resumen.pdf    fórmulas del tema en 2 páginas A4
@@ -71,6 +78,7 @@ python3 build_local.py "../../Tema 3 - Feature Selection"
 | Fecha | Cambio |
 |---|---|
 | 2026-11-11 | Tema 3 (Feature Selection): primera versión completa. |
+| 2026-11-11 | Portada `index.html` para abrir los temas con GitHub Pages. |
 
 ## Origen del contenido
 
