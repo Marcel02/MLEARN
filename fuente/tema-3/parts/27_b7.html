@@ -1,0 +1,82 @@
+<section class="view" id="v-b7" data-sec="b7">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 7 · Apartado 3.5 del PDF</div>
+    <h1>Conclusiones: PCA frente a MDA</h1>
+    <p class="lede">Las cuatro conclusiones de la última diapositiva y una comparativa para decidir qué método usar.</p>
+    <div class="meta"><span class="chip">Diap. 43</span><span class="chip">PDF p. 50</span></div>
+  </div>
+
+  <!-- 7.1 -->
+  <article class="concept" data-cid="b7-1">
+    <header><h3>Las conclusiones de la diapositiva</h3><span class="ref">Diap. 43 · PDF p. 50</span></header>
+    <div class="summary">
+      <ul>
+        <li><strong>PCA es no supervisado:</strong> no necesita las etiquetas \(y_k\) para reducir el número de características.</li>
+        <li><strong>PCA no garantiza la separación de clases</strong>, aunque se use mucho en la práctica.</li>
+        <li><strong>MDA es supervisado</strong> y puede separar clases, con una limitación en el número de características (\(d'\le\min(d,c-1)\)). La limitación se evita aplicando MDA sobre subconjuntos de características.</li>
+        <li>Hay muchos otros métodos no lineales: <strong>t-SNE</strong> y <strong>autoencoders</strong>.</li>
+      </ul>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: de dónde sale cada conclusión</summary><div class="deep-body">
+      <ul>
+        <li><strong>No supervisado</strong> → PCA solo usa \(\bm\) y \(\bS\) (diap. 15), que se calculan sin saber la clase de cada vector.</li>
+        <li><strong>No garantiza separar</strong> → \(\bS=\bS_T=\bS_C+\bS_B\) (diap. 30): la dirección de máxima dispersión total puede deberse a lo alargadas que son las clases, no a lo separadas que están (diap. 25, ejemplo 6).</li>
+        <li><strong>MDA separa con límite</strong> → maximiza \(|\bW^T\bS_B\bW|/|\bW^T\bS_C\bW|\) (diap. 33) y \(\rank(\bS_B)\le c-1\) (diap. 34). Los grupos de características (diap. 35) dan \(d'=(c-1)K\).</li>
+      </ul>
+      <p>Aquí \(y_k\) son las <em>etiquetas</em> de clase (no los \(\by_k\) erróneos de la diap. 17).</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 7.2 -->
+  <article class="concept" data-cid="b7-2">
+    <header><h3>Comparativa completa</h3><span class="ref">Síntesis de las diap. 13–37</span></header>
+    <div class="summary"><p>Todo lo que distingue a los dos métodos, con la diapositiva de la que sale cada fila.</p></div>
+    <div class="inner">
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>PCA</th><th>MDA</th></tr></thead>
+        <tbody>
+          <tr><td>Criterio</td><td>Mínimo error de reconstrucción \(J\) (diap. 14)</td><td>Máximo cociente \(\frac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}\) (diap. 33)</td></tr>
+          <tr><td>Información</td><td>Solo los \(\bx_k\) (no supervisado)</td><td>\(\bx_k\) y su clase (supervisado, diap. 28)</td></tr>
+          <tr><td>Matrices</td><td>\(\bS=\bS_T\)</td><td>\(\bS_B\) y \(\bS_C\) (con \(\bS_T=\bS_C+\bS_B\))</td></tr>
+          <tr><td>Problema</td><td>\(\bS\bw_j=\lambda_j\bw_j\) (simétrico)</td><td>\(\bS_B\bw_j=\sigma_j\bS_C\bw_j\) (generalizado; \(\bS_C^{-1}\bS_B\) no simétrica)</td></tr>
+          <tr><td>Columnas de \(\bW\)</td><td>Ortonormales, \(\bW^T\bW=\mathbf I\)</td><td>En general no ortogonales; \(\bw_i^T\bS_C\bw_j=0\)</td></tr>
+          <tr><td>Se eligen</td><td>Los \(d'\) mayores \(\lambda_j\)</td><td>Los \(d'\) mayores \(\sigma_j\) (no nulos)</td></tr>
+          <tr><td>Valor del criterio</td><td>\(J_{\min}=\sum_{i&gt;d'}\lambda_i\) (diap. 20)</td><td>\(\prod_{i\le d'}\sigma_i\) (diap. 34)</td></tr>
+          <tr><td>Máximo \(d'\)</td><td>\(d\)</td><td>\(\min(d,c-1)\); más con grupos (diap. 35)</td></tr>
+          <tr><td>Requisitos</td><td>Ninguno especial (\(\bS\) siempre diagonalizable)</td><td>\(\bS_C\) invertible: \(N-c\ge d\)</td></tr>
+          <tr><td>Media</td><td>Hay que restar \(\bm\) (\(\balpha=\bm\), diap. 24)</td><td>Indiferente: las dispersiones no cambian al trasladar (diap. 31)</td></tr>
+          <tr><td>Sirve para reconstruir</td><td>Sí: \(\hat{\bx}=\bW\bz+\bm\) (diap. 22)</td><td>No es su objetivo</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 7.3 -->
+  <article class="concept" data-cid="b7-3">
+    <header><h3>Cuándo usar cada uno</h3><span class="ref">Diap. 6, 25, 34, 35, 43</span></header>
+    <div class="summary">
+      <div class="tbl"><table>
+        <thead><tr><th>Situación</th><th>Elección</th><th>Por qué</th></tr></thead>
+        <tbody>
+          <tr><td>No hay etiquetas</td><td>PCA</td><td>MDA las necesita para \(\bm_i\), \(\bS_C\), \(\bS_B\).</td></tr>
+          <tr><td>Comprimir o almacenar (eigenfaces), quitar ruido</td><td>PCA</td><td>Minimiza el error de reconstrucción.</td></tr>
+          <tr><td>Visualizar en 2D/3D sin etiquetas</td><td>PCA (o t-SNE)</td><td>Diap. 6 y 39.</td></tr>
+          <tr><td>Clasificar con etiquetas, clases separadas en direcciones de poca varianza</td><td>MDA</td><td>PCA puede descartar justo esa dirección (diap. 25).</td></tr>
+          <tr><td>Clasificar y hacen falta más de \(c-1\) características</td><td>MDA por grupos, o PCA</td><td>Límite de rango de \(\bS_B\) (diap. 34–35).</td></tr>
+          <tr><td>Muy pocos datos frente a \(d\) (\(N-c&lt;d\))</td><td>Primero PCA</td><td>\(\bS_C\) es singular y MDA no se puede calcular directamente (diap. 34).</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="inner">
+      <div class="note trap"><span class="lab">Errores habituales</span>
+        <p>(1) Esperar que PCA separe clases porque «conserva la información»: conserva dispersión, no discriminación. (2) Pedir a MDA más de \(c-1\) características. (3) Creer que MDA necesita la etiqueta del vector que se clasifica: solo la usa para calcular \(\bW\); luego \(\bz=\bW^T\bx\) se aplica a cualquier vector. (4) Olvidar restar la media en PCA. (5) Confundir \(\lambda_j\) (PCA) con \(\sigma_j\) (MDA).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b7"></div>
+  <div class="pager"></div>
+</section>

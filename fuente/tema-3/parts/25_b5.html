@@ -1,0 +1,345 @@
+<section class="view" id="v-b5" data-sec="b5">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 5 · Apartado 3.3 del PDF</div>
+    <h1>Multiple Discriminant Analysis (MDA)</h1>
+    <p class="lede">Elegir \(\bW\) para que las clases queden lo más separadas posible en \(\mathbb{R}^{d'}\): mucha distancia entre clases y poca dispersión dentro de cada una.</p>
+    <div class="meta"><span class="chip">Diap. 26–37</span><span class="chip">PDF p. 29–44</span><span class="chip">incluye manuscritas p. 29–32 y 41</span></div>
+  </div>
+  <p class="small">En el PDF, las páginas manuscritas 29–32 (apuntes del «Recap 16/10» y una foto de la pizarra) van antes de la diapositiva 26. Aquí las integro en la tarjeta de la diapositiva que explican, indicando siempre su página.</p>
+
+  <!-- 5.1 -->
+  <article class="concept" data-cid="b5-1">
+    <header><h3>Qué quiere MDA</h3><span class="ref">Diap. 26 · PDF p. 33 + manuscrita p. 29</span></header>
+    <div class="summary">
+      <p>Transformar con las componentes principales no siempre sirve para discriminar. Se busca una transformación que</p>
+      <ul><li><strong>aumente la distancia entre clases</strong> y</li><li><strong>reduzca la dispersión dentro de cada clase</strong>.</li></ul>
+      <p>Ejemplo 6: con las mismas dos clases, proyectar sobre la dirección de PCA las mezcla; proyectar sobre otra dirección \(\bw\) las separa.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>La idea viene del caso unidimensional del tema 2. Con dos clases en 1D, lo que decide si se distinguen bien no es solo la distancia entre medias, sino esa distancia comparada con la anchura de cada clase:</p>
+      \[D=\frac{|m_1-m_2|}{\sigma}.\]
+      <p>Dos clases con las medias igual de lejos pueden estar muy solapadas (\(\sigma\) grande) o perfectamente separadas (\(\sigma\) pequeña). MDA generaliza este cociente a \(\bz\in\mathbb{R}^{d'}\) y lo maximiza respecto a \(\bW\). Hay que responder dos preguntas: cómo medir «distancia entre clases» y «dispersión intra-clase» cuando las cosas son vectores (diap. 28–31), y cómo convertir esas matrices en un número que maximizar (diap. 31–33).</p>
+      <p>En la figura del ejemplo 6, las dos clases son alargadas y paralelas. PCA elige la dirección de máxima dispersión total, que es la del alargamiento; al proyectar, las clases se solapan. La buena dirección es casi perpendicular al alargamiento: ahí cada clase es estrecha y las medias quedan lejos.</p>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 29 («Recap 16/10»)</span>
+        <p>Recuerda PCA: \(\bz_i=\bW^T(\bx_i-\balpha)\in\mathbb{R}^{d'\times1}\), \(d'&lt;d\), \(\bW^T=[\bw_1^T;\dots;\bw_{d'}^T]\), \(\bS\bw_i=\lambda_i\bw_i\) con \(\bS\) la «<em>total scatter matrix</em>». Criterio de PCA: encontrar \(\bz_i\) tal que, al volver de \(\bz\) a \(\bx_i\), el error sea mínimo.</p>
+        <p>Para MDA escribe \(\bz_i=\bW^T\bx_i\), «<em>maximum discriminability between classes on \(\mathbb{R}^{d'}\)</em>», y pregunta: «<em>How to find matrix \(\bW\) that will separate the classes the most</em>». Dibuja dos gaussianas \(f(x|\omega_1)\), \(f(x|\omega_2)\) con \(D=\frac{|m_1-m_2|}{\sigma}\) (<em>separation of classes</em> / <em>dispersion intra class</em>), primero solapadas y luego estrechas y separadas, y concluye: «<em>How to define a \(D\) for \(\bz\in\mathbb{R}^{d'}\), and maximize it with respect to \(\bW\)</em>».</p>
+      </div>
+      <div class="note link"><span class="lab">Conexión con el tema 2</span>
+        <p>Ese \(D\) es la discriminabilidad \(D'\) del tema 2, y en el bloque 2 vimos que \(\Pr(e)=Q(D'/2)\) para dos gaussianas. Maximizar la separación en \(\bz\) es, en el fondo, intentar que el clasificador que venga después tenga poco error.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.2 -->
+  <article class="concept" data-cid="b5-2">
+    <header><h3>Dos proyecciones de las mismas clases</h3><span class="ref">Diap. 27 · PDF p. 34</span></header>
+    <div class="summary">
+      <p>Figura de Duda, Hart y Stork: dos clases en 2D proyectadas sobre dos rectas distintas, con el histograma de cada clase sobre la recta. A la izquierda, los histogramas se solapan; a la derecha quedan separados. <strong>Lo que se elige es la dirección de proyección.</strong></p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li>Proyectar sobre una recta de dirección \(\bw\) con \(\|\bw\|=1\) es calcular \(z=\bw^Tx\) para cada punto (bloque 3). El histograma de los \(z\) de cada clase es lo que «ve» un clasificador en 1D.</li>
+        <li>La recta de la izquierda no es mala por estar mal orientada respecto a las medias, sino porque a lo largo de ella cada clase se ve ancha. En la de la derecha cada clase se ve estrecha y las medias proyectadas quedan lejos.</li>
+        <li>Intuición útil: la dirección óptima no tiene por qué ser la que une las dos medias, \(\bm_1-\bm_2\). Si las clases son alargadas, conviene girarla para evitar las direcciones donde cada clase es ancha. Con dos clases, la tarjeta 5.8 da la fórmula exacta: \(\bw\propto\bS_C^{-1}(\bm_1-\bm_2)\).</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.3 -->
+  <article class="concept" data-cid="b5-3">
+    <header><h3>Medias por clase, media global y dispersión total</h3><span class="ref">Diap. 28–29 · PDF p. 35–36</span></header>
+    <div class="summary">
+      <p>Se construye \(\bW^T\) de \(\mathbb{R}^d\) a \(\mathbb{R}^{d'}\). Para medir distancia entre clases y dispersión intra-clase se definen</p>
+      \[\bm_i=\frac{1}{N_i}\sum_{\bx\in D_i}\bx,\qquad \bm=\frac1N\sum_{\bx\in\{D_1,\dots,D_c\}}\bx=\frac1N\sum_{i=1}^cN_i\bm_i,\qquad \bS_T=\sum_{\bx\in\{D_1,\dots,D_c\}}(\bx-\bm)(\bx-\bm)^T.\]
+      <p><strong>A diferencia de PCA, MDA es supervisado:</strong> hacen falta las etiquetas de cada vector. La diap. 29 dibuja \(\bm_1\), \(\bm\) y \(\bm_2\) sobre dos nubes.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Notación.</strong> \(D_i\) es el conjunto de vectores de la clase \(i\), \(N_i\) cuántos son y \(N=\sum_iN_i\).</li>
+        <li><strong>De dónde sale la segunda igualdad de \(\bm\).</strong> Sumar sobre todos los vectores es sumar clase a clase: \(\sum_{\text{todos}}\bx=\sum_{i=1}^c\sum_{\bx\in D_i}\bx=\sum_{i=1}^cN_i\bm_i\), porque por definición \(\sum_{\bx\in D_i}\bx=N_i\bm_i\).</li>
+        <li><strong>Lectura.</strong> \(\bm\) es la media de las \(\bm_i\) <em>ponderada</em> por el tamaño de cada clase. Solo coincide con la media simple \(\frac1c\sum_i\bm_i\) si todos los \(N_i\) son iguales.</li>
+        <li><strong>\(\bS_T\) es la \(\bS\) de PCA</strong>: la misma matriz con otro nombre. Ver la diap. 30 para por qué no basta con ella.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Matiz sobre los apuntes · PDF p. 29 y 31</span>
+        <p>El profesor anota \(\bm\) como «<em>mean of \(\bm_i\), \(i=1\dots c\)</em>». Es la media ponderada \(\frac1N\sum_iN_i\bm_i\) (la de la diapositiva), no la media simple de las \(\bm_i\), salvo que las clases tengan el mismo tamaño. El ejercicio 3 de la hoja sí usa la media simple \(\frac1c\sum_i\bm_i\) y un \(\bS_B\) sin pesos \(N_i\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.4 -->
+  <article class="concept" data-cid="b5-4">
+    <header><h3>\(\bS_T=\bS_C+\bS_B\): por qué PCA no siempre funciona</h3><span class="ref">Diap. 30 · PDF p. 37</span></header>
+    <div class="summary">
+      \[\bS_T=\sum_{i=1}^c\bS_{C,i}+\sum_{i=1}^cN_i(\bm_i-\bm)(\bm_i-\bm)^T=\bS_C+\bS_B,\qquad \bS_{C,i}=\sum_{\bx\in D_i}(\bx-\bm_i)(\bx-\bm_i)^T.\]
+      <p>\(\bS_C\) es la <strong>suma de las dispersiones intra-clase</strong>; \(\bS_B\), la <strong>dispersión entre clases</strong> («<em>how disperse are the means</em>»). La matriz que usa PCA contiene un término que interesa maximizar (\(\bS_B\)) y otro que interesa minimizar (\(\bS_C\)). <strong>Por eso PCA no siempre funciona.</strong></p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la descomposición completa</summary><div class="deep-body">
+      <p>La diapositiva pasa de la segunda a la tercera línea sin decir qué ocurre con los términos cruzados. Aquí está todo:</p>
+      <ol class="steps">
+        <li><strong>Agrupar por clases.</strong> \(\bS_T=\sum_{i=1}^c\sum_{\bx\in D_i}(\bx-\bm)(\bx-\bm)^T\).</li>
+        <li><strong>Sumar y restar \(\bm_i\).</strong> \(\bx-\bm=(\bx-\bm_i)+(\bm_i-\bm)\). Llamo \(\ba=\bx-\bm_i\) y \(\mathbf b=\bm_i-\bm\) (etiquetas mías).</li>
+        <li><strong>Desarrollar el producto.</strong> \((\ba+\mathbf b)(\ba+\mathbf b)^T=\ba\ba^T+\ba\mathbf b^T+\mathbf b\ba^T+\mathbf b\mathbf b^T\).</li>
+        <li><strong>Los cruzados se anulan.</strong> \(\mathbf b=\bm_i-\bm\) no depende de \(\bx\) dentro de la clase \(i\), así que \(\sum_{\bx\in D_i}\ba\mathbf b^T=\left(\sum_{\bx\in D_i}(\bx-\bm_i)\right)\mathbf b^T=(N_i\bm_i-N_i\bm_i)\mathbf b^T=\mathbf 0\). Lo mismo con \(\mathbf b\ba^T\).</li>
+        <li><strong>Lo que queda.</strong> \(\sum_{\bx\in D_i}\ba\ba^T=\bS_{C,i}\), y \(\sum_{\bx\in D_i}\mathbf b\mathbf b^T=N_i(\bm_i-\bm)(\bm_i-\bm)^T\), porque se suma \(N_i\) veces lo mismo.</li>
+        <li><strong>Sumar sobre clases.</strong> \(\bS_T=\sum_i\bS_{C,i}+\sum_iN_i(\bm_i-\bm)(\bm_i-\bm)^T=\bS_C+\bS_B\).</li>
+        <li><strong>Lectura para PCA.</strong> A lo largo de una dirección \(\bw\) unitaria, \(\bw^T\bS_T\bw=\bw^T\bS_C\bw+\bw^T\bS_B\bw\). PCA maximiza la suma sin distinguir los sumandos: puede elegir una dirección con mucha dispersión intra-clase y ninguna entre clases.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico (comprobado en código)</span>
+        <p>Clase 1: \((0,2)\), \((4,6)\), \((1{,}5;\,4{,}5)\), \((2{,}5;\,3{,}5)\), con \(\bm_1=(2,4)\). Clase 2: \((2,0)\), \((6,4)\), \((3{,}5;\,2{,}5)\), \((4{,}5;\,1{,}5)\), con \(\bm_2=(4,2)\). Las dos clases tienen la misma forma alargada a lo largo de \((1,1)\) y están desplazadas a lo largo de \((1,-1)\).</p>
+        <p>\(\bS_{C,1}=\bS_{C,2}=\begin{pmatrix}8{,}5&7{,}5\\7{,}5&8{,}5\end{pmatrix}\Rightarrow\bS_C=\begin{pmatrix}17&15\\15&17\end{pmatrix}\).</p>
+        <p>\(\bm=(3,3)\), \(\bm_1-\bm=(-1,1)\), \(\bm_2-\bm=(1,-1)\): \(\bS_B=4\begin{pmatrix}1&-1\\-1&1\end{pmatrix}+4\begin{pmatrix}1&-1\\-1&1\end{pmatrix}=\begin{pmatrix}8&-8\\-8&8\end{pmatrix}\).</p>
+        <p>\(\bS_T=\begin{pmatrix}25&7\\7&25\end{pmatrix}=\bS_C+\bS_B\) ✓. Autovalores de \(\bS_T\): \(32\) en la dirección \((1,1)\) y \(18\) en \((1,-1)\). PCA con \(d'=1\) elige \((1,1)/\sqrt2\)… y las dos clases se proyectan en <em>exactamente</em> los mismos valores (\(1{,}41;\ 7{,}07;\ 4{,}24;\ 4{,}24\)). Separación nula. La tarjeta 5.8 resuelve este mismo ejemplo con MDA.</p>
+      </div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 37, 29 y 31</span>
+        <p>Colorea \(\bS_T\) (verde), \(\bS_C\) y \(\bS_B\) (magenta) y rotula la matriz entre clases como «<em>How disperse are the means</em>». Al margen dibuja dos clases elípticas con medias \(\bm_1\), \(\bm_2\): una elipse pequeña por clase (\(\bS_{C,1}\), \(\bS_{C,2}\)), una elipse grande que engloba ambas (\(\bS_T\)), la media global \(\bm\) entre las dos y una flecha entre medias (\(\bS_B\)). En la p. 29 ya había escrito la descomposición con la llave «\(\bS_B\): <em>measures the scatter of the means</em>».</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.5 -->
+  <article class="concept" data-cid="b5-5">
+    <header><h3>Las matrices en el espacio de \(\bz\) y el volumen de un elipsoide</h3><span class="ref">Diap. 31 · PDF p. 38 + manuscrita p. 30</span></header>
+    <div class="summary">
+      <p>Con \(\bz_k=\bW^T\bx_k\), las dispersiones en \(\bz\) se calculan a partir de las de \(\bx\):</p>
+      \[\bS_C\to\bW^T\bS_C\bW,\qquad \bS_B\to\bW^T\bS_B\bW.\]
+      <p>Para resumir una matriz de dispersión en un número se usa el <strong>volumen de su hiperelipsoide</strong> \((\bx-\bm)^T\bS^{-1}(\bx-\bm)=K\):</p>
+      \[V=V_d\,|\bS|^{1/2}K^{d/2},\qquad V_d=\begin{cases}\dfrac{\pi^{d/2}}{(d/2)!} & d\text{ par}\\[2mm] \dfrac{2^d\left(\frac{d-1}{2}\right)!}{d!}\,\pi^{(d-1)/2} & d\text{ impar}\end{cases}\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p><strong>Por qué \(\bS_C\to\bW^T\bS_C\bW\).</strong></p>
+      <ol class="steps">
+        <li>La media de la clase \(i\) en \(\bz\) es \(\frac{1}{N_i}\sum_{\bx\in D_i}\bW^T\bx=\bW^T\bm_i\) (sacando \(\bW^T\) del sumatorio).</li>
+        <li>Entonces \(\bz-\bW^T\bm_i=\bW^T(\bx-\bm_i)\), y su producto externo es \(\bW^T(\bx-\bm_i)(\bx-\bm_i)^T\bW\).</li>
+        <li>Sumando sobre \(\bx\in D_i\): \(\bS_{C,i}^{(\bz)}=\bW^T\bS_{C,i}\bW\) (el superíndice \((\bz)\) es etiqueta mía). Sumando sobre \(i\): \(\bW^T\bS_C\bW\). Con \(\bS_B\) es igual, usando que la media global en \(\bz\) es \(\bW^T\bm\).</li>
+        <li>¿Y si se usa \(\bz=\bW^T(\bx-\balpha)\)? Todas las medias se desplazan por \(\bW^T\balpha\) y las diferencias no cambian: las dispersiones son las mismas. Por eso la diap. 31 puede prescindir de \(\balpha\).</li>
+      </ol>
+      <p><strong>De dónde sale el volumen.</strong></p>
+      <ol class="steps">
+        <li>Por la tarjeta 4.11, el elipsoide \((\bx-\bm)^T\bS^{-1}(\bx-\bm)=K\) tiene semiejes \(a_i=\sqrt{K\lambda_i}\), con \(\lambda_i\) los autovalores de \(\bS\).</li>
+        <li>Ese elipsoide es la esfera unidad de \(\mathbb{R}^d\) estirada un factor \(a_i\) en cada eje (y girada). Estirar un eje por \(a_i\) multiplica el volumen por \(a_i\); girar no lo cambia. Así \(V=V_d\prod_ia_i\), donde \(V_d\) es el volumen de la esfera unidad.</li>
+        <li>\(\prod_i\sqrt{K\lambda_i}=K^{d/2}\sqrt{\prod_i\lambda_i}=K^{d/2}|\bS|^{1/2}\), porque el determinante es el producto de los autovalores. Sale \(V=V_d|\bS|^{1/2}K^{d/2}\).</li>
+        <li>Comprobación de \(V_d\): \(d=1\): \(\frac{2\cdot0!}{1!}=2\) (longitud de \([-1,1]\)); \(d=2\): \(\frac{\pi}{1!}=\pi\); \(d=3\): \(\frac{8\cdot1!}{3!}\pi=\frac43\pi\). Son las de siempre.</li>
+      </ol>
+      <p><strong>El cociente de volúmenes (apunte de la p. 30).</strong></p>
+      <ol class="steps">
+        <li>Definición: \(D=\dfrac{\text{dispersión entre clases}}{\text{dispersión intra-clase}}=\dfrac{V(\bS_{B,z})}{V(\bS_{C,z})}\).</li>
+        <li>Sustituir la fórmula del volumen en \(\mathbb{R}^{d'}\): \(D=\dfrac{V_{d'}|\bS_{B,z}|^{1/2}K^{d'/2}}{V_{d'}|\bS_{C,z}|^{1/2}K^{d'/2}}=\dfrac{|\bS_{B,z}|^{1/2}}{|\bS_{C,z}|^{1/2}}\). \(V_{d'}\) y \(K\) se cancelan.</li>
+        <li>Pasar a \(\bx\): \(D=\dfrac{|\bW^T\bS_{B,x}\bW|^{1/2}}{|\bW^T\bS_{C,x}\bW|^{1/2}}\), con \(\bS_{C,x}=\sum_j\bS_{C_j,x}\). Las dos matrices se calculan con la base de datos («<em>from our DBase</em>»).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 30</span>
+        <p>Desarrolla el cociente \(D\) como arriba y lo reescribe clase a clase: «<em>Scatter matrix for class \(j\)</em>»: \(\bS_{C_j,z}=\sum_{\bz\in D_j}(\bz_i-\bm_{j,z})(\bz_i-\bm_{j,z})^T=\bW^T\left[\sum_{\bx_i\in D_j}(\bx_i-\bm_{j,x})(\bx_i-\bm_{j,x})^T\right]\bW=\bW^T\bS_{C_j,x}\bW\), «<em>computable from our data base</em>».</p>
+      </div>
+      <div class="note errata"><span class="lab">Erratas en el apunte · PDF p. 30</span>
+        <p>Escribe «<em>we want to optimize respect to \(\bS\) to maximize \(D\)</em>»: se optimiza respecto a \(\bW\). Y en la última igualdad pone \(\bW\bS_{C_j,x}\bW\); falta la traspuesta en el primer factor, \(\bW^T\bS_{C_j,x}\bW\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.6 -->
+  <article class="concept" data-cid="b5-6">
+    <header><h3>El criterio discriminante y su solución</h3><span class="ref">Diap. 33 · PDF p. 39 + manuscritas p. 31–32</span></header>
+    <div class="summary">
+      <p>Suponiendo \(\bz\) gaussiano, el volumen de todas las clases es proporcional a \(|\bW^T\bS_C\bW|^{1/2}\) y la distancia entre clases a \(|\bW^T\bS_B\bW|^{1/2}\). <strong>Criterio discriminante:</strong></p>
+      \[\bW=\arg\max_{\bW}\frac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}.\]
+      <p>La solución \(\bW=[\bw_1\ \cdots\ \bw_{d'}]\) son los <strong>autovectores generalizados</strong> asociados a los \(d'\) mayores autovalores:</p>
+      \[\bS_B\bw_j=\sigma_j\bS_C\bw_j\quad\Longrightarrow\quad \bS_B\bW=\bS_C\bW\bSigma\quad\Longrightarrow\quad \bS_C^{-1}\bS_B\bW=\bW\bSigma,\]
+      <p>con \(\bSigma\) diagonal con los \(\sigma_j\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: por qué la solución son autovectores generalizados</summary><div class="deep-body">
+      <p>La diapositiva da la solución sin demostrarla. Primero el caso \(d'=1\) (ejercicio 4 de la hoja), luego el general.</p>
+      <p><strong>Caso \(d'=1\).</strong> Con un solo vector, los determinantes son escalares: \(J(\bw)=\dfrac{\bw^T\bS_B\bw}{\bw^T\bS_C\bw}\) (\(J\) aquí es etiqueta mía; no confundir con el \(J\) de PCA).</p>
+      <ol class="steps">
+        <li><strong>Gradiente de un cociente.</strong> \(\nabla\frac{f}{g}=\frac{g\nabla f-f\nabla g}{g^2}\), con \(\nabla(\bw^T\bS_B\bw)=2\bS_B\bw\) y \(\nabla(\bw^T\bS_C\bw)=2\bS_C\bw\) (matrices simétricas).</li>
+        <li><strong>Igualar a cero.</strong> El denominador \((\bw^T\bS_C\bw)^2\) no se anula si \(\bS_C\) es definida positiva, así que basta el numerador: \((\bw^T\bS_C\bw)\,2\bS_B\bw-(\bw^T\bS_B\bw)\,2\bS_C\bw=\mathbf 0\).</li>
+        <li><strong>Reordenar.</strong> \(\bS_B\bw=\dfrac{\bw^T\bS_B\bw}{\bw^T\bS_C\bw}\bS_C\bw=J(\bw)\,\bS_C\bw\). Es la ecuación de autovalores generalizados, con \(\sigma=J(\bw)\).</li>
+        <li><strong>Cuál elegir.</strong> En cada punto estacionario el valor del criterio es justo su \(\sigma\). El máximo es el autovector del mayor \(\sigma\).</li>
+      </ol>
+      <p><strong>Caso general.</strong> Maximizar el cociente equivale a maximizar su logaritmo, \(f(\bW)=\ln|\bW^T\bS_B\bW|-\ln|\bW^T\bS_C\bW|\) (\(f\): etiqueta mía).</p>
+      <ol class="steps">
+        <li><strong>Derivada de un log-determinante.</strong> Para \(\mathbf X\) invertible, \(d\ln|\mathbf X|=\tr(\mathbf X^{-1}d\mathbf X)\). Con \(\mathbf X=\bW^T\bA\bW\) y \(\bA\) simétrica, \(d\mathbf X=d\bW^T\bA\bW+\bW^T\bA\,d\bW\). Las dos trazas son iguales (una es la traspuesta de la otra y \(\mathbf X\) es simétrica), así que \(d\ln|\mathbf X|=2\tr(\mathbf X^{-1}\bW^T\bA\,d\bW)\), es decir, \(\nabla_{\bW}\ln|\bW^T\bA\bW|=2\bA\bW(\bW^T\bA\bW)^{-1}\).</li>
+        <li><strong>Igualar el gradiente a cero.</strong> \(2\bS_B\bW(\bW^T\bS_B\bW)^{-1}-2\bS_C\bW(\bW^T\bS_C\bW)^{-1}=\mathbf 0\). Multiplicando por la derecha por \(\bW^T\bS_B\bW\):
+        \[\bS_B\bW=\bS_C\bW\,\bM,\qquad \bM=(\bW^T\bS_C\bW)^{-1}(\bW^T\bS_B\bW)\quad(d'\times d',\ \text{etiqueta mía}).\]</li>
+        <li><strong>El criterio no cambia si se cambia de base.</strong> Para cualquier \(\bA\) invertible \(d'\times d'\): \(\dfrac{|\bA^T\bW^T\bS_B\bW\bA|}{|\bA^T\bW^T\bS_C\bW\bA|}=\dfrac{|\bA|^2|\bW^T\bS_B\bW|}{|\bA|^2|\bW^T\bS_C\bW|}\). Igual que en PCA, solo importa el subespacio.</li>
+        <li><strong>Elegir la base buena.</strong> Como \(\bW^T\bS_C\bW\) es definida positiva y \(\bW^T\bS_B\bW\) simétrica, existe una \(\bA\) que las diagonaliza a la vez: \(\bA^T(\bW^T\bS_C\bW)\bA=\mathbf I\) y \(\bA^T(\bW^T\bS_B\bW)\bA=\bSigma\) diagonal (ejercicio 1 de la hoja). Con \(\bW'=\bW\bA\), la ecuación del paso 2 queda \(\bS_B\bW'=\bS_C\bW'\bSigma\): columna a columna, \(\bS_B\bw'_j=\sigma_j\bS_C\bw'_j\).</li>
+        <li><strong>Valor del criterio.</strong> En esa base vale \(|\bSigma|=\prod_j\sigma_j\) (tarjeta 5.7). Para que sea máximo hay que tomar los \(d'\) mayores \(\sigma_j\). (Comprobado numéricamente: ninguna de 20 000 matrices \(\bW\) aleatorias supera el producto de los dos mayores \(\sigma\), y el gradiente se anula en los autovectores generalizados.)</li>
+      </ol>
+      <p><strong>\(D\) o \(D^2\).</strong> El profesor maximiza \(D\) (con raíces) y en la pizarra pasa a \(D^2\), que es el cociente de la diapositiva sin raíces. La raíz es creciente: el máximo está en la misma \(\bW\).</p>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 31 y pizarra p. 32</span>
+        <p>p. 31: \(\max_{\bW}D(\bW)=\max_{\bW}\frac{|\bW^T\bS_{B,x}\bW|}{|\bW^T\bS_{C,x}\bW|}\) → «<em>solution</em>» \(\bW=[\bw_1,\bw_2,\dots,\bw_{d'}]\), «<em>generalized eigenvectors</em>».</p>
+        <p>Pizarra (p. 32): \(\max_{\bW}D^2(\bW)\); \(\bS_B\bw_j=\sigma_j\bS_C\bw_j\) («<em>generalized eigenvalues</em>»); \(\bS_C^{-1}\bS_B\bw_j=\sigma_j\bw_j\to\bS_C^{-1}\bS_B[\bw_1\ \bw_2\cdots\bw_{d'}]=[\bw_1\cdots\bw_{d'}]\bSigma\) («<em>diagonal</em>»); \(D^2(\bW)=\frac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}=\frac{|\bW^T\bS_C\bW||\bSigma|}{|\bW^T\bS_C\bW|}=\prod_{i=1}^{d'}\sigma_i\). Y concluye: «<em>\(\bw_i\) associated to the maximum generalized eigenvalues that are \(\ge1\)</em>» (lectura de la foto; ver tarjeta 5.7).</p>
+      </div>
+      <div class="note errata"><span class="lab">Erratas</span>
+        <p>Diap. 33: «<em>We can choose the definition of \(\bS_B\) matrix in slide 29…</em>». \(\bS_B\) está en la diap. 30; la 29 es la figura de las medias (probablemente numeración de una versión anterior). Apunte p. 31: escribe \(\bS_B\bw_j=\sigma_i\), incompleto; es \(\bS_B\bw_j=\sigma_j\bS_C\bw_j\). La diap. 32 no está en el PDF.</p>
+      </div>
+      <div class="note trap"><span class="lab">Errores habituales</span>
+        <p>(1) Usar los autovectores de \(\bS_B\) solo, o de \(\bS_T\): ignoran la forma de las clases. (2) Pensar que \(\bS_C^{-1}\bS_B\) es simétrica y que sus autovectores son ortogonales: en general no lo son (los \(\bw_j\) son ortogonales «respecto a \(\bS_C\)», \(\bw_i^T\bS_C\bw_j=0\)). (3) Confundir los \(\sigma_j\) de MDA con los \(\lambda_j\) de PCA.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.7 -->
+  <article class="concept" data-cid="b5-7">
+    <header><h3>¿Cuántos autovalores? \(d'\le\min(d,\,c-1)\)</h3><span class="ref">Diap. 34 · PDF p. 40</span></header>
+    <div class="summary">
+      <p>Si \(\bW\) contiene los autovectores generalizados,</p>
+      \[\frac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}=|\bSigma|=\prod_{i=1}^{d'}\sigma_i.\]
+      <p>La dimensión máxima de \(\bz\) es \(d'\le\min(d,\,c-1)\) porque: (1) solo cuentan los autovalores no nulos (si no, no hay discriminación); (2) su número está acotado por \(\rank(\bS_C^{-1}\bS_B)\le\min(\rank(\bS_C^{-1}),\rank(\bS_B))\); (3) \(\rank(\bS_B)\le\min(d,c-1)\) y \(\rank(\bS_C)=d\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>El cociente vale \(\prod\sigma_i\).</strong> De \(\bS_B\bW=\bS_C\bW\bSigma\), multiplicando por \(\bW^T\) por la izquierda: \(\bW^T\bS_B\bW=(\bW^T\bS_C\bW)\bSigma\). Tomando determinantes y usando \(|\mathbf A\mathbf B|=|\mathbf A||\mathbf B|\): \(|\bW^T\bS_B\bW|=|\bW^T\bS_C\bW|\,|\bSigma|\). Dividiendo sale \(|\bSigma|=\prod\sigma_i\). Vale con cualquier escala de los autovectores.</li>
+        <li><strong>Los \(\sigma_j\) son reales y \(\ge0\).</strong> \(\bS_C^{-1}\bS_B\) no es simétrica, pero es semejante a \(\bS_C^{-1/2}\bS_B\bS_C^{-1/2}\), que sí lo es y además es semidefinida positiva. Dos matrices semejantes tienen los mismos autovalores. Por eso se puede hablar de «los mayores».</li>
+        <li><strong>Un \(\sigma_j=0\) anula el producto.</strong> Meter en \(\bW\) una dirección con \(\sigma_j=0\) hace el cociente cero: en esa dirección las medias proyectadas coinciden y no aporta discriminación.</li>
+        <li><strong>Rango del producto.</strong> El número de autovalores no nulos de \(\bS_C^{-1}\bS_B\) es su rango (es diagonalizable, por el paso 2). Y el rango de un producto no supera el de ningún factor.</li>
+        <li><strong>\(\rank(\bS_B)\le c-1\).</strong> \(\bS_B\) es suma de \(c\) matrices de rango 1, cada una en la dirección de \(\bm_i-\bm\). Esos \(c\) vectores cumplen \(\sum_iN_i(\bm_i-\bm)=\sum_iN_i\bm_i-N\bm=\mathbf 0\): son dependientes y generan como mucho un subespacio de dimensión \(c-1\). Además, una matriz \(d\times d\) no tiene rango mayor que \(d\). (Demostración completa en el ejercicio 3.)</li>
+        <li><strong>\(\rank(\bS_C)=d\)</strong> es lo que permite invertirla. Exige datos suficientes: \(\bS_C=\sum_i\bS_{C,i}\) y cada \(\bS_{C,i}\) tiene rango \(\le N_i-1\) (tarjeta 1.3), así que \(\rank(\bS_C)\le N-c\). Si \(N-c&lt;d\), \(\bS_C\) es singular y la fórmula falla.</li>
+        <li><strong>Conclusión.</strong> Como mucho \(\min(d,c-1)\) autovalores no nulos, luego \(d'\le\min(d,c-1)\). Con pocas clases es una limitación seria: con \(c=2\), MDA da una sola característica.</li>
+      </ol>
+      <p><strong>«No nulos» (diapositiva) frente a «\(\ge1\)» (pizarra).</strong> Responden a preguntas distintas:</p>
+      <ul>
+        <li>Con \(d'\) fijado, el criterio se maximiza con los \(d'\) mayores \(\sigma\), y no tiene sentido pasar de los no nulos: es la regla de la diapositiva.</li>
+        <li>Si además se quisiera elegir \(d'\) maximizando el propio producto \(\prod\sigma_i\), cada factor \(\sigma&lt;1\) lo reduciría: solo convendría añadir los \(\sigma\ge1\). Esa parece ser la idea de la pizarra.</li>
+        <li>Cuidado: esa segunda regla depende de qué matriz se ponga en el denominador. Con \(\bS_T\) en lugar de \(\bS_C\) (ejercicio 4) todos los autovalores quedan en \([0,1)\) y la regla no elegiría ninguno, aunque las direcciones sean las mismas (tarjeta 5.8). Además, comparar \(\prod\sigma_i\) entre dimensiones distintas mezcla volúmenes de espacios distintos. Lo seguro es la diapositiva: hasta \(\min(d,c-1)\) direcciones con \(\sigma\neq0\), y \(d'\) se ajusta validando el clasificador.</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 40</span>
+        <p>Al margen: «<em>RANGO: # of eigenvalues \(\neq0\) ó LI columns/rows</em>». Subraya \(\rank(\bS_B)\le\min(d,c-1)\) y \(\rank(\bS_C)=d\). Ejemplo: \(c=3\), \(d=1000\) → \(d'\le2\). Y anota «<em>Limitation</em>».</p>
+      </div>
+      <div class="note errata"><span class="lab">Matices</span>
+        <p>«Rango = nº de autovalores no nulos» solo vale para matrices diagonalizables (contraejemplo: \(\begin{pmatrix}0&1\\0&0\end{pmatrix}\) tiene rango 1 y sus dos autovalores son 0). Aquí se cumple porque \(\bS_C^{-1}\bS_B\) es semejante a una simétrica. Y «\(\rank(\bS_C)=d\)» no es automático: hace falta \(N-c\ge d\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.8 -->
+  <article class="concept" data-cid="b5-8">
+    <header><h3>El caso de dos clases: \(\bw\propto\bS_C^{-1}(\bm_1-\bm_2)\)</h3><span class="ref">Diap. 34 con \(c=2\) · ejercicio 4</span></header>
+    <div class="summary">
+      <p>Con \(c=2\), \(d'\le1\): una sola dirección. \(\bS_B\) tiene rango 1 y la ecuación generalizada se resuelve a mano:</p>
+      \[\bS_B=\frac{N_1N_2}{N}(\bm_1-\bm_2)(\bm_1-\bm_2)^T\quad\Longrightarrow\quad \bw\propto\bS_C^{-1}(\bm_1-\bm_2).\]
+      <p>Es la misma dirección que el discriminante lineal (LDA) del tema 2, \(\bC^{-1}(\bmu_1-\bmu_2)\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Las dos medias respecto a la global.</strong> Con \(\bm=\frac{N_1\bm_1+N_2\bm_2}{N}\): \(\bm_1-\bm=\frac{N\bm_1-N_1\bm_1-N_2\bm_2}{N}=\frac{N_2}{N}(\bm_1-\bm_2)\) (usando \(N-N_1=N_2\)). Igualmente \(\bm_2-\bm=-\frac{N_1}{N}(\bm_1-\bm_2)\).</li>
+        <li><strong>\(\bS_B\).</strong> Con \(\boldsymbol\Delta=\bm_1-\bm_2\) (etiqueta mía): \(\bS_B=N_1\frac{N_2^2}{N^2}\boldsymbol\Delta\boldsymbol\Delta^T+N_2\frac{N_1^2}{N^2}\boldsymbol\Delta\boldsymbol\Delta^T=\frac{N_1N_2(N_2+N_1)}{N^2}\boldsymbol\Delta\boldsymbol\Delta^T=\frac{N_1N_2}{N}\boldsymbol\Delta\boldsymbol\Delta^T\).</li>
+        <li><strong>\(\bS_B\bw\) siempre apunta hacia \(\boldsymbol\Delta\).</strong> \(\bS_B\bw=\frac{N_1N_2}{N}\boldsymbol\Delta(\boldsymbol\Delta^T\bw)\), y \(\boldsymbol\Delta^T\bw\) es un escalar.</li>
+        <li><strong>Resolver.</strong> \(\bS_B\bw=\sigma\bS_C\bw\) se convierte en \(\sigma\bS_C\bw=(\text{escalar})\,\boldsymbol\Delta\Rightarrow\bw\propto\bS_C^{-1}\boldsymbol\Delta\). La norma y el signo de \(\bw\) no importan para proyectar.</li>
+        <li><strong>Su autovalor.</strong> Sustituyendo, \(\sigma=\frac{N_1N_2}{N}\boldsymbol\Delta^T\bS_C^{-1}\boldsymbol\Delta\): una distancia de Mahalanobis entre medias, igual que la \(r^2\) del bloque 2 pero con \(\bS_C\) en lugar de \(\bC\).</li>
+        <li><strong>¿\(\bS_C\) o \(\bS_T\) en el denominador?</strong> La solución del ejercicio 4 usa la dispersión total. Da igual: como \(\bS_T=\bS_C+\bS_B\), \(\bS_B\bw=\sigma\bS_C\bw\iff\bS_B\bw=\sigma(\bS_T-\bS_B)\bw\iff(1+\sigma)\bS_B\bw=\sigma\bS_T\bw\iff\bS_B\bw=\frac{\sigma}{1+\sigma}\bS_T\bw\). Mismos autovectores; los autovalores pasan a ser \(\frac{\sigma}{1+\sigma}\), con el mismo orden. Vale para cualquier \(c\).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico: el de la tarjeta 5.4, ahora con MDA</span>
+        <p>\(\bS_C=\begin{pmatrix}17&15\\15&17\end{pmatrix}\), \(|\bS_C|=289-225=64\), \(\bS_C^{-1}=\frac{1}{64}\begin{pmatrix}17&-15\\-15&17\end{pmatrix}\), \(\boldsymbol\Delta=\bm_1-\bm_2=(-2,2)^T\).</p>
+        <p>\(\bw\propto\bS_C^{-1}\boldsymbol\Delta=\frac{1}{64}(-34-30,\ 30+34)^T=(-1,1)^T\). Unitario: \(\bw=\frac{1}{\sqrt2}(-1,1)^T\), perpendicular al alargamiento.</p>
+        <p>Proyecciones: clase 1 \(\to\) \(1{,}41;\ 1{,}41;\ 2{,}12;\ 0{,}71\); clase 2 \(\to\) \(-1{,}41;\ -1{,}41;\ -0{,}71;\ -2{,}12\). Separación perfecta (con PCA era nula).</p>
+        <p>Criterio: \(\bw^T\bS_B\bw=16\), \(\bw^T\bS_C\bw=2\), \(\sigma=8\). Comprobación con la fórmula del paso 5: \(\bS_C^{-1}\boldsymbol\Delta=(-1,1)^T\), así que \(\boldsymbol\Delta^T\bS_C^{-1}\boldsymbol\Delta=(-2)(-1)+2\cdot1=4\) y \(\sigma=\frac{4\cdot4}{8}\cdot4=8\) ✓. Con \(\bS_T\) en el denominador: \(16/18=8/9=\frac{\sigma}{1+\sigma}\) ✓. Para la dirección de PCA, \((1,1)/\sqrt2\): \(\bw^T\bS_B\bw=0\), criterio nulo.</p>
+      </div>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2</span>
+        <p>En LDA (dos gaussianas con covarianza común), el clasificador de Bayes proyecta sobre \(\bC^{-1}(\bmu_1-\bmu_2)\). Estimando \(\bC\) con \(\bS_C/(N-2)\) (covarianza intra-clase combinada), MDA con dos clases da exactamente esa dirección: es la proyección que conserva toda la información útil para el clasificador lineal.</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Proyectar sobre \(\bm_1-\bm_2\) sin más. Solo es óptimo si \(\bS_C\) es proporcional a la identidad (clases «redondas»). Con clases alargadas, \(\bS_C^{-1}\) gira la dirección para evitar las zonas donde cada clase es ancha.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="mda">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>MDA frente a PCA con dos clases</h3></div><span class="ref small">Diap. 26, 30, 34</span></div>
+    <p class="small">Dos clases alargadas y paralelas, como en el ejemplo 6. PCA usa \(\bS_T\); MDA usa \(\bw\propto\bS_C^{-1}(\bm_1-\bm_2)\). Debajo, las proyecciones de cada método y el error con el mejor umbral.</p>
+    <div class="controls">
+      <div class="ctl"><label for="mda-th"><span>Orientación de las clases</span><output id="mda-th-o"></output></label><input type="range" id="mda-th" min="0" max="180" step="1" value="20"></div>
+      <div class="ctl"><label for="mda-el"><span>Alargamiento de cada clase</span><output id="mda-el-o"></output></label><input type="range" id="mda-el" min="1" max="6" step="0.1" value="4.5"></div>
+      <div class="ctl"><label for="mda-se"><span>Separación entre medias</span><output id="mda-se-o"></output></label><input type="range" id="mda-se" min="0.5" max="5" step="0.1" value="2.2"></div>
+      <div class="ctl"><label for="mda-ph"><span>Ángulo de la separación respecto al eje corto</span><output id="mda-ph-o"></output></label><input type="range" id="mda-ph" min="0" max="90" step="1" value="10"></div>
+    </div>
+    <div class="plots">
+      <div class="plot wide"><canvas id="mda-c1" height="330" aria-label="Dos clases con las direcciones de PCA y MDA"></canvas>
+        <div class="legend"><span><i class="dot" style="background:var(--c1)"></i>clase 1</span><span><i class="dot" style="background:var(--c2)"></i>clase 2</span><span><i style="background:var(--cw1)"></i>PCA: autovector principal de \(\bS_T\)</span><span><i style="background:var(--cmda)"></i>MDA: \(\bS_C^{-1}(\bm_1-\bm_2)\)</span></div></div>
+      <div class="plot"><canvas id="mda-c2" height="150" aria-label="Proyección de PCA"></canvas><div class="cap" id="mda-cap2">Proyección sobre la dirección de PCA</div></div>
+      <div class="plot"><canvas id="mda-c3" height="150" aria-label="Proyección de MDA"></canvas><div class="cap" id="mda-cap3">Proyección sobre la dirección de MDA</div></div>
+    </div>
+    <div class="readout" id="mda-out"></div>
+  </div>
+
+  <!-- 5.9 -->
+  <article class="concept" data-cid="b5-9">
+    <header><h3>Más de \(\min(d,c-1)\) características: MDA por grupos</h3><span class="ref">Diap. 35 · PDF p. 42 + manuscrita p. 41</span></header>
+    <div class="summary">
+      <p>Si se quieren más de \(\min(d,c-1)\) características en \(\bz\), se pueden <strong>definir grupos de características en \(\bx\) y calcular una matriz MDA en cada uno</strong>. Ejemplo: la base de datos PHONEME de las prácticas.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li>Se parte \(\bx_i\) (dimensión \(d\)) en \(K\) bloques de características.</li>
+        <li>En cada bloque \(j\) se calcula su propio MDA, \(\bW^{(j)}\), con las mismas etiquetas. Cada uno da hasta \(c-1\) características, \(\bz^{(j)}\).</li>
+        <li>Se concatenan: \(\bz=(\bz^{(1)},\dots,\bz^{(K)})\), con \(d'=(c-1)\cdot K\).</li>
+        <li>Cada bloque debe tener más de \(c-1\) características (anotación del profesor): si no, ese MDA no reduce nada.</li>
+        <li>Precio: cada MDA solo ve su bloque. Las \(\bz^{(j)}\) no son óptimas en conjunto y pueden ser redundantes entre sí.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 41</span>
+        <p>«<em>reduce from \(d\to d'\)</em>»: dibuja \(\bx_i\) partido en bloques (cada uno con «<em>#features &gt; c−1</em>»), cada bloque entra en un MDA\(^{(1)}\), …, MDA\(^{(K)}\) con su \(\bW^{(j)}\) y salida \(\bz^{(j)}\) de \(c-1\) componentes, y concluye \(d'=(c-1)\cdot K\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.10 -->
+  <article class="concept" data-cid="b5-10">
+    <header><h3>Ejemplo 7: tres clases en 3D proyectadas sobre planos</h3><span class="ref">Diap. 36 · PDF p. 43</span></header>
+    <div class="summary">
+      <p>Tres distribuciones tridimensionales (una por clase) se proyectan sobre dos planos. El plano definido por \(\bW_1\) separa más las clases que el definido por \(\bW_2\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>Con \(c=3\) clases en \(d=3\), MDA permite \(d'\le\min(3,2)=2\): la proyección óptima es justamente un plano, y la figura compara dos candidatos. En el plano de \(\bW_1\) las tres elipses proyectadas quedan en fila y sin tocarse; en el de \(\bW_2\) se solapan. MDA elegiría el plano generado por los dos autovectores generalizados de mayor \(\sigma\), que maximiza el cociente de volúmenes. (En la figura, \(\bW_1\) y \(\bW_2\) son matrices \(3\times2\); la flecha dibujada es la normal de cada plano.)</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 5.11 -->
+  <article class="concept" data-cid="b5-11">
+    <header><h3>Fronteras de decisión sobre los vectores transformados</h3><span class="ref">Diap. 37 · PDF p. 44</span></header>
+    <div class="summary">
+      <p>Tras reducir, se clasifica con el detector bayesiano gaussiano del tema 2 aplicado a \(\bz\). Las medias y covarianzas en \(\bz\) salen de las de \(\bx\):</p>
+      \[\bmu_i=\bW^T\bm_i,\qquad \bC_i=\frac{1}{N_i}\bW^T\bS_{C,i}\bW,\qquad i=1,\dots,c.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Media.</strong> \(\frac{1}{N_i}\sum_{\bx\in D_i}\bW^T\bx=\bW^T\bm_i\).</li>
+        <li><strong>Covarianza.</strong> \(\frac{1}{N_i}\sum_{\bx\in D_i}(\bW^T\bx-\bW^T\bm_i)(\bW^T\bx-\bW^T\bm_i)^T=\frac{1}{N_i}\bW^T\bS_{C,i}\bW\), con el mismo argumento de la tarjeta 5.5. El factor \(\frac{1}{N_i}\) corresponde a la estimación de máxima verosimilitud.</li>
+        <li><strong>Para qué sirve reducir antes.</strong> Las \(\bC_i\) son ahora \(d'\times d'\) con \(d'\le c-1\), pequeñas. Se estiman bien con pocos datos y son invertibles: desaparece el problema de rango de la diap. 5 y de la nota 1 de la diap. 2.</li>
+        <li><strong>Las etiquetas solo se necesitan para entrenar.</strong> Una vez calculada \(\bW\), cualquier vector nuevo se transforma con \(\bz=\bW^T\bx\) sin conocer su clase, y el clasificador decide.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2</span>
+        <p>Con \(\bmu_i\) y \(\bC_i\) se aplican directamente QDA (una \(\bC_i\) por clase) o LDA (covarianza común, por ejemplo \(\frac{1}{N}\bW^T\bS_C\bW\)) en \(\mathbb{R}^{d'}\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b5"></div>
+  <div class="pager"></div>
+</section>

@@ -1,0 +1,146 @@
+<section class="view" id="v-b2" data-sec="b2">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 2 · Apartado 3.1 del PDF (continuación)</div>
+    <h1>Dos gaussianas: cuándo reducir empeora el error</h1>
+    <p class="lede">El ejemplo que justifica el «WARNING» de la diapositiva 8: con características independientes y relevantes, el error tiende a cero al crecer \(d\).</p>
+    <div class="meta"><span class="chip">Diap. 8–10</span><span class="chip">PDF p. 9–11</span><span class="chip">enlaza con el tema 2</span></div>
+  </div>
+
+  <!-- 2.1 -->
+  <article class="concept" data-cid="b2-1">
+    <header><h3>El aviso y el planteamiento del ejemplo 2</h3><span class="ref">Diap. 8 · PDF p. 9</span></header>
+    <div class="summary">
+      <p><strong>Reducir el número de características puede aumentar el error.</strong> De hecho, el error puede llegar a cero cuando el número de características crece, <strong>pero solo si son independientes</strong> (y aportan información). Para verlo, la diapositiva plantea dos clases gaussianas equiprobables con la misma covarianza:</p>
+      \[f_{\bx}(\bx\mid\omega_i)\sim N(\bmu_i;\bC),\qquad i=1,2,\qquad \bx\in\mathbb{R}^d,\qquad \Pr(\omega_1)=\Pr(\omega_2).\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>Las tres hipótesis del ejemplo no son casuales; cada una simplifica algo:</p>
+      <ul>
+        <li><strong>Gaussianas:</strong> el clasificador óptimo y su error tienen forma cerrada.</li>
+        <li><strong>Misma \(\bC\) en las dos clases:</strong> los términos cuadráticos en \(\bx\) se cancelan y la frontera de Bayes es un hiperplano (el discriminante lineal del tema 2).</li>
+        <li><strong>Equiprobables:</strong> el umbral queda exactamente a mitad de camino entre las dos clases.</li>
+      </ul>
+      <p>Otra hipótesis implícita, y la más importante para entender el resto: \(\bmu_1,\bmu_2,\bC\) son los <strong>parámetros verdaderos</strong>, no estimaciones. Así el ejemplo mide la información que contienen las características, sin el efecto de los pocos datos de la diap. 5.</p>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2</span>
+        <p>Es el caso LDA: clases gaussianas con covarianza común. El clasificador de Bayes es lineal en \(\bx\) y su vector normal es \(\bC^{-1}(\bmu_1-\bmu_2)\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 2.2 -->
+  <article class="concept" data-cid="b2-2">
+    <header><h3>De dónde sale \(\Pr(e)=Q(r/2)\)</h3><span class="ref">Diap. 9 · PDF p. 10</span></header>
+    <div class="summary">
+      <p>La probabilidad de error del clasificador de Bayes en el ejemplo 2 es</p>
+      \[\Pr(e)=\frac{1}{\sqrt{2\pi}}\int_{r/2}^{\infty}e^{-u^2/2}\,du=Q\!\left(\frac r2\right),\qquad r^2=(\bmu_1-\bmu_2)^T\bC^{-1}(\bmu_1-\bmu_2).\]
+      <p>Solo depende de \(r\), la <strong>distancia de Mahalanobis</strong> entre las medias. Como \(Q\) es decreciente, a mayor \(r\), menor error.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la derivación completa</summary><div class="deep-body">
+      <p>La diapositiva da el resultado sin demostrarlo. Esta es la derivación entera; ningún paso se da por hecho.</p>
+      <ol class="steps">
+        <li><strong>Regla de Bayes con clases equiprobables.</strong> Se decide \(\omega_1\) si \(f(\bx|\omega_1)\Pr(\omega_1)&gt;f(\bx|\omega_2)\Pr(\omega_2)\). Como \(\Pr(\omega_1)=\Pr(\omega_2)\), queda \(f(\bx|\omega_1)&gt;f(\bx|\omega_2)\), o en logaritmos (el logaritmo es creciente y no cambia la desigualdad): \(\ln f(\bx|\omega_1)-\ln f(\bx|\omega_2)&gt;0\).</li>
+        <li><strong>Sustituir las gaussianas.</strong> \(\ln f(\bx|\omega_i)=-\frac d2\ln 2\pi-\frac12\ln|\bC|-\frac12(\bx-\bmu_i)^T\bC^{-1}(\bx-\bmu_i)\). Los dos primeros términos son iguales para \(i=1,2\) (misma \(\bC\)) y se cancelan en la diferencia:
+          \[g(\bx)\equiv-\tfrac12(\bx-\bmu_1)^T\bC^{-1}(\bx-\bmu_1)+\tfrac12(\bx-\bmu_2)^T\bC^{-1}(\bx-\bmu_2).\]
+          (\(g\) es una etiqueta mía para esta diferencia.)</li>
+        <li><strong>Desarrollar los productos.</strong> \((\bx-\bmu_i)^T\bC^{-1}(\bx-\bmu_i)=\bx^T\bC^{-1}\bx-2\bmu_i^T\bC^{-1}\bx+\bmu_i^T\bC^{-1}\bmu_i\), usando que \(\bC^{-1}\) es simétrica (\(\bx^T\bC^{-1}\bmu_i=\bmu_i^T\bC^{-1}\bx\)). El término \(\bx^T\bC^{-1}\bx\) aparece con signo opuesto en los dos sumandos y se cancela:
+          \[g(\bx)=(\bmu_1-\bmu_2)^T\bC^{-1}\bx-\tfrac12\left(\bmu_1^T\bC^{-1}\bmu_1-\bmu_2^T\bC^{-1}\bmu_2\right).\]
+          Es lineal en \(\bx\): la frontera \(g(\bx)=0\) es un hiperplano.</li>
+        <li><strong>Reducir el problema a una sola variable.</strong> Toda la decisión depende de \(\bx\) a través del escalar \(y=(\bmu_1-\bmu_2)^T\bC^{-1}\bx\) (etiqueta mía). Una combinación lineal de una gaussiana es gaussiana, así que basta con calcular la media y la varianza de \(y\) en cada clase:
+          \[E[y|\omega_i]=(\bmu_1-\bmu_2)^T\bC^{-1}\bmu_i,\qquad \mathrm{Var}[y|\omega_i]=(\bmu_1-\bmu_2)^T\bC^{-1}\,\bC\,\bC^{-1}(\bmu_1-\bmu_2)=r^2.\]
+          (Para la varianza: si \(y=\mathbf{a}^T\bx\), \(\mathrm{Var}[y]=\mathbf{a}^T\bC\mathbf{a}\), con \(\mathbf{a}=\bC^{-1}(\bmu_1-\bmu_2)\).)</li>
+        <li><strong>Distancia entre medias y umbral.</strong> \(E[y|\omega_1]-E[y|\omega_2]=(\bmu_1-\bmu_2)^T\bC^{-1}(\bmu_1-\bmu_2)=r^2\). El umbral es \(\frac12(\bmu_1^T\bC^{-1}\bmu_1-\bmu_2^T\bC^{-1}\bmu_2)\), y se comprueba que es exactamente el punto medio \(\frac12\left(E[y|\omega_1]+E[y|\omega_2]\right)=\frac12(\bmu_1-\bmu_2)^T\bC^{-1}(\bmu_1+\bmu_2)\): al desarrollar, los términos cruzados \(\bmu_1^T\bC^{-1}\bmu_2\) y \(\bmu_2^T\bC^{-1}\bmu_1\) son iguales y se cancelan.</li>
+        <li><strong>Normalizar.</strong> Cada media está a \(r^2/2\) del umbral, y la desviación típica es \(r\). En unidades de desviación típica, la distancia al umbral es \(\dfrac{r^2/2}{r}=\dfrac r2\).</li>
+        <li><strong>Error condicionado.</strong> Si la muestra es de \(\omega_1\), hay error cuando \(y\) cae por debajo del umbral: \(\Pr(e|\omega_1)=\Pr\!\left(\frac{y-E[y|\omega_1]}{r}&lt;-\frac r2\right)=Q(r/2)\), por la simetría de la gaussiana. Lo mismo ocurre con \(\omega_2\) hacia el otro lado.</li>
+        <li><strong>Error total.</strong> \(\Pr(e)=\Pr(\omega_1)\Pr(e|\omega_1)+\Pr(\omega_2)\Pr(e|\omega_2)=\frac12Q(\frac r2)+\frac12Q(\frac r2)=Q(\frac r2)\), que es la integral de la diapositiva.</li>
+      </ol>
+      <div class="numex"><span class="lab">Comprobación numérica</span>
+        <p>\(r=2\Rightarrow\Pr(e)=Q(1)=0{,}1587\). \(r=4\Rightarrow Q(2)=0{,}0228\). \(r=6\Rightarrow Q(3)=0{,}0013\). Duplicar \(r\) no divide el error por dos: lo reduce mucho más, porque la cola gaussiana cae como \(e^{-t^2/2}\).</p>
+      </div>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2: \(D'\)</span>
+        <p>En una dimensión, \(\bC=\sigma^2\) y \(r=\frac{|\mu_1-\mu_2|}{\sigma}\): es la discriminabilidad \(D'\) del tema 2 (el profesor la escribe en la p. 29 como \(D=|m_1-m_2|/\sigma\)). En \(d\) dimensiones, \(r\) es su generalización, y la fórmula se lee \(\Pr(e)=Q(D'/2)\).</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Usar la distancia euclídea \(\|\bmu_1-\bmu_2\|\) en lugar de \(r\). La euclídea ignora cuánto se dispersan los datos en cada dirección; la de Mahalanobis mide la separación en unidades de desviación típica. Otro despiste frecuente: escribir \(Q(r)\) en lugar de \(Q(r/2)\). El \(/2\) sale de que el umbral está a mitad de camino.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 2.3 -->
+  <article class="concept" data-cid="b2-3">
+    <header><h3>Características independientes: \(r^2\) es una suma</h3><span class="ref">Diap. 9 · PDF p. 10</span></header>
+    <div class="summary">
+      <p>Si las características son independientes, \(\bC\) es diagonal y</p>
+      \[r^2=\sum_{i=1}^d\left(\frac{\mu_{i,1}-\mu_{i,2}}{\sigma_i}\right)^2.\]
+      <p>Cada característica suma un término \(\ge0\). <strong>Si las características son relevantes y \(d\to\infty\), entonces \(r\to\infty\) y \(\Pr(e)\to0\)</strong> (recuadro de la diapositiva).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Independencia ⇒ \(\bC\) diagonal.</strong> Si \(x_i\) y \(x_j\) son independientes, su covarianza es 0. Para gaussianas también vale el recíproco. Así \(\bC=\mathrm{diag}(\sigma_1^2,\dots,\sigma_d^2)\).</li>
+        <li><strong>Inversa de una diagonal.</strong> \(\bC^{-1}=\mathrm{diag}(1/\sigma_1^2,\dots,1/\sigma_d^2)\).</li>
+        <li><strong>Forma cuadrática.</strong> Con \(\boldsymbol\delta=\bmu_1-\bmu_2\) (etiqueta mía), \(\boldsymbol\delta^T\bC^{-1}\boldsymbol\delta=\sum_i\delta_i^2/\sigma_i^2\). Como \(\delta_i=\mu_{i,1}-\mu_{i,2}\), sale la fórmula de la diapositiva.</li>
+        <li><strong>Lectura:</strong> cada término es el cuadrado del \(D'\) de esa característica por separado, así que \(r^2=\sum_iD_i'^2\). Añadir una característica independiente nunca reduce \(r\), y por tanto nunca aumenta \(\Pr(e)\). Quitar una relevante sí lo aumenta: ese es el «WARNING».</li>
+        <li><strong>La condición «relevantes» importa.</strong> Si cada término es al menos \(\varepsilon&gt;0\), \(r^2\ge d\,\varepsilon\to\infty\). Pero si las contribuciones decaen, la suma puede converger. Ejemplo: con \(D_i'=D_1'/i\), \(r^2=D_1'^2\sum_i 1/i^2\to D_1'^2\,\pi^2/6\), y el error se queda en un valor positivo. Compruébalo en el laboratorio de abajo con el modo «contribución decreciente».</li>
+        <li><strong>¿Y la U de la diap. 5?</strong> No hay contradicción. Aquí los parámetros son conocidos; en la diap. 5 se estiman con \(n\) muestras. Con datos finitos, cada característica añadida aporta \(D_i'^2\) de información pero también error de estimación.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico 2D (comprobado en código)</span>
+        <p>\(\bmu_1=(1,\ 0{,}5)^T\), \(\bmu_2=(0,0)^T\), \(\bC=\mathrm{diag}(1,\ 0{,}25)\), es decir \(\sigma_1=1\), \(\sigma_2=0{,}5\).</p>
+        <p>\(r^2=\left(\frac{1}{1}\right)^2+\left(\frac{0{,}5}{0{,}5}\right)^2=2\), \(r=1{,}414\), \(\Pr(e)=Q(0{,}707)=0{,}2398\).</p>
+        <p>Si eliminas \(x_2\): \(r=1\), \(\Pr(e)=Q(0{,}5)=0{,}3085\). Reducir de 2 a 1 característica sube el error del 24,0 % al 30,9 %.</p>
+        <p><strong>Con dependencia:</strong> \(\boldsymbol\delta=(1,1)^T\), \(\bC=\begin{pmatrix}1&0{,}8\\0{,}8&1\end{pmatrix}\). Entonces \(\bC^{-1}=\frac{1}{0{,}36}\begin{pmatrix}1&-0{,}8\\-0{,}8&1\end{pmatrix}\) y \(r^2=\frac{1-1{,}6+1}{0{,}36}=1{,}111\), \(\Pr(e)=Q(0{,}527)=0{,}2991\). Con las mismas medias pero independientes (\(\bC=\mathbf{I}\)) sería \(r^2=2\) y \(0{,}2398\). La segunda característica, al estar correlada con la primera, aporta mucho menos. (Una simulación de Monte Carlo con 400 000 muestras por clase da 0,2985.)</p>
+      </div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Notación de la diapositiva</span>
+        <p>En \(\mu_{i,1}\) el primer índice es la <em>característica</em> \(i\) y el segundo la <em>clase</em>. Además, la diapositiva escribe \(\boldsymbol\mu_{i,1}\) en negrita, pero es un escalar (una componente). En el resto del tema, \(i\) suele indexar clases.</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Leer el recuadro como «más características siempre es mejor». Hacen falta tres cosas: independencia (si no, aportan menos), relevancia (contribuciones que no se anulen) y parámetros conocidos (si no, aparece la U).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="pe">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>\(\Pr(e)=Q(r/2)\) en función de \(r\) y de \(d\)</h3></div><span class="ref small">Diap. 9</span></div>
+    <p class="small">Características independientes. \(D'_i=|\mu_{i,1}-\mu_{i,2}|/\sigma_i\) es la contribución de la característica \(i\), de modo que \(r^2=\sum_i D_i'^2\).</p>
+    <div class="controls">
+      <div class="ctl"><label for="pe-mode"><span>Cómo contribuye cada característica</span></label>
+        <select id="pe-mode"><option value="const">Constante: D′ᵢ = D′</option><option value="decay">Decreciente: D′ᵢ = D′ / i</option><option value="k">Solo las k primeras son relevantes</option></select></div>
+      <div class="ctl"><label for="pe-dp"><span>\(D'\) por característica</span><output id="pe-dp-o"></output></label><input type="range" id="pe-dp" min="0.05" max="1.5" step="0.05" value="0.5"></div>
+      <div class="ctl"><label for="pe-d"><span>Número de características \(d\)</span><output id="pe-d-o"></output></label><input type="range" id="pe-d" min="1" max="100" step="1" value="10"></div>
+      <div class="ctl" id="pe-k-wrap"><label for="pe-k"><span>Características relevantes \(k\)</span><output id="pe-k-o"></output></label><input type="range" id="pe-k" min="1" max="50" step="1" value="5"></div>
+    </div>
+    <div class="plots">
+      <div class="plot"><canvas id="pe-c1" height="230" aria-label="Probabilidad de error frente al número de características"></canvas><div class="cap">\(\Pr(e)\) frente a \(d\)</div></div>
+      <div class="plot"><canvas id="pe-c2" height="230" aria-label="Curva Q(r/2) frente a r"></canvas><div class="cap">\(\Pr(e)=Q(r/2)\) frente a \(r\)</div></div>
+      <div class="plot wide"><canvas id="pe-c3" height="210" aria-label="Las dos clases proyectadas sobre la dirección discriminante"></canvas><div class="cap">Las dos clases sobre \(y\) (normalizado): medias separadas \(r\), umbral en \(r/2\). Área sombreada = \(\Pr(e)\).</div></div>
+    </div>
+    <div class="readout" id="pe-out"></div>
+  </div>
+
+  <!-- 2.4 -->
+  <article class="concept" data-cid="b2-4">
+    <header><h3>Ejemplo 3: separables en 3D, solapadas en 1D y 2D</h3><span class="ref">Diap. 10 · PDF p. 11</span></header>
+    <div class="summary">
+      <p>Dos distribuciones que en \((x_1,x_2,x_3)\) están completamente separadas (error cero) se <strong>solapan</strong> si solo miras \(x_1\) o \((x_1,x_2)\). Quedarse con un subconjunto de características equivale a mirar la «sombra» de las pdf, y la sombra puede mezclar lo que en el espacio completo estaba separado.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li>La figura muestra \(f_{\bx}(\bx|\omega_1)\Pr(\omega_1)\) y \(f_{\bx}(\bx|\omega_2)\Pr(\omega_2)\) en 3D (superficies de nivel), sus proyecciones sobre el plano \((x_1,x_2)\) y sobre el eje \(x_1\).</li>
+        <li>Quitar \(x_3\) significa trabajar con la marginal \(f(x_1,x_2|\omega_i)=\int f(x_1,x_2,x_3|\omega_i)\,dx_3\): se «aplasta» la pdf a lo largo de \(x_3\). Dos nubes que se separaban por su altura \(x_3\) quedan superpuestas en el plano. La zona gris-roja de la figura es el error en 2D.</li>
+        <li>Quitar también \(x_2\) aplasta otra vez: en 1D el solape (error en 1D) es todavía mayor.</li>
+        <li>Moraleja para el resto del tema: si hay que reducir, la pregunta es <em>qué dirección conservar</em>. Las características originales no tienen por qué ser las mejores; una combinación lineal \(\bw^T\bx\) bien elegida puede conservar la separación. Esa es la idea de la transformación \(\bz=\bW^T(\bx-\balpha)\) del bloque 3 y, sobre todo, de MDA.</li>
+      </ol>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b2"></div>
+  <div class="pager"></div>
+</section>

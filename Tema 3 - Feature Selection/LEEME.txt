@@ -1,0 +1,39 @@
+MLEARN · Tema 3 · Feature selection
+Plataforma de estudio (PCA, MDA y reducción de características)
+=================================================================
+
+CÓMO ABRIRLA
+- Haz doble clic en index.html. Se abre en el navegador (Chrome, Edge, Firefox o Safari).
+- Funciona sin internet: las fórmulas, las tipografías y los gráficos van dentro del archivo.
+- Está pensada para el ordenador. En el móvil depende de si el visor de archivos
+  permite páginas interactivas; si no, ábrela en el ordenador.
+
+QUÉ HAY EN LA CARPETA
+- index.html
+    Teoría de los 7 bloques (diapositivas 1–43 y apuntes manuscritos del profesor),
+    con derivaciones paso a paso, 5 laboratorios interactivos, un test por bloque
+    con modo «Repasar falladas», los 5 ejercicios de la hoja con pistas y solución,
+    36 flashcards y la hoja resumen.
+- hoja-resumen.pdf
+    Todas las fórmulas del tema en 2 páginas A4, lista para imprimir.
+- hoja-resumen.html
+    La misma hoja en formato web (se abre sin internet).
+
+EL PROGRESO
+- Se guarda en el navegador de cada persona: conceptos marcados, tests, ejercicios
+  y flashcards. Al compartir la carpeta, cada compañero empieza de cero; tu progreso
+  no viaja con ella.
+- Si borras los datos del navegador, cambias de navegador o mueves o renombras la
+  carpeta, el progreso puede volver a empezar.
+
+IMPRIMIR
+- Hoja resumen: abre hoja-resumen.pdf, o en la página ve a «Hoja resumen» y pulsa
+  «Imprimir hoja resumen».
+- Cualquier otra sección: ábrela y usa Imprimir del navegador (Ctrl+P o Cmd+P).
+  Las explicaciones desplegables se abren solas al imprimir.
+
+SOBRE EL CONTENIDO
+- Basado en las diapositivas del tema 3 (ML_Chapter3_FS_GO.pdf) y en la hoja de
+  ejercicios (ExercisesChapter3MLEARN.pdf). No es material oficial de la asignatura.
+- Las erratas y dudas detectadas en ese material están en la página de inicio
+  («Erratas y dudas detectadas en el material») y señaladas en cada tarjeta.

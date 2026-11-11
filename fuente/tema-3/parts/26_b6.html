@@ -1,0 +1,66 @@
+<section class="view" id="v-b6" data-sec="b6">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 6 · Apartado 3.4 del PDF</div>
+    <h1>Enfoques no lineales</h1>
+    <p class="lede">El PDF menciona dos métodos sin desarrollarlos: t-SNE y los autoencoders. Aquí se explica lo que dicen sus diapositivas y cómo se relacionan con lo visto.</p>
+    <div class="meta"><span class="chip">Diap. 38–42</span><span class="chip">PDF p. 45–49</span></div>
+  </div>
+
+  <!-- 6.1 -->
+  <article class="concept" data-cid="b6-1">
+    <header><h3>Por qué ir más allá de lo lineal</h3><span class="ref">Diap. 38 · PDF p. 45</span></header>
+    <div class="summary">
+      <p>Se han propuesto muchos otros métodos <strong>no lineales</strong> de reducción de características, como <strong>t-SNE</strong> y los <strong>autoencoders</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>PCA y MDA comparten la forma \(\bz=\bW^T(\bx-\balpha)\): proyectan sobre un subespacio plano. Si los datos viven sobre una superficie curvada dentro de \(\mathbb{R}^d\), o si las clases forman grupos que ninguna proyección plana deja separados, una transformación lineal no puede «desplegarlos». Los métodos no lineales sustituyen \(\bW^T(\cdot)\) por una función más flexible.</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 6.2 -->
+  <article class="concept" data-cid="b6-2">
+    <header><h3>t-SNE y el ejemplo de los dígitos</h3><span class="ref">Diap. 39–40 · PDF p. 46–47</span></header>
+    <div class="summary">
+      <p><strong>t-SNE:</strong> reducción de dimensionalidad que <strong>preserva las distancias entre vectores</strong>. Ejemplo 8: base de datos NIST de 6000 dígitos manuscritos llevada a 2D. Con PCA, casi todas las clases se mezclan (solo el 0 y el 1 quedan en los extremos). Con t-SNE aparecen 10 grupos bien separados, uno por dígito. La diap. 40 repite el mapa de t-SNE dibujando cada punto con su imagen.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Por qué PCA mezcla los dígitos.</strong> Con \(d'=2\) se conservan solo las dos direcciones de mayor dispersión total. Diez clases con formas complejas no caben separadas en un plano obtenido por proyección lineal, y PCA ni siquiera usa las etiquetas.</li>
+        <li><strong>Qué hace t-SNE, con un matiz.</strong> La diapositiva lo resume como «preservar distancias». Más exactamente, intenta que los vecinos cercanos en \(\mathbb{R}^d\) sigan siéndolo en 2D: conserva sobre todo la estructura local, no todas las distancias (las distancias entre grupos lejanos del mapa no deben interpretarse). Tampoco usa etiquetas: los colores de la figura se añaden después.</li>
+        <li><strong>Diferencia práctica con PCA.</strong> t-SNE no da una matriz \(\bW\) ni una fórmula \(\bz=f(\bx)\) para un vector nuevo: coloca directamente los puntos de la base de datos. Por eso se usa sobre todo para <em>visualizar</em> (la utilidad de la diap. 6).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Detalle de la diapositiva 39</span>
+        <p>Dice «NIST», pero la figura de la diap. 40 enlaza a una animación sobre MNIST, la versión estándar de esa base de dígitos. La diap. 40 aparece sin número en el PDF.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 6.3 -->
+  <article class="concept" data-cid="b6-3">
+    <header><h3>Autoencoders: una red con cuello de botella</h3><span class="ref">Diap. 41–42 · PDF p. 48–49</span></header>
+    <div class="summary">
+      <p>Un <strong>autoencoder</strong> es una red neuronal cuya salida intenta reproducir su entrada: \(x_1,\dots,x_6\to\) capa oculta «<em>bottleneck</em>» \(z_1,z_2,z_3\to\hat x_1,\dots,\hat x_6\). La parte que va de \(x\) a \(z\) es el <strong>codificador</strong> \(q_\theta(x)\); la que va de \(z\) a \(\hat x\), el <strong>decodificador</strong> \(p_\phi(z)\). La capa estrecha \(z\) es la <strong>representación latente</strong>, de menor dimensión: las características reducidas.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: relación con PCA</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Cómo se entrena.</strong> Se ajustan los parámetros del codificador (\(\theta\)) y del decodificador (\(\phi\)) para que \(\hat{\bx}\approx\bx\), típicamente minimizando \(\sum_k\|\hat{\bx}_k-\bx_k\|^2\). Como \(\bz\) tiene menos componentes que \(\bx\), la red se ve obligada a comprimir.</li>
+        <li><strong>Caso lineal.</strong> Si el codificador es \(\bz_k=\bW_e^T(\bx_k-\balpha)\) y el decodificador \(\hat{\bx}_k=\bW_d\bz_k+\balpha\), sin funciones no lineales (\(\bW_e\), \(\bW_d\): etiquetas mías), la pérdida es \(\sum_k\|\bW_d\bz_k+\balpha-\bx_k\|^2\): exactamente el \(J\) de la diap. 14.</li>
+        <li><strong>Consecuencia.</strong> Por la demostración del bloque 4, el mejor autoencoder lineal reconstruye sobre el mismo subespacio que PCA (el de los \(d'\) autovectores principales de \(\bS\)), aunque sus pesos pueden ser cualquier base de ese subespacio.</li>
+        <li><strong>Lo que añade la no linealidad.</strong> Con funciones de activación no lineales, codificador y decodificador pueden representar superficies curvas: es una generalización no lineal de PCA. Igual que PCA, no usa etiquetas, así que tampoco garantiza separar clases.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Pensar que la salida del autoencoder es la característica reducida. La salida \(\hat{\bx}\) tiene la dimensión original; la representación reducida es la capa central \(\bz\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b6"></div>
+  <div class="pager"></div>
+</section>

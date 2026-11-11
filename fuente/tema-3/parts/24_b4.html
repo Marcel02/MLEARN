@@ -1,0 +1,417 @@
+<section class="view" id="v-b4" data-sec="b4">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 4 · Apartado 3.2 del PDF</div>
+    <h1>Principal Components Analysis (PCA)</h1>
+    <p class="lede">Elegir \(\bW\) para que \(\bW\bz_k+\balpha\) reconstruya \(\bx_k\) con el menor error cuadrático. El resultado: las columnas de \(\bW\) son los autovectores de \(\bS\) con los \(d'\) mayores autovalores.</p>
+    <div class="meta"><span class="chip">Diap. 14–25</span><span class="chip">PDF p. 16–28</span><span class="chip">incluye manuscrita p. 18</span></div>
+  </div>
+
+  <!-- 4.1 -->
+  <article class="concept" data-cid="b4-1">
+    <header><h3>Planteamiento: el error de reconstrucción \(J\)</h3><span class="ref">Diap. 14 · PDF p. 16</span></header>
+    <div class="summary">
+      <p>Tenemos \(N\) vectores de <strong>todas las clases mezcladas</strong>, \(D=\{\bx_1,\dots,\bx_N\}\), \(\bx\in\mathbb{R}^d\). Buscamos la matriz \(\bW\) que mejor aproxima los vectores originales,</p>
+      \[\bx_k\cong\bW\bz_k+\balpha,\]
+      <p>en el sentido del error cuadrático medio:</p>
+      \[J=\sum_{k=1}^N\left\|\bW\bz_k+\balpha-\bx_k\right\|_2^2.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Qué es \(\bW\bz_k+\balpha\).</strong> Es un punto de \(\mathbb{R}^d\) construido con solo \(d'\) números (las componentes de \(\bz_k\)): \(\balpha+z_{k,1}\bw_1+\dots+z_{k,d'}\bw_{d'}\). Todos esos puntos viven en un subespacio afín de dimensión \(d'\): el que pasa por \(\balpha\) y está generado por las columnas de \(\bW\).</li>
+        <li><strong>Qué mide \(J\).</strong> Para cada \(\bx_k\), la distancia al cuadrado entre el vector original y su representante en ese subespacio. \(J\) se mide en el espacio original \(\mathbb{R}^d\), no en \(\mathbb{R}^{d'}\).</li>
+        <li><strong>Incógnitas.</strong> \(\bW\) (\(d\times d'\)), \(\balpha\) (\(d\times1\)) y los \(N\) vectores \(\bz_k\). La demostración (tarjetas 4.5 a 4.8) las va eliminando una a una: primero \(\bz_k\), después \(\balpha\), por último \(\bW\).</li>
+        <li><strong>Caso límite \(d'=d\).</strong> \(\bW\) es cuadrada; si es invertible, basta \(\bz_k=\bW^{-1}(\bx_k-\balpha)\) para que \(\bW\bz_k+\balpha=\bx_k\) y \(J=0\). Sin reducir no hay error, como anota el profesor.</li>
+        <li><strong>Por qué «todas las clases».</strong> PCA no mira las etiquetas: trata la base de datos como una sola nube. Es la causa de que no siempre separe bien las clases (tarjeta 4.13).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 16</span>
+        <p>Sobre \(\bz_k\): «<em>reduced size of \(\bx_i\)</em>». Completa la igualdad: \(\bx_k\cong\bW\bz_k+\balpha=\hat{\bx}_i+\be_i\), donde \(\hat{\bx}_i\) es la reconstrucción y \(\be_i\) el «<em>error of reconstruction of \(\bx_i\) from \(\bz_i\)</em>». Bajo \(J\) escribe \(\|\be_k\|^2\): \(J\) es la suma de los errores de reconstrucción al cuadrado.</p>
+        <p>En el margen: «\(d'\) eigenvectors; if \(d'=d\) ⇒ then \(\hat{\bx}_k=\bx_i\), same as original».</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Confundir el signo: \(\be_k=\bx_k-\hat{\bx}_k\) o \(\hat{\bx}_k-\bx_k\) da igual dentro de \(J\), porque se eleva al cuadrado. Lo que no da igual es medir el error en \(\mathbb{R}^{d'}\): \(\bz_k\) y \(\bx_k\) ni siquiera tienen la misma dimensión.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.2 -->
+  <article class="concept" data-cid="b4-2">
+    <header><h3>El resultado: autovectores de la matriz de dispersión</h3><span class="ref">Diap. 15 · PDF p. 17</span></header>
+    <div class="summary">
+      \[\bz_k=\bW^T(\bx_k-\bm),\qquad \bm=\balpha=\frac1N\sum_{k=1}^N\bx_k,\qquad \bW=[\bw_1\ \ \bw_2\ \cdots\ \bw_{d'}],\]
+      \[\bS\bw_j=\lambda_j\bw_j,\qquad \bS=\sum_{k=1}^N(\bx_k-\bm)(\bx_k-\bm)^T\in\mathbb{R}^{d\times d}.\]
+      <p><strong>Minimizar el MSE implica usar en \(\bW\) los autovectores asociados a los mayores autovalores.</strong> La demostración está en las tarjetas 4.5–4.8.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: \(\bS\) frente a la covarianza</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Dimensiones de \(\bS\).</strong> Cada sumando es \((d\times1)(1\times d)=d\times d\), así que \(\bS\in\mathbb{R}^{d\times d}\) y tiene \(d\) autovalores (anotación del profesor). De ellos nos quedamos con \(d'\).</li>
+        <li><strong>Relación con la covarianza.</strong> La estimación insesgada es \(\hat{\bC}=\frac{1}{N-1}\sum_k(\bx_k-\bm)(\bx_k-\bm)^T\), de modo que \(\bS=(N-1)\hat{\bC}\). Con la estimación de máxima verosimilitud \(\frac1N\sum_k(\cdots)\) (la de la p. 3), \(\bS=N\hat{\bC}\).</li>
+        <li><strong>Mismos autovectores.</strong> Si \(\hat{\bC}\bw=\mu\bw\) (\(\mu\): etiqueta mía), entonces \(\bS\bw=(N-1)\hat{\bC}\bw=(N-1)\mu\bw\). El mismo \(\bw\) es autovector de \(\bS\), con autovalor \(\lambda=(N-1)\mu\). Multiplicar una matriz por una constante positiva escala los autovalores y no toca los autovectores ni su orden.</li>
+        <li><strong>Consecuencia.</strong> Da igual hacer PCA con \(\bS\) o con la covarianza: las direcciones y el orden son idénticos. Lo único que cambia es la escala de los \(\lambda_j\) y, con ella, el valor numérico de \(J\).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico 2D (comprobado en código)</span>
+        <p>\(N=4\): \(\bx_1=(1,1)^T\), \(\bx_2=(2,3)^T\), \(\bx_3=(3,2)^T\), \(\bx_4=(4,4)^T\).</p>
+        <p><strong>Media:</strong> \(\bm=(2{,}5;\ 2{,}5)^T\). <strong>Vectores centrados:</strong> \((-1{,}5;-1{,}5)\), \((-0{,}5;\ 0{,}5)\), \((0{,}5;-0{,}5)\), \((1{,}5;\ 1{,}5)\).</p>
+        <p><strong>Dispersión:</strong> \(S_{11}=2{,}25+0{,}25+0{,}25+2{,}25=5\), \(S_{22}=5\), \(S_{12}=2{,}25-0{,}25-0{,}25+2{,}25=4\). Así \(\bS=\begin{pmatrix}5&4\\4&5\end{pmatrix}\).</p>
+        <p><strong>Autovalores:</strong> \(|\bS-\lambda\mathbf I|=(5-\lambda)^2-16=0\Rightarrow\lambda=5\pm4\): \(\lambda_1=9\), \(\lambda_2=1\).</p>
+        <p><strong>Autovectores:</strong> \((\bS-9\mathbf I)\bw=\mathbf 0\Rightarrow\begin{pmatrix}-4&4\\4&-4\end{pmatrix}\bw=\mathbf 0\Rightarrow\bw_1=\frac{1}{\sqrt2}(1,1)^T\). Y \(\bw_2=\frac{1}{\sqrt2}(-1,1)^T\), ortogonal.</p>
+        <p><strong>Con \(d'=1\):</strong> \(z_k=\bw_1^T(\bx_k-\bm)\): \(-2{,}121\), \(0\), \(0\), \(2{,}121\). Reconstrucción \(\hat{\bx}_k=\bm+z_k\bw_1\): \((1,1)\), \((2{,}5;2{,}5)\), \((2{,}5;2{,}5)\), \((4,4)\).</p>
+        <p><strong>Error:</strong> \(J=0+0{,}5+0{,}5+0=1=\lambda_2\), el autovalor descartado (tarjeta 4.8).</p>
+        <p><strong>Covarianza insesgada:</strong> \(\hat{\bC}=\bS/3\), con autovalores \(3\) y \(1/3\). Multiplicados por \(N-1=3\) dan \(9\) y \(1\), con los mismos autovectores.</p>
+      </div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 17</span>
+        <p>Sobre \(d'\): «<em>Hyperparameter, we don't know at first its value. To be computed when testing</em>». Sobre \(\bS\): «<em>The same as the covariance matrix</em> \(\times(N-1)\): \(\hat{\bC}\cdot(N-1)\)». Y bajo \(\bS\): \((d\times1)(1\times d)\in\mathbb{R}^{d\times d}\) ⇒ \(d\) autovalores.</p>
+      </div>
+      <div class="note errata"><span class="lab">Matiz sobre la anotación</span>
+        <p>\(\bS=(N-1)\hat{\bC}\) es cierto con la covarianza insesgada (\(\frac{1}{N-1}\)). En la p. 3 el profesor escribió \(\hat{\bC}\) con \(\frac1N\); con esa, \(\bS=N\hat{\bC}\). Para PCA da igual (mismos autovectores), pero no mezcles las dos en un examen.</p>
+      </div>
+      <div class="note trap"><span class="lab">Errores habituales</span>
+        <p>(1) Elegir los autovectores de los autovalores <em>pequeños</em>: esos dan el máximo error, no el mínimo. (2) Olvidar restar \(\bm\) al construir \(\bS\) (tarjeta 4.12). (3) Confundir \(d\) autovalores de \(\bS\) con \(d'\) columnas de \(\bW\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.3 -->
+  <article class="concept" data-cid="b4-3">
+    <header><h3>El algoritmo en seis pasos y las propiedades de \(\bS\)</h3><span class="ref">Manuscrita · PDF p. 18</span></header>
+    <div class="summary">
+      <p>El profesor resume PCA así:</p>
+      <ol>
+        <li>Calcular \(\balpha\) (\(=\bm\)).</li>
+        <li>Calcular \(\bS\).</li>
+        <li>Descomponer en autovalores y autovectores: \(\bS\bw_i=\lambda_i\bw_i\), \(i=1,\dots,d\).</li>
+        <li>Elegir los \(d'\) mayores autovalores.</li>
+        <li>\(\bW=[\bw_1\ \cdots\ \bw_{d'}]\).</li>
+        <li>\(\bz_i=\bW^T(\bx_i-\balpha)\), \(i=1,\dots,N\).</li>
+      </ol>
+      <p><strong>Propiedades de la matriz de dispersión:</strong> (1) \(\bS=\bS^T\), simétrica; (2) autovectores ortogonales; (3) autovalores no negativos.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: demostración de las tres propiedades</summary><div class="deep-body">
+      <p>Llamo \(\ba_k=\bx_k-\bm\) (etiqueta mía), de modo que \(\bS=\sum_k\ba_k\ba_k^T\).</p>
+      <ol class="steps">
+        <li><strong>Simétrica.</strong> \((\ba_k\ba_k^T)^T=(\ba_k^T)^T\ba_k^T=\ba_k\ba_k^T\). Cada sumando es simétrico y la suma de simétricas también.</li>
+        <li><strong>Semidefinida positiva.</strong> Para cualquier \(\bv\in\mathbb{R}^d\): \(\bv^T\bS\bv=\sum_k\bv^T\ba_k\ba_k^T\bv=\sum_k(\bv^T\ba_k)^2\ge0\), porque \(\bv^T\ba_k\) es un escalar y \(\ba_k^T\bv\) es el mismo escalar.</li>
+        <li><strong>Autovalores \(\ge0\).</strong> Si \(\bS\bw=\lambda\bw\) con \(\|\bw\|=1\), multiplica por \(\bw^T\): \(\bw^T\bS\bw=\lambda\bw^T\bw=\lambda\). Por el paso anterior, \(\lambda\ge0\).</li>
+        <li><strong>Qué significa \(\lambda_j\).</strong> Con el paso 3, \(\lambda_j=\bw_j^T\bS\bw_j=\sum_k(\bw_j^T(\bx_k-\bm))^2=\sum_k z_{k,j}^2\): es la dispersión de los datos a lo largo de \(\bw_j\). Por eso «mayores autovalores» significa «direcciones de mayor dispersión».</li>
+        <li><strong>Autovectores ortogonales.</strong> Sean \(\bS\bw_i=\lambda_i\bw_i\), \(\bS\bw_j=\lambda_j\bw_j\) con \(\lambda_i\ne\lambda_j\). Calcula \(\bw_i^T\bS\bw_j\) de dos formas: por la derecha, \(\lambda_j\bw_i^T\bw_j\); por la izquierda, usando \(\bS=\bS^T\), \((\bS\bw_i)^T\bw_j=\lambda_i\bw_i^T\bw_j\). Restando: \((\lambda_i-\lambda_j)\bw_i^T\bw_j=0\Rightarrow\bw_i^T\bw_j=0\). Si dos autovalores coinciden, dentro de ese subespacio se puede elegir una base ortogonal (teorema espectral).</li>
+        <li><strong>Consecuencia: características incorreladas.</strong> \(\sum_k\bz_k\bz_k^T=\bW^T\left[\sum_k(\bx_k-\bm)(\bx_k-\bm)^T\right]\bW=\bW^T\bS\bW\). Como \(\bS\bw_j=\lambda_j\bw_j\) y \(\bw_i^T\bw_j=\delta_{ij}\), la entrada \((i,j)\) vale \(\bw_i^T\bS\bw_j=\lambda_j\delta_{ij}\): \(\bW^T\bS\bW=\mathrm{diag}(\lambda_1,\dots,\lambda_{d'})\). La dispersión de las nuevas características es diagonal. Además, su media es cero: \(\frac1N\sum_k\bz_k=\bW^T(\bm-\bm)=\mathbf 0\).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Decir que los autovalores de \(\bS\) son «positivos». Son no negativos: si los datos están en un subespacio (por ejemplo \(N\le d\)), algún \(\lambda_j\) vale exactamente 0.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.4 -->
+  <article class="concept" data-cid="b4-4">
+    <header><h3>Interpretación en 2D: de correladas a incorreladas</h3><span class="ref">Diap. 16 · PDF p. 19</span></header>
+    <div class="summary">
+      <p>Con características correladas, la nube de puntos es una elipse inclinada. PCA coloca \(\bw_1\) a lo largo del eje largo y \(\bw_2\) perpendicular. En las nuevas coordenadas \((z_1,z_2)\) la elipse queda alineada con los ejes: <strong>características incorreladas, en las direcciones de los autovectores de \(\bS\)</strong>. Quedarse con \(z_1\) es proyectar cada punto sobre la recta de \(\bw_1\).</p>
+    </div>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 19</span>
+        <p>«<em>NOTA: Remember that the Cov matrix is related to an ellipsoid</em>». Dibuja una elipse con semiejes proporcionales a \(\sqrt{\lambda_1}\) y \(\sqrt{\lambda_2}\). Se demuestra en la tarjeta 4.11.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="pca">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>PCA en 2D: autovectores, proyección y error</h3></div><span class="ref small">Diap. 14–16, 20</span></div>
+    <p class="small">40 puntos fijos. Cambia la forma de la nube y prueba direcciones: \(J(\varphi)\) es el error de reconstrucción al proyectar sobre la recta de ángulo \(\varphi\) que pasa por \(\bm\) (\(\varphi\): etiqueta mía). Arrastra sobre el gráfico para girar la recta.</p>
+    <div class="controls">
+      <div class="ctl"><label for="pca-th"><span>Rotación de la nube \(\theta\)</span><output id="pca-th-o"></output></label><input type="range" id="pca-th" min="0" max="180" step="1" value="35"></div>
+      <div class="ctl"><label for="pca-ra"><span>Anchura relativa \(\sigma_2/\sigma_1\)</span><output id="pca-ra-o"></output></label><input type="range" id="pca-ra" min="0.1" max="1" step="0.01" value="0.35"></div>
+      <div class="ctl"><label for="pca-ph"><span>Dirección de prueba \(\varphi\)</span><output id="pca-ph-o"></output></label><input type="range" id="pca-ph" min="0" max="179" step="1" value="90"></div>
+      <div class="ctl" style="justify-content:flex-end"><button class="btn pri" id="pca-go">Colocar la recta sobre \(\bw_1\)</button></div>
+    </div>
+    <div class="plots">
+      <div class="plot wide"><canvas id="pca-c1" height="360" aria-label="Nube de puntos con autovectores y proyecciones"></canvas>
+        <div class="legend"><span><i style="background:var(--cw1)"></i>\(\bw_1\) (escala \(\propto\sqrt{\lambda_1}\))</span><span><i style="background:var(--cw2)"></i>\(\bw_2\)</span><span><i style="background:var(--accent)"></i>recta de prueba y puntos reconstruidos \(\hat{\bx}_k\)</span><span><i style="background:var(--muted)"></i>errores \(\be_k\)</span></div></div>
+      <div class="plot"><canvas id="pca-c2" height="230" aria-label="Error de reconstrucción en función del ángulo"></canvas><div class="cap">\(J(\varphi)=\tr(\bS)-\bu^T\bS\bu\) con \(\bu=(\cos\varphi,\sin\varphi)^T\). Mínimo \(=\lambda_2\) en \(\bw_1\); máximo \(=\lambda_1\) en \(\bw_2\).</div></div>
+      <div class="plot"><canvas id="pca-c3" height="230" aria-label="Los mismos puntos en coordenadas z"></canvas><div class="cap">Los mismos puntos en coordenadas \(\bz=\bW^T(\bx-\bm)\) con \(d'=d=2\): nube alineada con los ejes, características incorreladas.</div></div>
+    </div>
+    <div class="readout" id="pca-out"></div>
+  </div>
+
+  <!-- 4.5 -->
+  <article class="concept" data-cid="b4-5">
+    <header><h3>Demostración (I): el mejor \(\bz_k\) para un \(\bW\) dado</h3><span class="ref">Diap. 17 · PDF p. 20</span></header>
+    <div class="summary">
+      <p>Fijado \(\bW\), cada \(\bz_k\) óptimo se obtiene anulando el gradiente de \(J\):</p>
+      \[\nabla_{\bz_k}J=2\bW^T\bW\bz_k+2\bW^T(\bm-\bx_k)=\mathbf 0\ \Rightarrow\ \bz_k=(\bW^T\bW)^{-1}\bW^T(\bx_k-\bm).\]
+      <p>Sustituyendo y quitando lo que no depende de \(\bW\):</p>
+      \[\hat J=-\sum_{k=1}^N(\bx_k-\bm)^T\bW(\bW^T\bW)^{-1}\bW^T(\bx_k-\bm).\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo: todo el álgebra</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Punto de partida.</strong> La diapositiva escribe \(J=\sum_k\|\bW\bz_k+\bm-\bx_k\|_2^2\), con \(\bm\) en lugar de \(\balpha\). Es decir, da por hecho que \(\balpha=\bm\). Lo justifico en los pasos 11–13.</li>
+        <li><strong>Desarrollar la norma.</strong> \(\|\bv\|^2=\bv^T\bv\) con \(\bv=\bW\bz_k+\bm-\bx_k\). Multiplicando los tres términos por los tres términos salen los nueve de la diapositiva:
+        \[\bz_k^T\bW^T\bW\bz_k+\bz_k^T\bW^T\bm-\bz_k^T\bW^T\bx_k+\bm^T\bW\bz_k+\bm^T\bm-\bm^T\bx_k-\bx_k^T\bW\bz_k-\bx_k^T\bm+\bx_k^T\bx_k.\]</li>
+        <li><strong>Agrupar los términos con \(\bz_k\).</strong> Un escalar es igual a su traspuesto: \(\bm^T\bW\bz_k=\bz_k^T\bW^T\bm\) y \(\bx_k^T\bW\bz_k=\bz_k^T\bW^T\bx_k\). Los términos con \(\bz_k\) quedan
+        \[\bz_k^T(\bW^T\bW)\bz_k+2\bz_k^T\bW^T(\bm-\bx_k).\]</li>
+        <li><strong>Derivar.</strong> \(\bz_k\) solo aparece en el sumando \(k\). Reglas: \(\nabla_{\bz}(\bz^T\bA\bz)=2\bA\bz\) si \(\bA\) es simétrica (aquí \(\bA=\bW^T\bW\)), y \(\nabla_{\bz}(\bz^T\mathbf b)=\mathbf b\). Resultado: \(\nabla_{\bz_k}J=2\bW^T\bW\bz_k+2\bW^T(\bm-\bx_k)\).</li>
+        <li><strong>Despejar.</strong> \(\bW^T\bW\bz_k=\bW^T(\bx_k-\bm)\Rightarrow\bz_k=(\bW^T\bW)^{-1}\bW^T(\bx_k-\bm)\). Hace falta que \(\bW^T\bW\) (\(d'\times d'\)) sea invertible, es decir, que las columnas de \(\bW\) sean linealmente independientes. Si no lo fueran, sobraría alguna.</li>
+        <li><strong>¿Es un mínimo?</strong> Como función de \(\bz_k\), \(J\) es una cuadrática con hessiana \(2\bW^T\bW\), definida positiva. El punto estacionario es el mínimo global.</li>
+        <li><strong>Sustituir.</strong> Llamo \(\bP=\bW(\bW^T\bW)^{-1}\bW^T\) (\(d\times d\), etiqueta mía). Entonces \(\bW\bz_k=\bP(\bx_k-\bm)\), y el residuo es \(\bW\bz_k+\bm-\bx_k=-(\mathbf I-\bP)(\bx_k-\bm)\).</li>
+        <li><strong>Dos propiedades de \(\bP\).</strong> Simétrica: \(\bP^T=\bW(\bW^T\bW)^{-T}\bW^T=\bP\), porque \(\bW^T\bW\) es simétrica. Idempotente: \(\bP^2=\bW(\bW^T\bW)^{-1}(\bW^T\bW)(\bW^T\bW)^{-1}\bW^T=\bP\). Por tanto \(\mathbf I-\bP\) también es simétrica e idempotente: \((\mathbf I-\bP)^2=\mathbf I-2\bP+\bP^2=\mathbf I-\bP\).</li>
+        <li><strong>\(J\) con el \(\bz_k\) óptimo.</strong> \(J=\sum_k(\bx_k-\bm)^T(\mathbf I-\bP)^T(\mathbf I-\bP)(\bx_k-\bm)=\sum_k(\bx_k-\bm)^T(\mathbf I-\bP)(\bx_k-\bm)\).</li>
+        <li><strong>Separar lo que depende de \(\bW\).</strong> \(J=\sum_k\|\bx_k-\bm\|^2-\sum_k(\bx_k-\bm)^T\bP(\bx_k-\bm)\). El primer término no depende de \(\bW\); quitarlo no cambia dónde está el mínimo. Queda \(\hat J\), la expresión de la diapositiva.</li>
+        <li><strong>¿Y \(\balpha\)? (paso que falta en el PDF).</strong> Repite los pasos 2–9 con \(\balpha\) en lugar de \(\bm\): sale \(J(\balpha)=\sum_k\|(\mathbf I-\bP)(\bx_k-\balpha)\|^2\).</li>
+        <li><strong>Derivar respecto a \(\balpha\).</strong> \(\nabla_{\balpha}J=-2\sum_k(\mathbf I-\bP)(\bx_k-\balpha)=-2(\mathbf I-\bP)\left(\sum_k\bx_k-N\balpha\right)=-2N(\mathbf I-\bP)(\bm-\balpha)\). Igualando a cero: \((\mathbf I-\bP)(\bm-\balpha)=\mathbf 0\).</li>
+        <li><strong>Lectura.</strong> Esa condición dice que \(\bm-\balpha\) debe estar en el espacio de columnas de \(\bW\). Cualquier \(\balpha=\bm+\bW\mathbf c\) es óptimo: todos describen el mismo subespacio afín y dan el mismo \(J\). \(\balpha=\bm\) es la elección natural, y además hace que los \(\bz_k\) tengan media cero. Un \(\balpha\) desplazado fuera de ese subespacio da un \(J\) mayor (comprobado numéricamente).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Erratas en la diapositiva 17</span>
+        <p>En el desarrollo aparece \(-\bx_k^T\bW\by_k\) y el gradiente se escribe \(\nabla_{\by_k}J\). Debe ser \(\bz_k\) en los dos casos (en la diap. 43, \(y_k\) son las etiquetas, otra cosa distinta).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.6 -->
+  <article class="concept" data-cid="b4-6">
+    <header><h3>Demostración (II): solo importa el subespacio (SVD de \(\bW\))</h3><span class="ref">Diap. 18 · PDF p. 21</span></header>
+    <div class="summary">
+      <p>Con la SVD \(\bW=\bU\bGamma\bV^T\) se demuestra que</p>
+      \[\bW(\bW^T\bW)^{-1}\bW^T=\bU_L\bU_L^T,\]
+      <p>donde \(\bU_L\) son las \(d'\) primeras columnas de \(\bU\). Los valores singulares \(\bGamma\) y la matriz \(\bV\) <strong>no influyen</strong>, así que se puede tomar \(\bW=\bU_L\), con columnas ortonormales, y el problema queda</p>
+      \[\bW=\arg\max_{\bW}\sum_{k=1}^N(\bx_k-\bm)^T\bW\bW^T(\bx_k-\bm).\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo: cada igualdad de la diapositiva</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Para qué.</strong> \(\hat J\) depende de \(\bW\) solo a través de \(\bP=\bW(\bW^T\bW)^{-1}\bW^T\). Queremos saber qué forma tiene \(\bP\).</li>
+        <li><strong>La SVD.</strong> \(\bW=\bU\bGamma\bV^T\), con \(\bU\) (\(d\times d\)) y \(\bV\) (\(d'\times d'\)) ortogonales (\(\bU^T\bU=\mathbf I\), \(\bV^T\bV=\bV\bV^T=\mathbf I\)) y \(\bGamma\) (\(d\times d'\)) de la forma \(\begin{bmatrix}\bGamma\\ \mathbf 0\end{bmatrix}\): un bloque diagonal \(d'\times d'\) con los valores singulares \(\gamma_i&gt;0\) (positivos si \(\bW\) tiene rango \(d'\)) y debajo ceros.</li>
+        <li><strong>\(\bW^T\bW\).</strong> \(\bW^T=\bV\bGamma^T\bU^T\), así que \(\bW^T\bW=\bV\bGamma^T\bU^T\bU\bGamma\bV^T=\bV\bGamma^T\bGamma\bV^T\).</li>
+        <li><strong>Su inversa.</strong> \((\mathbf A\mathbf B\mathbf C)^{-1}=\mathbf C^{-1}\mathbf B^{-1}\mathbf A^{-1}\): \((\bV\bGamma^T\bGamma\bV^T)^{-1}=\bV^{-T}(\bGamma^T\bGamma)^{-1}\bV^{-1}=\bV(\bGamma^T\bGamma)^{-1}\bV^T\), usando \(\bV^{-1}=\bV^T\).</li>
+        <li><strong>Montar \(\bP\).</strong> \(\bP=\bU\bGamma\bV^T\cdot\bV(\bGamma^T\bGamma)^{-1}\bV^T\cdot\bV\bGamma^T\bU^T=\bU\bGamma(\bGamma^T\bGamma)^{-1}\bGamma^T\bU^T\), porque \(\bV^T\bV=\mathbf I\) dos veces.</li>
+        <li><strong>Por bloques.</strong> \(\bGamma^T\bGamma=[\bGamma\ \ \mathbf 0]\begin{bmatrix}\bGamma\\ \mathbf 0\end{bmatrix}=\bGamma^2\), diagonal con \(\gamma_i^2\); su inversa es \(\bGamma^{-2}\).</li>
+        <li><strong>El producto central.</strong> \(\begin{bmatrix}\bGamma\\ \mathbf 0\end{bmatrix}\bGamma^{-2}[\bGamma\ \ \mathbf 0]=\begin{bmatrix}\bGamma\bGamma^{-2}\bGamma&\mathbf 0\\ \mathbf 0&\mathbf 0\end{bmatrix}=\begin{bmatrix}\mathbf I&\mathbf 0\\ \mathbf 0&\mathbf 0\end{bmatrix}\). Las matrices diagonales conmutan, así que \(\bGamma\bGamma^{-2}\bGamma=\mathbf I\).</li>
+        <li><strong>Partir \(\bU\).</strong> \(\bU=[\bU_L\ \ \bU_R]\), con \(\bU_L\) las \(d'\) primeras columnas y \(\bU_R\) las \(d-d'\) restantes. Entonces \(\bP=[\bU_L\ \ \bU_R]\begin{bmatrix}\mathbf I&\mathbf 0\\ \mathbf 0&\mathbf 0\end{bmatrix}\begin{bmatrix}\bU_L^T\\ \bU_R^T\end{bmatrix}=[\bU_L\ \ \mathbf 0]\begin{bmatrix}\bU_L^T\\ \bU_R^T\end{bmatrix}=\bU_L\bU_L^T\).</li>
+        <li><strong>Conclusión.</strong> \(\bP\) es el proyector ortogonal sobre el espacio de columnas de \(\bW\) (que es el de \(\bU_L\)). \(\hat J\) solo depende del <em>subespacio</em>, no de la base concreta. Podemos elegir la base más cómoda: \(\bW=\bU_L\), con \(\bW^T\bW=\mathbf I\). Así \(\bP=\bW\bW^T\) y minimizar \(\hat J\) es maximizar \(\sum_k(\bx_k-\bm)^T\bW\bW^T(\bx_k-\bm)\).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Posible errata y abuso de notación · diap. 18</span>
+        <p>La segunda línea empieza con \(\bU\bGamma^T\bV^T\bV^{-T}\cdots\). El primer factor es \(\bW=\bU\bGamma\bV^T\), así que debería ser \(\bU\bGamma\bV^T\bV^{-T}\cdots\). El resultado final \(\bU\bGamma(\bGamma^T\bGamma)^{-1}\bGamma^T\bU^T\) es correcto. Además, \(\bGamma\) designa a la vez la matriz \(d\times d'\) y su bloque diagonal \(d'\times d'\).</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Pensar que la \(\bW\) de PCA es única. Cualquier \(\bW\mathbf Q\) con \(\mathbf Q\) ortogonal \(d'\times d'\) genera el mismo subespacio y da el mismo \(J\). PCA escoge la base de autovectores, que además hace las \(z_j\) incorreladas (tarjeta 4.3). También el signo de cada \(\bw_j\) es arbitrario.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.7 -->
+  <article class="concept" data-cid="b4-7">
+    <header><h3>Demostración (III): traza y Lagrangiano</h3><span class="ref">Diap. 19 · PDF p. 22</span></header>
+    <div class="summary">
+      \[\sum_k(\bx_k-\bm)^T\bW\bW^T(\bx_k-\bm)=\tr\!\left(\bW^T\bS\bW\right)=\sum_{i=1}^{d'}\bw_i^T\bS\bw_i.\]
+      <p>La función es cuadrática y crece con la norma de los \(\bw_i\), así que hace falta una restricción: \(\bw_i^T\bw_i=E\). Con el Lagrangiano</p>
+      \[\bW=\arg\max_{\bW}\left[\sum_{i=1}^{d'}\bw_i^T\bS\bw_i+\sum_{i=1}^{d'}\lambda_i\left(E-\bw_i^T\bw_i\right)\right]\]
+      <p>sale \(\bS\bw_i=\lambda_i\bw_i\): <strong>los multiplicadores de Lagrange son los autovalores</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Un escalar es su traza.</strong> \((\bx_k-\bm)^T\bW\bW^T(\bx_k-\bm)\) es \(1\times1\), así que es igual a su traza.</li>
+        <li><strong>Linealidad.</strong> La suma de trazas es la traza de la suma: \(\sum_k\tr(\cdot)=\tr\left(\sum_k\cdot\right)\).</li>
+        <li><strong>Propiedad cíclica.</strong> \(\tr(\mathbf X\mathbf Y)=\tr(\mathbf Y\mathbf X)\) cuando ambos productos existen. Con \(\mathbf X=(\bx_k-\bm)^T\bW\) (\(1\times d'\)) e \(\mathbf Y=\bW^T(\bx_k-\bm)\) (\(d'\times1\)): \(\tr\left((\bx_k-\bm)^T\bW\bW^T(\bx_k-\bm)\right)=\tr\left(\bW^T(\bx_k-\bm)(\bx_k-\bm)^T\bW\right)\).</li>
+        <li><strong>Sacar \(\bW\) del sumatorio.</strong> \(\bW\) no depende de \(k\): \(\tr\left(\bW^T\left[\sum_k(\bx_k-\bm)(\bx_k-\bm)^T\right]\bW\right)=\tr(\bW^T\bS\bW)\).</li>
+        <li><strong>La diagonal.</strong> La entrada \((i,i)\) de \(\bW^T\bS\bW\) es \(\bw_i^T\bS\bw_i\), así que la traza es \(\sum_{i=1}^{d'}\bw_i^T\bS\bw_i\).</li>
+        <li><strong>Por qué hace falta restricción.</strong> Si duplicas \(\bw_i\), \(\bw_i^T\bS\bw_i\) se multiplica por 4: sin restricción, el máximo es infinito. La diapositiva fija \(\bw_i^T\bw_i=E\). Viniendo de \(\bW=\bU_L\), en realidad \(E=1\) y además las columnas son ortogonales entre sí.</li>
+        <li><strong>Derivar el Lagrangiano.</strong> Respecto a \(\bw_i\): \(\nabla_{\bw_i}(\bw_i^T\bS\bw_i)=2\bS\bw_i\) y \(\nabla_{\bw_i}(\lambda_i\bw_i^T\bw_i)=2\lambda_i\bw_i\). Igualando a cero: \(2\bS\bw_i-2\lambda_i\bw_i=\mathbf 0\Rightarrow\bS\bw_i=\lambda_i\bw_i\). Cada \(\bw_i\) óptimo es un autovector de \(\bS\), y el multiplicador \(\lambda_i\) es su autovalor. Por eso se usa la misma letra.</li>
+        <li><strong>Lo que el Lagrangiano no dice.</strong> Solo impone las normas. Con normas y nada más, el máximo de \(\sum_i\bw_i^T\bS\bw_i\) se alcanza poniendo <em>todas</em> las columnas iguales a \(\bw_1\) (valor \(d'\lambda_1\)), y esa \(\bW\) no sirve: tiene rango 1. Lo que obliga a usar autovectores distintos es la ortogonalidad de las columnas, que viene de \(\bW=\bU_L\). La tarjeta siguiente da la demostración con \(\bW^T\bW=\mathbf I\).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Hueco en la demostración · diap. 19–20</span>
+        <p>Falta imponer \(\bw_i^T\bw_j=0\) para \(i\neq j\). Sin esa restricción, la solución del Lagrangiano tal como está escrito degenera (lo comprobé numéricamente: repetir \(\bw_1\) da más que \(\lambda_1+\lambda_2\)). La conclusión de la diapositiva es correcta cuando se exige \(\bW^T\bW=\mathbf I\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.8 -->
+  <article class="concept" data-cid="b4-8">
+    <header><h3>Demostración (IV): qué autovectores y cuánto error queda</h3><span class="ref">Diap. 20 · PDF p. 23</span></header>
+    <div class="summary">
+      <p>Sustituyendo \(\bS\bw_i=\lambda_i\bw_i\): \(\sum_{i=1}^{d'}\bw_i^T\bS\bw_i=\sum_i\lambda_i\bw_i^T\bw_i=E\sum_{i=1}^{d'}\lambda_i\). Como los \(\lambda_i\ge0\), se maximiza eligiendo los <strong>\(d'\) mayores</strong>. El error mínimo es la suma de los autovalores descartados:</p>
+      \[J_{\min}=\sum_{k=1}^N\left\|(\mathbf I-\bW\bW^T)(\bx_k-\bm)\right\|_2^2=\sum_{i=d'+1}^{d}\lambda_i.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la elección rigurosa y los «…» de \(J_{\min}\)</summary><div class="deep-body">
+      <p>Primero, por qué los \(d'\) mayores es el máximo de verdad (con \(\bW^T\bW=\mathbf I\)). Este argumento no está en el PDF; lo añado para cerrar el hueco de la tarjeta anterior.</p>
+      <ol class="steps">
+        <li><strong>Descomposición espectral.</strong> \(\bS=\sum_{j=1}^d\lambda_j\bu_j\bu_j^T\), con \(\bu_j\) autovectores ortonormales y \(\lambda_1\ge\dots\ge\lambda_d\ge0\) (\(\bu_j\): etiqueta mía, para distinguirlos de las columnas de una \(\bW\) cualquiera).</li>
+        <li><strong>Reescribir el objetivo.</strong> \(\tr(\bW^T\bS\bW)=\sum_j\lambda_j\tr(\bW^T\bu_j\bu_j^T\bW)=\sum_j\lambda_j\|\bW^T\bu_j\|^2=\sum_j\lambda_jp_j\), con \(p_j=\|\bW^T\bu_j\|^2\) (etiqueta mía).</li>
+        <li><strong>Cada \(p_j\) está entre 0 y 1.</strong> \(p_j=\bu_j^T\bW\bW^T\bu_j=\|\bW\bW^T\bu_j\|^2\), porque \(\bW\bW^T\) es simétrica e idempotente. Proyectar no alarga: \(\|\bW\bW^T\bu_j\|\le\|\bu_j\|=1\).</li>
+        <li><strong>Los \(p_j\) suman \(d'\).</strong> \(\sum_j p_j=\sum_j\tr(\bW\bW^T\bu_j\bu_j^T)=\tr\left(\bW\bW^T\sum_j\bu_j\bu_j^T\right)=\tr(\bW\bW^T\mathbf I)=\tr(\bW^T\bW)=\tr(\mathbf I_{d'})=d'\).</li>
+        <li><strong>Reparto óptimo.</strong> Hay que repartir un «presupuesto» total \(d'\) entre los \(\lambda_j\), con un máximo de 1 en cada uno. Lo mejor es dar \(p_j=1\) a los \(d'\) mayores y 0 al resto: el máximo es \(\sum_{j=1}^{d'}\lambda_j\), y se alcanza con \(\bW=[\bu_1\ \cdots\ \bu_{d'}]\).</li>
+      </ol>
+      <p>Ahora, los pasos que la diapositiva resume con «\(=\dots=\)»:</p>
+      <ol class="steps">
+        <li><strong>Sustituir \(\bz_k\).</strong> Con \(\bW^T\bW=\mathbf I\), \(\bz_k=\bW^T(\bx_k-\bm)\), y el residuo es \(\bW\bW^T(\bx_k-\bm)+\bm-\bx_k=-(\mathbf I-\bW\bW^T)(\bx_k-\bm)\).</li>
+        <li><strong>Norma al cuadrado.</strong> \(\mathbf I-\bW\bW^T\) es simétrica e idempotente, así que \(\|(\mathbf I-\bW\bW^T)\ba\|^2=\ba^T(\mathbf I-\bW\bW^T)\ba\).</li>
+        <li><strong>Pasar a traza.</strong> \(\sum_k(\bx_k-\bm)^T(\mathbf I-\bW\bW^T)(\bx_k-\bm)=\tr\left((\mathbf I-\bW\bW^T)\bS\right)=\tr(\bS)-\tr(\bW^T\bS\bW)\), con los mismos trucos de la tarjeta 4.7.</li>
+        <li><strong>Traza = suma de autovalores.</strong> \(\tr(\bS)=\sum_{i=1}^d\lambda_i\), y con los autovectores principales \(\tr(\bW^T\bS\bW)=\sum_{i=1}^{d'}\lambda_i\).</li>
+        <li><strong>Resultado.</strong> \(J_{\min}=\sum_{i=1}^d\lambda_i-\sum_{i=1}^{d'}\lambda_i=\sum_{i=d'+1}^d\lambda_i\). En el ejemplo de 4 puntos (tarjeta 4.2): \(J_{\min}=\lambda_2=1\).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Erratas en la diapositiva 20</span>
+        <p>«<em>Since the eigenvalues of \(\bS\) are positive, minimizing the function…</em>». Son dos fallos: los autovalores son <strong>no negativos</strong>, y la función \(\sum_i\bw_i^T\bS\bw_i\) se <strong>maximiza</strong> (maximizarla equivale a minimizar \(J\)).</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span>
+        <p>Decir que \(J_{\min}\) es la suma de los autovalores <em>conservados</em>. Esa suma es lo que se «explica»; \(J_{\min}\) es lo que se pierde. Comprueba: con \(d'=d\) no se descarta nada y \(J_{\min}=0\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.9 -->
+  <article class="concept" data-cid="b4-9">
+    <header><h3>Elegir \(d'\)</h3><span class="ref">Diap. 15 (anotación) y 20</span></header>
+    <div class="summary">
+      <p>\(d'\) es un <strong>hiperparámetro</strong>: no se conoce de antemano y se ajusta con datos de validación (anotación de la diap. 15). La fórmula de \(J_{\min}\) dice qué se pierde con cada elección: al pasar de \(d'\) a \(d'+1\), el error baja exactamente \(\lambda_{d'+1}\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li>La fracción de error relativo que queda es \(\dfrac{J_{\min}}{\tr(\bS)}=\dfrac{\sum_{i&gt;d'}\lambda_i}{\sum_{i}\lambda_i}\), y la fracción de dispersión conservada es su complementaria, \(\dfrac{\sum_{i\le d'}\lambda_i}{\sum_i\lambda_i}\).</li>
+        <li>Si los autovalores caen rápido, pocas componentes bastan. Si son todos parecidos (nube «redonda»), PCA apenas comprime: cualquier dirección es tan buena como otra.</li>
+        <li>Para clasificar, el criterio final no es \(J\) sino el error del clasificador sobre datos de validación. Un \(d'\) con \(J_{\min}\) pequeño puede tirar justo la dirección que separaba las clases (tarjeta 4.13).</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="dp">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Efecto de \(d'\) sobre el error de reconstrucción</h3></div><span class="ref small">Diap. 20</span></div>
+    <p class="small">Espectro sintético de \(d=10\) autovalores, \(\lambda_j=10\,\rho^{\,j-1}\) (\(\rho\): etiqueta mía para la velocidad de caída). Con \(\rho=1\) todos son iguales.</p>
+    <div class="controls">
+      <div class="ctl"><label for="dp-rho"><span>Caída del espectro \(\rho\)</span><output id="dp-rho-o"></output></label><input type="range" id="dp-rho" min="0.2" max="1" step="0.01" value="0.6"></div>
+      <div class="ctl"><label for="dp-k"><span>Componentes conservadas \(d'\)</span><output id="dp-k-o"></output></label><input type="range" id="dp-k" min="0" max="10" step="1" value="3"></div>
+    </div>
+    <div class="plots">
+      <div class="plot"><canvas id="dp-c1" height="240" aria-label="Autovalores conservados y descartados"></canvas><div class="cap">Barras rellenas: autovalores conservados. Barras con trama: descartados, cuya suma es \(J_{\min}\).</div></div>
+      <div class="plot"><canvas id="dp-c2" height="240" aria-label="Error mínimo en función de d prima"></canvas><div class="cap">\(J_{\min}(d')/\tr(\bS)\) frente a \(d'\).</div></div>
+    </div>
+    <div class="readout" id="dp-out"></div>
+  </div>
+
+  <!-- 4.10 -->
+  <article class="concept" data-cid="b4-10">
+    <header><h3>Ejemplo 5: eigenfaces</h3><span class="ref">Diap. 21–22 · PDF p. 24–25</span></header>
+    <div class="summary">
+      <p>Turk y Pentland (1991). Con una base de caras (XM2VTS) se calcula la cara media \(\bm\) y los autovectores de \(\bS\). Cada autovector, reorganizado como imagen, es una «eigenface». Los de mayor autovalor parecen caras difuminadas; los de menor, ruido. <strong>Los autovectores forman una base del espacio de caras</strong>, y cada cara se representa como</p>
+      \[\tilde{\bx}=\bW\bz+\bm=\bm+z_1\bw_1+z_2\bw_2+\dots+z_{d'}\bw_{d'}.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Qué es cada pieza.</strong> \(\bx\in\mathbb{R}^d\) es la imagen aplanada (\(d\) = número de píxeles). Cada \(\bw_j\in\mathbb{R}^d\) también tiene un valor por píxel, así que se puede volver a dibujar como imagen. \(\bz\in\mathbb{R}^{d'}\) son los pesos que dicen cuánto de cada eigenface lleva la cara.</li>
+        <li><strong>Por qué las primeras parecen caras.</strong> Recogen las direcciones de mayor dispersión entre caras: iluminación, forma general, posición de pelo y gafas. Las últimas recogen variaciones minúsculas, píxel a píxel, que se comportan como ruido.</li>
+        <li><strong>Reconstrucción.</strong> \(\tilde{\bx}\) es la \(\hat{\bx}\) de la diap. 14. Con \(d'\) moderado la cara reconstruida es reconocible; el error es \(\sum_{i&gt;d'}\lambda_i\) sobre la base de entrenamiento.</li>
+        <li><strong>Usos:</strong> almacenamiento (guardar \(\bz\) en lugar de \(\bx\), diap. 6) y reconocimiento (clasificar en el espacio de \(\bz\), diap. 11).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Errata · diap. 22</span>
+        <p>La última componente está etiquetada \(z_d\times\bw_{d'}\). Debe ser \(z_{d'}\times\bw_{d'}\): hay \(d'\) términos, no \(d\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.11 -->
+  <article class="concept" data-cid="b4-11">
+    <header><h3>Propiedad: los autovectores son los ejes de un hiperelipsoide</h3><span class="ref">Diap. 23 · PDF p. 26</span></header>
+    <div class="summary">
+      <p>Los autovectores de \(\bS\) definen las direcciones principales de un hiperelipsoide: son ortogonales y apuntan en las direcciones de máxima y mínima dispersión. Tomando una curva de nivel gaussiana,</p>
+      \[(\bx-\bm)^T\bS^{-1}(\bx-\bm)=K\ \Longrightarrow\ \frac{z_1^2}{K\lambda_1}+\frac{z_2^2}{K\lambda_2}+\dots+\frac{z_d^2}{K\lambda_d}=1,\]
+      <p>una elipse de semiejes \(\sqrt{K\lambda_i}\). Conservar los mayores autovectores es conservar las direcciones de máxima variabilidad. La vuelta al espacio original es \(\bx=\bW\bz+\bm\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>En esta diapositiva \(\bW\) es la matriz \(d\times d\) con <em>todos</em> los autovectores, no la \(d\times d'\) reducida.</p>
+      <ol class="steps">
+        <li><strong>Diagonalizar \(\bS\).</strong> Apilando \(\bS\bw_j=\lambda_j\bw_j\) en columnas: \(\bS\bW=\bW\bLambda\), con \(\bLambda=\mathrm{diag}(\lambda_1,\dots,\lambda_d)\). Como los autovectores son ortonormales, \(\bW^{-1}=\bW^T\) y \(\bS=\bW\bLambda\bW^T\).</li>
+        <li><strong>Inversa.</strong> \(\bS^{-1}=(\bW^T)^{-1}\bLambda^{-1}\bW^{-1}=\bW\bLambda^{-1}\bW^T\). Requiere \(\lambda_i&gt;0\).</li>
+        <li><strong>Sustituir.</strong> \((\bx-\bm)^T\bW\bLambda^{-1}\bW^T(\bx-\bm)=K\). Agrupando \(\bz=\bW^T(\bx-\bm)\) (y su traspuesto \(\bz^T=(\bx-\bm)^T\bW\)): \(\bz^T\bLambda^{-1}\bz=K\).</li>
+        <li><strong>Diagonal ⇒ suma.</strong> \(\bz^T\bLambda^{-1}\bz=\sum_iz_i^2/\lambda_i=K\). Dividiendo por \(K\): \(\sum_iz_i^2/(K\lambda_i)=1\).</li>
+        <li><strong>Leer la elipse.</strong> Es la ecuación canónica \(\sum_iz_i^2/a_i^2=1\) con semiejes \(a_i=\sqrt{K\lambda_i}\). En coordenadas \(\bz\) los ejes son los ejes coordenados.</li>
+        <li><strong>Volver a \(\bx\).</strong> \(\bx=\bW\bz+\bm\): una rotación (\(\bW\) es ortogonal) y una traslación a \(\bm\). El eje más largo queda en la dirección de \(\bw_1\), el autovector de mayor \(\lambda\).</li>
+        <li><strong>¿Hace falta que los datos sean gaussianos?</strong> No para PCA. La gaussiana solo sirve para dibujar la elipse; el resultado de PCA (mínimo \(J\)) vale para cualquier distribución.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2</span>
+        <p>Es la misma forma cuadrática que aparece en la gaussiana multivariante, \((\bx-\bmu)^T\bC^{-1}(\bx-\bmu)\): las curvas de nivel de una gaussiana son elipses con ejes en los autovectores de \(\bC\) y semiejes \(\propto\sqrt{\lambda_i}\). La distancia \(r\) del bloque 2 es esta misma forma evaluada en \(\bmu_1-\bmu_2\).</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 4.12 -->
+  <article class="concept" data-cid="b4-12">
+    <header><h3>¿Por qué restar la media? (Ejemplo 4)</h3><span class="ref">Diap. 24 · PDF p. 27</span></header>
+    <div class="summary">
+      <p>Restar la media equivale a usar la <strong>covarianza</strong> en lugar de la matriz de «correlación» \(\sum_k\bx_k\bx_k^T\). En muchos casos mejora la separabilidad de las clases. Ejemplo 4 (de 2 a 1 característica, dos clases lejos del origen): sin restar la media, \(\bw_1\) apunta hacia la nube y las clases se solapan al proyectar; restándola, \(\bw'\) sigue la dispersión y las clases quedan separadas.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: de dónde sale el desvío</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Descomponer la matriz sin centrar.</strong> Escribe \(\bx_k=(\bx_k-\bm)+\bm\):
+        \[\sum_k\bx_k\bx_k^T=\sum_k(\bx_k-\bm)(\bx_k-\bm)^T+\sum_k(\bx_k-\bm)\bm^T+\bm\sum_k(\bx_k-\bm)^T+N\bm\bm^T.\]</li>
+        <li><strong>Los términos cruzados se anulan</strong>, porque \(\sum_k(\bx_k-\bm)=\mathbf 0\). Queda \(\sum_k\bx_k\bx_k^T=\bS+N\bm\bm^T\).</li>
+        <li><strong>Lectura.</strong> La matriz sin centrar es \(\bS\) más un término de rango 1 en la dirección de \(\bm\). Si los datos están lejos del origen (\(\|\bm\|\) grande), \(N\bm\bm^T\) domina y el primer autovector apunta casi hacia \(\bm/\|\bm\|\). Describe <em>dónde</em> están los datos, no <em>cómo varían</em>.</li>
+        <li><strong>Relación con \(\balpha=\bm\).</strong> Es la otra cara de la tarjeta 4.5: el desplazamiento óptimo es la media. Proyectar sin restarla equivale a forzar \(\balpha=\mathbf 0\), y esa recta tiene que pasar por el origen.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Terminología de la diapositiva</span>
+        <p>«<em>Correlation matrix</em>» significa aquí \(\sum_k\bx_k\bx_k^T\) (momento de segundo orden sin restar la media, como en procesado de señal). No es la matriz de coeficientes de correlación normalizados (con unos en la diagonal) de estadística.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="mean">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Con y sin restar la media</h3></div><span class="ref small">Diap. 24</span></div>
+    <p class="small">Dos clases lejos del origen, como en el ejemplo 4. Debajo, las proyecciones sobre la dirección elegida y el error con el mejor umbral posible.</p>
+    <div class="controls">
+      <div class="ctl"><span class="small">Matriz usada</span><div class="seg" role="group" aria-label="Matriz usada"><button id="mean-r" aria-pressed="true">Sin restar: \(\sum\bx_k\bx_k^T\)</button><button id="mean-s" aria-pressed="false">Restando: \(\bS\)</button></div></div>
+      <div class="ctl"><label for="mean-d"><span>Distancia de las clases al origen</span><output id="mean-d-o"></output></label><input type="range" id="mean-d" min="0" max="8" step="0.1" value="6"></div>
+    </div>
+    <div class="plots">
+      <div class="plot wide"><canvas id="mean-c1" height="300" aria-label="Dos clases y la dirección principal"></canvas>
+        <div class="legend"><span><i class="dot" style="background:var(--c1)"></i>clase 1</span><span><i class="dot" style="background:var(--c2)"></i>clase 2</span><span><i style="background:var(--cw1)"></i>primer autovector</span></div></div>
+    </div>
+    <div class="readout" id="mean-out"></div>
+  </div>
+
+  <!-- 4.13 -->
+  <article class="concept" data-cid="b4-13">
+    <header><h3>PCA no garantiza separar las clases</h3><span class="ref">Diap. 25 · PDF p. 28</span></header>
+    <div class="summary">
+      <p>Tres casos con dos clases en 2D. En el primero, la dirección de máxima dispersión (el autovector del mayor autovalor de \(\bS\), dibujado junto a la elipse \((\bx-\bm)^T\bS^{-1}(\bx-\bm)=K\)) coincide con la que separa las clases: <strong>buena separación</strong>. En los otros dos, la mayor dispersión la pone la forma alargada de una de las clases, y al proyectar las clases se mezclan: <strong>mala separación</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li>PCA maximiza la dispersión <em>total</em> de los datos proyectados, sin saber qué punto es de qué clase.</li>
+        <li>La dispersión total a lo largo de una dirección tiene dos fuentes: lo separadas que están las medias de las clases (útil) y lo alargada que es cada clase (inútil, incluso perjudicial).</li>
+        <li>Caso 1: las clases están una encima de otra y cada una es alargada en horizontal, pero la distancia vertical entre medias pesa más. El primer autovector sale casi vertical y separa.</li>
+        <li>Casos 2 y 3: una clase es muy alargada (en vertical o en diagonal). Su forma domina la dispersión total, \(\bw_1\) sigue esa forma, y las proyecciones de las dos clases se solapan.</li>
+        <li>La diap. 30 lo formaliza: \(\bS_T=\bS_C+\bS_B\). La matriz que usa PCA mezcla la dispersión intra-clase (a minimizar) con la entre-clases (a maximizar). MDA las separa (bloque 5).</li>
+      </ol>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b4"></div>
+  <div class="pager"></div>
+</section>

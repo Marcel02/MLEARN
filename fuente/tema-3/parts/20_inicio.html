@@ -1,0 +1,61 @@
+<section class="view" id="v-inicio" data-sec="inicio">
+  <div class="hero">
+    <div class="eyebrow">MLEARN · Tema 3 · Duda, Hart &amp; Stork, cap. 3.7 y 3.8</div>
+    <h1>Selección y reducción de características</h1>
+    <p class="lede">Plataforma de estudio construida sobre las diapositivas del tema (con los apuntes manuscritos del profesor) y la hoja de ejercicios. Notación exacta del PDF: \(\bx\in\mathbb{R}^d\), \(\bz\in\mathbb{R}^{d'}\), \(\bW\), \(\balpha\), \(\bm\), \(\bS\), \(\lambda_j\), \(\bw_j\), \(N\).</p>
+  </div>
+
+  <div class="cards3">
+    <div class="mini"><h4>Cómo está organizado</h4><p>Cada concepto tiene un resumen visible y una explicación a fondo desplegable. Las derivaciones se revelan paso a paso con «Siguiente paso».</p></div>
+    <div class="mini"><h4>Etiquetas de cada tarjeta</h4><p>Todas indican «Diapositiva X · PDF p. Y». Las cajas de colores recogen apuntes del profesor, errores habituales, erratas y conexiones con el tema 2.</p></div>
+    <div class="mini"><h4>Progreso</h4><p>Marca cada concepto como entendido y haz el test del bloque. El progreso y tus fallos se guardan y sobreviven a una recarga.</p></div>
+  </div>
+
+  <div class="legend" style="margin:6px 0 4px">
+    <span><i class="dot" style="background:var(--prof)"></i>Apuntes del profesor</span>
+    <span><i class="dot" style="background:var(--trap)"></i>Error habitual</span>
+    <span><i class="dot" style="background:var(--err)"></i>Posible errata</span>
+    <span><i class="dot" style="background:var(--link)"></i>Conexión con el tema 2</span>
+  </div>
+
+  <h2>Notación del tema</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Símbolo</th><th>Significado</th><th>Dónde aparece</th></tr></thead>
+    <tbody>
+      <tr><td>\(d\)</td><td>Número de características originales (dimensión de \(\bx\)).</td><td>Diap. 8, 13</td></tr>
+      <tr><td>\(d'\)</td><td>Número de características tras reducir, \(d'&lt;d\). Es un hiperparámetro.</td><td>Diap. 13, 15</td></tr>
+      <tr><td>\(N\)</td><td>Número de vectores de entrenamiento (todas las clases juntas).</td><td>Diap. 5, 14</td></tr>
+      <tr><td>\(\bx_k\in\mathbb{R}^d\)</td><td>Vector de características \(k\)-ésimo, \(k=1,\dots,N\). El conjunto es \(D=\{\bx_1,\dots,\bx_N\}\).</td><td>Diap. 14</td></tr>
+      <tr><td>\(\bz_k\in\mathbb{R}^{d'}\)</td><td>Vector reducido: \(\bz_k=\bW^T(\bx_k-\balpha)\).</td><td>Diap. 13</td></tr>
+      <tr><td>\(\bW\in\mathbb{R}^{d\times d'}\)</td><td>Matriz de transformación; \(\bW^T\in\mathbb{R}^{d'\times d}\). Sus columnas son \(\bw_1,\dots,\bw_{d'}\).</td><td>Diap. 13, 15</td></tr>
+      <tr><td>\(\balpha\)</td><td>Vector de desplazamiento. En PCA el óptimo es \(\balpha=\bm\).</td><td>Diap. 13, 15</td></tr>
+      <tr><td>\(\bm\)</td><td>Media de todos los datos, \(\bm=\frac1N\sum_k\bx_k\).</td><td>Diap. 15, 28</td></tr>
+      <tr><td>\(\bS\)</td><td>Matriz de dispersión (<em>scatter</em>) de todos los datos, \(\sum_k(\bx_k-\bm)(\bx_k-\bm)^T\). En MDA se llama \(\bS_T\).</td><td>Diap. 15, 28</td></tr>
+      <tr><td>\(\lambda_j,\ \bw_j\)</td><td>Autovalores y autovectores de \(\bS\): \(\bS\bw_j=\lambda_j\bw_j\).</td><td>Diap. 15</td></tr>
+      <tr><td>\(c,\ D_i,\ N_i,\ \bm_i\)</td><td>Nº de clases; vectores de la clase \(i\); cuántos son; su media.</td><td>Diap. 28</td></tr>
+      <tr><td>\(\bS_{C,i},\ \bS_C\)</td><td>Dispersión intra-clase de la clase \(i\) y su suma \(\bS_C=\sum_i\bS_{C,i}\).</td><td>Diap. 30</td></tr>
+      <tr><td>\(\bS_B\)</td><td>Dispersión entre clases, \(\sum_i N_i(\bm_i-\bm)(\bm_i-\bm)^T\).</td><td>Diap. 30</td></tr>
+      <tr><td>\(\sigma_j,\ \bSigma\)</td><td>Autovalores generalizados de MDA, \(\bS_B\bw_j=\sigma_j\bS_C\bw_j\), y la matriz diagonal que los contiene.</td><td>Diap. 33</td></tr>
+      <tr><td>\(\bmu_i,\ \bC\)</td><td>Media y covarianza de las gaussianas del ejemplo 2 (parámetros verdaderos, no estimados).</td><td>Diap. 8–9</td></tr>
+      <tr><td>\(r\)</td><td>Distancia de Mahalanobis entre \(\bmu_1\) y \(\bmu_2\).</td><td>Diap. 9</td></tr>
+      <tr><td>\(Q(t)\)</td><td>Cola de la gaussiana estándar, \(\frac{1}{\sqrt{2\pi}}\int_t^\infty e^{-u^2/2}du\). Etiqueta mía: el PDF escribe la integral sin darle nombre.</td><td>Diap. 9</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note trap"><span class="lab">Choques de notación que conviene tener presentes</span>
+    <p>En la diap. 17 aparece \(\by_k\) donde debería ir \(\bz_k\); en la diap. 43, en cambio, \(y_k\) son las etiquetas de clase. En la diap. 9, \(\mu_{i,1}\) es la componente \(i\) de \(\bmu_1\) (aquí \(i\) recorre características, no clases). En la figura de la diap. 5, \(n\) es el número de patrones de entrenamiento y \(m\) el número de celdas, nada que ver con \(N\) y \(\bm\).</p>
+  </div>
+
+  <h2>Mapa diapositiva ↔ página del PDF</h2>
+  <p class="small">El PDF tiene 50 páginas: 42 diapositivas numeradas, 1 portada, 6 páginas manuscritas sin número y 1 foto de la pizarra. La diapositiva 32 no está en el PDF.</p>
+  <div class="map-grid"><div class="tbl"><table>
+    <thead><tr><th>Diap.</th><th>PDF p.</th><th>Contenido</th><th>Bloque</th></tr></thead>
+    <tbody id="mapBody"></tbody>
+  </table></div></div>
+
+  <h2>Erratas y dudas detectadas en el material</h2>
+  <p class="small">Cada una aparece también en su tarjeta, junto a la explicación. Donde el material es ambiguo lo digo en lugar de elegir en silencio.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Dónde</th><th>Qué pone</th><th>Qué debería poner / matiz</th></tr></thead>
+    <tbody id="errBody"></tbody>
+  </table></div>
+</section>

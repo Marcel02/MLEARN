@@ -1,0 +1,11 @@
+<script>
+buildNav(); buildPagers(); buildTables();
+$$('.quiz[data-quiz]').forEach(buildQuiz);
+if (typeof initExtras === 'function') initExtras();
+initConcepts(); initSteps();
+renderMath(document.body);
+applyTheme();
+show(currentId());
+updateProgress();
+initCloud();
+</script>

@@ -1,0 +1,80 @@
+<section class="view" id="v-resumen" data-sec="resumen">
+  <div class="sec-head">
+    <div class="eyebrow">Para imprimir</div>
+    <h1>Hoja resumen</h1>
+    <p class="lede">Todas las fórmulas del tema en una página, con la diapositiva de la que sale cada una.</p>
+    <div class="meta">
+      <button class="btn pri" id="sheetDl">Descargar como HTML para imprimir</button>
+      <span class="small" id="sheetMsg">Se guarda un archivo que se abre en cualquier navegador; desde ahí, Imprimir o Guardar como PDF.</span>
+    </div>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet-title"><b>MLEARN · Tema 3 · Feature selection</b><span>Duda, Hart &amp; Stork, cap. 3.7–3.8 · diap. 1–43</span></div>
+
+    <div class="sh-block">
+      <h3>1 · Dimensionalidad</h3>
+      <div class="sh-row"><span class="sh-k">Covarianza estimada <i>(d. 5)</i></span><span class="sh-v">\(\hat{\bC}=\frac1N\sum_{i}(\bx_i-\hat{\bmu})(\bx_i-\hat{\bmu})^T,\quad \rank(\hat{\bC})\le\min(d,N-1)\Rightarrow\) singular si \(N\le d\)</span></div>
+      <div class="sh-row"><span class="sh-k">Parámetros de \(\bC\)</span><span class="sh-v">\(\frac{d(d+1)}{2}\) por clase (crece como \(d^2\))</span></div>
+      <div class="sh-row"><span class="sh-k">Dos gaussianas, misma \(\bC\), equiprobables <i>(d. 8–9)</i></span><span class="sh-v">\(\Pr(e)=\frac{1}{\sqrt{2\pi}}\int_{r/2}^\infty e^{-u^2/2}du=Q(r/2),\quad r^2=(\bmu_1-\bmu_2)^T\bC^{-1}(\bmu_1-\bmu_2)\)</span></div>
+      <div class="sh-row"><span class="sh-k">Características independientes</span><span class="sh-v">\(r^2=\sum_{i=1}^d\left(\frac{\mu_{i,1}-\mu_{i,2}}{\sigma_i}\right)^2=\sum_iD_i'^2\); relevantes y \(d\to\infty\Rightarrow\Pr(e)\to0\) (parámetros conocidos)</span></div>
+      <div class="sh-row"><span class="sh-k">Valores de \(Q\)</span><span class="sh-v">\(Q(0)=0{,}5\quad Q(0{,}5)=0{,}309\quad Q(1)=0{,}159\quad Q(2)=0{,}023\quad Q(3)=0{,}0013\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>2 · Transformación lineal <i>(d. 13)</i></h3>
+      <div class="sh-row"><span class="sh-k">Reducción</span><span class="sh-v">\(\bz_k=\bW^T(\bx_k-\balpha),\quad \bx\in\mathbb{R}^d,\ \bz\in\mathbb{R}^{d'},\ \bW\in\mathbb{R}^{d\times d'},\ d'&lt;d\)</span></div>
+      <div class="sh-row"><span class="sh-k">Reconstrucción <i>(d. 14)</i></span><span class="sh-v">\(\hat{\bx}_k=\bW\bz_k+\balpha,\qquad \be_k=\bx_k-\hat{\bx}_k\)</span></div>
+      <div class="sh-row"><span class="sh-k">Componente \(j\)</span><span class="sh-v">\(z_{k,j}=\bw_j^T(\bx_k-\balpha)\) = coordenada sobre \(\bw_j\) si \(\|\bw_j\|=1\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>3 · PCA <i>(d. 14–25)</i></h3>
+      <div class="sh-row"><span class="sh-k">Criterio</span><span class="sh-v">\(J=\sum_{k=1}^N\|\bW\bz_k+\balpha-\bx_k\|_2^2\) (mínimo)</span></div>
+      <div class="sh-row"><span class="sh-k">Solución <i>(d. 15)</i></span><span class="sh-v">\(\balpha=\bm=\frac1N\sum_k\bx_k,\quad \bS=\sum_k(\bx_k-\bm)(\bx_k-\bm)^T,\quad \bS\bw_j=\lambda_j\bw_j,\quad \bW=[\bw_1\cdots\bw_{d'}]\) con los \(d'\) mayores \(\lambda_j\)</span></div>
+      <div class="sh-row"><span class="sh-k">\(\bS\) y covarianza</span><span class="sh-v">\(\bS=(N-1)\hat{\bC}_{\text{insesgada}}=N\hat{\bC}_{\text{MV}}\): mismos autovectores</span></div>
+      <div class="sh-row"><span class="sh-k">Propiedades de \(\bS\) <i>(p. 18)</i></span><span class="sh-v">\(\bS=\bS^T\), \(\bv^T\bS\bv\ge0\), \(\lambda_j\ge0\), autovectores ortogonales, \(\lambda_j=\sum_kz_{k,j}^2\), \(\bW^T\bS\bW=\mathrm{diag}(\lambda_j)\)</span></div>
+      <div class="sh-row"><span class="sh-k">\(\bz_k\) óptimo, \(\bW\) cualquiera <i>(d. 17)</i></span><span class="sh-v">\(\bz_k=(\bW^T\bW)^{-1}\bW^T(\bx_k-\bm),\quad \hat J=-\sum_k(\bx_k-\bm)^T\bP(\bx_k-\bm)\)</span></div>
+      <div class="sh-row"><span class="sh-k">Proyector <i>(d. 18)</i></span><span class="sh-v">\(\bP=\bW(\bW^T\bW)^{-1}\bW^T=\bU_L\bU_L^T\) (simétrico, idempotente) ⇒ se toma \(\bW^T\bW=\mathbf I\)</span></div>
+      <div class="sh-row"><span class="sh-k">Traza <i>(d. 19)</i></span><span class="sh-v">\(\sum_k(\bx_k-\bm)^T\bW\bW^T(\bx_k-\bm)=\tr(\bW^T\bS\bW)=\sum_{i=1}^{d'}\bw_i^T\bS\bw_i\)</span></div>
+      <div class="sh-row"><span class="sh-k">Lagrangiano</span><span class="sh-v">\(\sum_i\bw_i^T\bS\bw_i+\sum_i\lambda_i(E-\bw_i^T\bw_i)\Rightarrow\bS\bw_i=\lambda_i\bw_i\) (más ortogonalidad entre columnas)</span></div>
+      <div class="sh-row"><span class="sh-k">Error mínimo <i>(d. 20)</i></span><span class="sh-v">\(J_{\min}=\sum_k\|(\mathbf I-\bW\bW^T)(\bx_k-\bm)\|^2=\tr(\bS)-\tr(\bW^T\bS\bW)=\sum_{i=d'+1}^d\lambda_i\)</span></div>
+      <div class="sh-row"><span class="sh-k">Hiperelipsoide <i>(d. 23)</i></span><span class="sh-v">\((\bx-\bm)^T\bS^{-1}(\bx-\bm)=K\iff\sum_i\frac{z_i^2}{K\lambda_i}=1\): semiejes \(\sqrt{K\lambda_i}\) en las direcciones \(\bw_i\)</span></div>
+      <div class="sh-row"><span class="sh-k">Restar la media <i>(d. 24)</i></span><span class="sh-v">\(\sum_k\bx_k\bx_k^T=\bS+N\bm\bm^T\)</span></div>
+      <div class="sh-row"><span class="sh-k">Eigenfaces <i>(d. 22)</i></span><span class="sh-v">\(\tilde{\bx}=\bW\bz+\bm=\bm+\sum_{j=1}^{d'}z_j\bw_j\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>4 · MDA <i>(d. 26–37)</i></h3>
+      <div class="sh-row"><span class="sh-k">Medias <i>(d. 28)</i></span><span class="sh-v">\(\bm_i=\frac{1}{N_i}\sum_{\bx\in D_i}\bx,\qquad \bm=\frac1N\sum_{\bx}\bx=\frac1N\sum_{i=1}^cN_i\bm_i\)</span></div>
+      <div class="sh-row"><span class="sh-k">Dispersiones <i>(d. 30)</i></span><span class="sh-v">\(\bS_{C,i}=\sum_{\bx\in D_i}(\bx-\bm_i)(\bx-\bm_i)^T,\quad \bS_C=\sum_i\bS_{C,i},\quad \bS_B=\sum_iN_i(\bm_i-\bm)(\bm_i-\bm)^T\)</span></div>
+      <div class="sh-row"><span class="sh-k">Descomposición</span><span class="sh-v">\(\bS_T=\sum_{\bx}(\bx-\bm)(\bx-\bm)^T=\bS_C+\bS_B\) (cruzados nulos: \(\sum_{\bx\in D_i}(\bx-\bm_i)=\mathbf 0\))</span></div>
+      <div class="sh-row"><span class="sh-k">En el espacio de \(\bz\) <i>(d. 31)</i></span><span class="sh-v">\(\bz=\bW^T\bx:\quad \bS_C\to\bW^T\bS_C\bW,\quad \bS_B\to\bW^T\bS_B\bW\)</span></div>
+      <div class="sh-row"><span class="sh-k">Volumen del elipsoide</span><span class="sh-v">\(V=V_d|\bS|^{1/2}K^{d/2},\quad V_d=\frac{\pi^{d/2}}{(d/2)!}\) (par), \(\frac{2^d((d-1)/2)!}{d!}\pi^{(d-1)/2}\) (impar)</span></div>
+      <div class="sh-row"><span class="sh-k">Criterio <i>(d. 33)</i></span><span class="sh-v">\(\bW=\arg\max_{\bW}\dfrac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}\quad(=D^2,\ D=\text{cociente de volúmenes})\)</span></div>
+      <div class="sh-row"><span class="sh-k">Solución</span><span class="sh-v">\(\bS_B\bw_j=\sigma_j\bS_C\bw_j\iff\bS_C^{-1}\bS_B\bW=\bW\bSigma\); los \(d'\) mayores \(\sigma_j\)</span></div>
+      <div class="sh-row"><span class="sh-k">Valor <i>(d. 34)</i></span><span class="sh-v">\(\frac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}=|\bSigma|=\prod_{i=1}^{d'}\sigma_i\)</span></div>
+      <div class="sh-row"><span class="sh-k">Dimensión máxima</span><span class="sh-v">\(d'\le\min(d,c-1)\): \(\rank(\bS_B)\le c-1\), \(\rank(\bS_C)=d\) (exige \(N-c\ge d\))</span></div>
+      <div class="sh-row"><span class="sh-k">Dos clases (ej. 4)</span><span class="sh-v">\(\bS_B=\frac{N_1N_2}{N}(\bm_1-\bm_2)(\bm_1-\bm_2)^T,\quad \bw\propto\bS_C^{-1}(\bm_1-\bm_2)\)</span></div>
+      <div class="sh-row"><span class="sh-k">\(\bS_T\) en lugar de \(\bS_C\)</span><span class="sh-v">mismos \(\bw_j\); autovalores \(\frac{\sigma_j}{1+\sigma_j}\)</span></div>
+      <div class="sh-row"><span class="sh-k">Por grupos <i>(d. 35)</i></span><span class="sh-v">\(K\) grupos de características ⇒ \(d'=(c-1)K\)</span></div>
+      <div class="sh-row"><span class="sh-k">Clasificador en \(\bz\) <i>(d. 37)</i></span><span class="sh-v">\(\bmu_i=\bW^T\bm_i,\qquad \bC_i=\frac{1}{N_i}\bW^T\bS_{C,i}\bW\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>5 · Ejercicios clave</h3>
+      <div class="sh-row"><span class="sh-k">Ej. 1</span><span class="sh-v">\(\bw_i^T\bS_C\bw_j=\delta_{ij}\Rightarrow\tilde{\bS}_C=\mathbf I,\ \tilde{\bS}_B=\mathrm{diag}(\lambda_j),\ J=\prod\lambda_i\); invariante a \(\by=\mathbf Q\mathbf D\bW^T\bx\)</span></div>
+      <div class="sh-row"><span class="sh-k">Ej. 2 y 5</span><span class="sh-v">\(\max_{\|\bw\|=1}\bw^T\bS\bw=\lambda_{\max}\); con \(\bW^T\bW=\mathbf I\): \(\max\tr(\bW^T\bS\bW)=\sum_{i\le d'}\lambda_i\)</span></div>
+      <div class="sh-row"><span class="sh-k">Ej. 3</span><span class="sh-v">\(\sum_i(\bm_i-\bm)=\mathbf 0\Rightarrow\rank(\bS_B)\le c-1\); \(\rank(\bM\bM^T)=\rank(\bM)\)</span></div>
+      <div class="sh-row"><span class="sh-k">Ej. 4</span><span class="sh-v">\(\nabla\frac{\bw^T\bS_B\bw}{\bw^T\bS_C\bw}=\mathbf 0\Rightarrow\bS_B\bw=\lambda\bS_C\bw\), \(\lambda\) = el propio cociente</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>6 · PCA frente a MDA <i>(d. 43)</i></h3>
+      <div class="sh-row"><span class="sh-k">PCA</span><span class="sh-v">No supervisado · reconstruye · \(d'\le d\) · no garantiza separar clases</span></div>
+      <div class="sh-row"><span class="sh-k">MDA</span><span class="sh-v">Supervisado · separa clases · \(d'\le\min(d,c-1)\) · necesita \(\bS_C\) invertible</span></div>
+      <div class="sh-row"><span class="sh-k">No lineal <i>(d. 38–42)</i></span><span class="sh-v">t-SNE (visualizar, conserva vecindades) · autoencoders (lineal + MSE ≡ subespacio PCA)</span></div>
+    </div>
+  </div>
+  <div class="pager"></div>
+</section>

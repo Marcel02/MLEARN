@@ -1,0 +1,365 @@
+<script>
+/* ================= ayudas de dibujo ================= */
+function cssv(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
+function withAlpha(hex, a){
+  const h = hex.replace('#',''); const n = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+function setupCanvas(cv){
+  if (!cv.dataset.h) cv.dataset.h = cv.getAttribute('height') || '240';
+  const h = +cv.dataset.h, w = Math.max(200, cv.clientWidth || cv.parentNode.clientWidth || 300);
+  const dpr = window.devicePixelRatio || 1;
+  cv.style.height = h + 'px';
+  if (cv.width !== Math.round(w*dpr) || cv.height !== Math.round(h*dpr)){ cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); }
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+  return {ctx, w, h};
+}
+function lin(d0, d1, r0, r1){ const f = v => r0 + (v-d0)/(d1-d0)*(r1-r0); f.inv = p => d0 + (p-r0)/(r1-r0)*(d1-d0); f.d0=d0; f.d1=d1; return f; }
+function drawAxes(ctx, w, h, m, xs, ys, o){
+  const grid = cssv('--grid'), axis = cssv('--axis'), muted = cssv('--muted');
+  ctx.save(); ctx.lineWidth = 1; ctx.font = '11px "IBM Plex Mono", ui-monospace, monospace'; ctx.fillStyle = muted;
+  (o.yt || []).forEach(t => { const y = Math.round(ys(t)) + .5; ctx.strokeStyle = grid; ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(w - m.r, y); ctx.stroke();
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText(o.yf ? o.yf(t) : String(t), m.l - 6, y); });
+  (o.xt || []).forEach(t => { const x = Math.round(xs(t)) + .5; if (o.xgrid){ ctx.strokeStyle = grid; ctx.beginPath(); ctx.moveTo(x, m.t); ctx.lineTo(x, h - m.b); ctx.stroke(); }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(o.xf ? o.xf(t) : String(t), x, h - m.b + 5); });
+  ctx.strokeStyle = axis; ctx.beginPath(); ctx.moveTo(m.l + .5, m.t); ctx.lineTo(m.l + .5, h - m.b + .5); ctx.lineTo(w - m.r, h - m.b + .5); ctx.stroke();
+  ctx.font = '12px "IBM Plex Sans", system-ui, sans-serif'; ctx.fillStyle = cssv('--ink-2');
+  if (o.xl){ ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText(o.xl, m.l + (w - m.l - m.r)/2, h - 2); }
+  if (o.yl){ ctx.save(); ctx.translate(12, m.t + (h - m.t - m.b)/2); ctx.rotate(-Math.PI/2); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(o.yl, 0, 0); ctx.restore(); }
+  ctx.restore();
+}
+function dot(ctx, x, y, r, fill, ring){ ctx.beginPath(); ctx.arc(x, y, r + 2, 0, 7); ctx.fillStyle = ring; ctx.fill(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = fill; ctx.fill(); }
+function label(ctx, text, x, y, color, align='left', base='middle', font='12px "IBM Plex Sans", system-ui, sans-serif'){
+  ctx.save(); ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = base; ctx.fillText(text, x, y); ctx.restore();
+}
+function tagLabel(ctx, text, x, y, color){ ctx.save(); ctx.font = '12px "IBM Plex Sans", system-ui, sans-serif'; const tw = ctx.measureText(text).width; ctx.fillStyle = withAlpha(cssv('--surface'), .92); ctx.fillRect(x - 3, y - 9, tw + 6, 18); ctx.restore(); label(ctx, text, x, y, color, 'left'); }
+function showTip(plotEl, html, x, y){
+  let t = plotEl.querySelector('.tip'); if (!t){ t = document.createElement('div'); t.className = 'tip'; plotEl.appendChild(t); }
+  t.innerHTML = html; t.hidden = false;
+  const pw = plotEl.clientWidth; const tw = t.offsetWidth;
+  t.style.left = Math.min(Math.max(4, x + 12), pw - tw - 4) + 'px'; t.style.top = Math.max(4, y - 34) + 'px';
+}
+function hideTip(plotEl){ const t = plotEl.querySelector('.tip'); if (t) t.hidden = true; }
+
+/* ================= estadística ================= */
+function erfc(x){
+  const z = Math.abs(x), t = 1/(1 + 0.5*z);
+  const r = t*Math.exp(-z*z - 1.26551223 + t*(1.00002368 + t*(0.37409196 + t*(0.09678418 + t*(-0.18628806 + t*(0.27886807 + t*(-1.13520398 + t*(1.48851587 + t*(-0.82215223 + t*0.17087277)))))))));
+  return x >= 0 ? r : 2 - r;
+}
+function Qf(t){ return 0.5*erfc(t/Math.SQRT2); }
+function npdf(x, mu=0, s=1){ const u = (x-mu)/s; return Math.exp(-0.5*u*u)/(s*Math.sqrt(2*Math.PI)); }
+function fmtP(p){ if (p < 1e-4) return p.toExponential(1).replace('.', ','); return fmt(p, 4); }
+
+/* ================= laboratorio: Pr(e)=Q(r/2) ================= */
+VIZ.pe = function(el){
+  const mode = $('#pe-mode', el), dp = $('#pe-dp', el), dd = $('#pe-d', el), kk = $('#pe-k', el);
+  const c1 = $('#pe-c1', el), c2 = $('#pe-c2', el), c3 = $('#pe-c3', el), out = $('#pe-out', el);
+  let hover = null;
+  const contrib = i => { const D = +dp.value; if (mode.value === 'const') return D; if (mode.value === 'decay') return D/i; return i <= +kk.value ? D : 0; };
+  const r2of = d => { let s = 0; for (let i = 1; i <= d; i++){ const c = contrib(i); s += c*c; } return s; };
+  function draw(){
+    const D = +dp.value, d = +dd.value, k = +kk.value;
+    $('#pe-dp-o', el).textContent = fmt(D, 2); $('#pe-d-o', el).textContent = d; $('#pe-k-o', el).textContent = k;
+    $('#pe-k-wrap', el).hidden = mode.value !== 'k';
+    const r2 = r2of(d), r = Math.sqrt(r2), pe = Qf(r/2);
+    const acc = cssv('--accent'), surf = cssv('--surface'), ink2 = cssv('--ink-2'), muted = cssv('--muted');
+    const C1 = cssv('--c1'), C2 = cssv('--c2');
+    /* --- gráfico 1: Pr(e) frente a d --- */
+    { const {ctx, w, h} = setupCanvas(c1); const m = {l:46, r:12, t:12, b:36};
+      const xs = lin(1, 100, m.l, w - m.r), ys = lin(0, 0.5, h - m.b, m.t);
+      drawAxes(ctx, w, h, m, xs, ys, {yt:[0,.1,.2,.3,.4,.5], yf:t=>fmt(t,1), xt:[1,20,40,60,80,100], xl:'número de características d', yl:'Pr(e)'});
+      if (mode.value === 'decay'){ const lim = Qf(Math.sqrt(D*D*Math.PI*Math.PI/6)/2); const y = ys(lim);
+        ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle = muted; ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(w - m.r, y); ctx.stroke(); ctx.restore();
+        label(ctx, 'límite d→∞: ' + fmt(lim, 3), w - m.r - 4, y - 8, muted, 'right'); }
+      if (mode.value === 'k' && k <= 100){ const x = xs(k); ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle = muted; ctx.beginPath(); ctx.moveTo(x, m.t); ctx.lineTo(x, h - m.b); ctx.stroke(); ctx.restore(); label(ctx, 'k', x + 4, m.t + 8, muted); }
+      ctx.save(); ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.beginPath();
+      let s = 0; for (let i = 1; i <= 100; i++){ const c = contrib(i); s += c*c; const x = xs(i), y = ys(Qf(Math.sqrt(s)/2)); if (i === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke(); ctx.restore();
+      dot(ctx, xs(d), ys(pe), 5, acc, surf);
+      if (hover){ const hd = hover, hp = Qf(Math.sqrt(r2of(hd))/2); ctx.save(); ctx.strokeStyle = cssv('--axis'); ctx.beginPath(); ctx.moveTo(xs(hd)+.5, m.t); ctx.lineTo(xs(hd)+.5, h - m.b); ctx.stroke(); ctx.restore(); dot(ctx, xs(hd), ys(hp), 4, ink2, surf); }
+      c1._sc = {xs, m, w};
+    }
+    /* --- gráfico 2: Q(r/2) frente a r --- */
+    { const {ctx, w, h} = setupCanvas(c2); const m = {l:46, r:12, t:12, b:36}; const RX = 8;
+      const xs = lin(0, RX, m.l, w - m.r), ys = lin(0, 0.5, h - m.b, m.t);
+      drawAxes(ctx, w, h, m, xs, ys, {yt:[0,.1,.2,.3,.4,.5], yf:t=>fmt(t,1), xt:[0,2,4,6,8], xl:'r (distancia de Mahalanobis)', yl:'Pr(e)'});
+      ctx.save(); ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = 0; i <= 200; i++){ const rr = RX*i/200, x = xs(rr), y = ys(Qf(rr/2)); if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke(); ctx.restore();
+      const rx = Math.min(r, RX);
+      ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle = muted; ctx.beginPath(); ctx.moveTo(xs(rx), h - m.b); ctx.lineTo(xs(rx), ys(pe)); ctx.lineTo(m.l, ys(pe)); ctx.stroke(); ctx.restore();
+      dot(ctx, xs(rx), ys(pe), 5, acc, surf);
+      label(ctx, r > RX ? `r = ${fmt(r,1)} (fuera de escala)` : `r = ${fmt(r,2)}`, Math.min(xs(rx) + 8, w - m.r - 4), Math.max(ys(pe) - 12, m.t + 8), ink2, r > RX || xs(rx) > w - 120 ? 'right' : 'left');
+    }
+    /* --- gráfico 3: las dos clases sobre y --- */
+    { const {ctx, w, h} = setupCanvas(c3); const m = {l:14, r:14, t:22, b:36};
+      const x0 = -3.6, x1 = Math.max(r, 0) + 3.6; const xs = lin(x0, x1, m.l, w - m.r), ys = lin(0, 0.45, h - m.b, m.t);
+      const thr = r/2;
+      const ticks = r > 0.6 ? [0, thr, r] : [0];
+      drawAxes(ctx, w, h, m, xs, ys, {xt:ticks, xf:t => t === 0 ? '0' : (Math.abs(t - thr) < 1e-9 ? 'r/2' : 'r'), xl:'y normalizado (unidades de desviación típica)'});
+      const N = 240;
+      const fillTail = (mu, from, to, col) => { ctx.beginPath(); ctx.moveTo(xs(from), ys(0));
+        for (let i = 0; i <= N; i++){ const x = from + (to - from)*i/N; ctx.lineTo(xs(x), ys(npdf(x, mu))); } ctx.lineTo(xs(to), ys(0)); ctx.closePath(); ctx.fillStyle = withAlpha(col, .32); ctx.fill(); };
+      fillTail(r, x0, thr, C1); fillTail(0, thr, x1, C2);
+      const curve = (mu, col) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= N; i++){ const x = x0 + (x1 - x0)*i/N; const y = ys(npdf(x, mu)); if (!i) ctx.moveTo(xs(x), y); else ctx.lineTo(xs(x), y); } ctx.stroke(); ctx.restore(); };
+      curve(0, C2); curve(r, C1);
+      ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle = cssv('--ink-2'); ctx.beginPath(); ctx.moveTo(xs(thr)+.5, m.t - 6); ctx.lineTo(xs(thr)+.5, h - m.b); ctx.stroke(); ctx.restore();
+      label(ctx, 'umbral', xs(thr) + 4, m.t - 10, ink2);
+      label(ctx, 'ω₂', xs(0) - 6, ys(npdf(0)) - 8, ink2, 'right');
+      label(ctx, 'ω₁', xs(r) + 6, ys(npdf(0)) - 8, ink2, 'left');
+    }
+    const lim = mode.value === 'decay' ? `<span class="kv">Límite d→∞: <b>${fmt(Qf(Math.sqrt(D*D*Math.PI*Math.PI/6)/2), 4)}</b></span>` : '';
+    out.innerHTML = `<span class="kv">r² = <b>${fmt(r2, 3)}</b></span><span class="kv">r = <b>${fmt(r, 3)}</b></span><span class="kv">Pr(e) = Q(r/2) = <b>${fmtP(pe)}</b></span><span class="kv">con d = 1: <b>${fmt(Qf(Math.abs(contrib(1))/2), 4)}</b></span>${lim}`;
+  }
+  [mode, dp, dd, kk].forEach(i => i.addEventListener('input', draw));
+  const plot1 = c1.parentNode;
+  c1.addEventListener('pointermove', e => { const sc = c1._sc; if (!sc) return; const rect = c1.getBoundingClientRect(); const px = e.clientX - rect.left;
+    if (px < sc.m.l || px > sc.w - sc.m.r){ hover = null; hideTip(plot1); draw(); return; }
+    hover = Math.max(1, Math.min(100, Math.round(sc.xs.inv(px)))); draw();
+    showTip(plot1, `d = ${hover} · Pr(e) = ${fmt(Qf(Math.sqrt(r2of(hover))/2), 4)}`, px, e.clientY - rect.top); });
+  c1.addEventListener('pointerleave', () => { hover = null; hideTip(plot1); draw(); });
+  c1.addEventListener('click', () => { if (hover){ dd.value = hover; draw(); } });
+  return {el, draw};
+};
+
+/* ================= datos fijos ================= */
+function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gaussPairs(n, seed){ const r = mulberry32(seed), out = [];
+  for (let i = 0; i < n; i++){ const u1 = Math.max(r(), 1e-12), u2 = r(); const R = Math.sqrt(-2*Math.log(u1)); out.push([R*Math.cos(2*Math.PI*u2), R*Math.sin(2*Math.PI*u2)]); }
+  // normalizar: media 0, covarianza identidad exacta (blanqueo), para que la forma dependa solo de los controles
+  const n0 = out.length; let mx = 0, my = 0; out.forEach(p => { mx += p[0]; my += p[1]; }); mx /= n0; my /= n0;
+  out.forEach(p => { p[0] -= mx; p[1] -= my; });
+  let a = 0, b = 0, c = 0; out.forEach(p => { a += p[0]*p[0]; b += p[0]*p[1]; c += p[1]*p[1]; }); a /= n0; b /= n0; c /= n0;
+  const L11 = Math.sqrt(a), L21 = b/L11, L22 = Math.sqrt(c - L21*L21);
+  out.forEach(p => { const y1 = p[0]/L11; const y2 = (p[1] - L21*y1)/L22; p[0] = y1; p[1] = y2; });
+  return out; }
+function scatter2(pts){ const n = pts.length; let mx = 0, my = 0; pts.forEach(p => { mx += p[0]; my += p[1]; }); mx /= n; my /= n;
+  let a = 0, b = 0, c = 0; pts.forEach(p => { const dx = p[0]-mx, dy = p[1]-my; a += dx*dx; b += dx*dy; c += dy*dy; }); return {m:[mx,my], S:[a,b,c]}; }
+function eig2(S){ const [a,b,c] = S; const tr = (a+c)/2, dd = Math.sqrt(((a-c)/2)**2 + b*b); const l1 = tr + dd, l2 = tr - dd; const ang = 0.5*Math.atan2(2*b, a-c); return {l1, l2, ang}; }
+function arrow(ctx, x0, y0, x1, y1, col, w=2.5){ const a = Math.atan2(y1-y0, x1-x0), L = 9; ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 - L*0.6*Math.cos(a), y1 - L*0.6*Math.sin(a)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 - L*Math.cos(a - 0.4), y1 - L*Math.sin(a - 0.4)); ctx.lineTo(x1 - L*Math.cos(a + 0.4), y1 - L*Math.sin(a + 0.4)); ctx.closePath(); ctx.fill(); ctx.restore(); }
+function degNorm(a){ let d = a*180/Math.PI; d = ((d % 180) + 180) % 180; return d; }
+
+/* ================= laboratorio: PCA 2D ================= */
+VIZ.pca = function(el){
+  const th = $('#pca-th', el), ra = $('#pca-ra', el), ph = $('#pca-ph', el), go = $('#pca-go', el);
+  const c1 = $('#pca-c1', el), c2 = $('#pca-c2', el), c3 = $('#pca-c3', el), out = $('#pca-out', el);
+  const U = gaussPairs(40, 7); const CEN = [1.0, 0.6], S1 = 1.7;
+  let dragging = false, geo = null;
+  function data(){ const t = (+th.value)*Math.PI/180, s1 = S1, s2 = S1*(+ra.value); const ct = Math.cos(t), st = Math.sin(t);
+    return U.map(u => [CEN[0] + ct*s1*u[0] - st*s2*u[1], CEN[1] + st*s1*u[0] + ct*s2*u[1]]); }
+  function draw(){
+    $('#pca-th-o', el).textContent = th.value + '°'; $('#pca-ra-o', el).textContent = fmt(+ra.value, 2); $('#pca-ph-o', el).textContent = ph.value + '°';
+    const X = data(); const {m, S} = scatter2(X); const E = eig2(S); const trS = S[0] + S[2];
+    const phi = (+ph.value)*Math.PI/180, u = [Math.cos(phi), Math.sin(phi)];
+    const w1 = [Math.cos(E.ang), Math.sin(E.ang)], w2 = [-Math.sin(E.ang), Math.cos(E.ang)];
+    const Jphi = trS - (u[0]*u[0]*S[0] + 2*u[0]*u[1]*S[1] + u[1]*u[1]*S[2]);
+    const ink2 = cssv('--ink-2'), muted = cssv('--muted'), acc = cssv('--accent'), surf = cssv('--surface'), W1 = cssv('--cw1'), W2 = cssv('--cw2');
+    /* --- nube --- */
+    { const {ctx, w, h} = setupCanvas(c1); const R = 4.8; const sc = Math.min((w - 20)/(2*R), (h - 20)/(2*R));
+      const ox = w/2, oy = h/2; const X2 = x => ox + (x - CEN[0])*sc, Y2 = y => oy - (y - CEN[1])*sc; geo = {X2, Y2, sc, ox, oy, m};
+      ctx.save(); ctx.strokeStyle = cssv('--grid'); ctx.lineWidth = 1;
+      for (let g = -12; g <= 12; g++){ const x = X2(g), y = Y2(g); if (x > 0 && x < w){ ctx.beginPath(); ctx.moveTo(x+.5, 0); ctx.lineTo(x+.5, h); ctx.stroke(); } if (y > 0 && y < h){ ctx.beginPath(); ctx.moveTo(0, y+.5); ctx.lineTo(w, y+.5); ctx.stroke(); } }
+      ctx.strokeStyle = cssv('--axis'); ctx.beginPath(); ctx.moveTo(X2(0)+.5, 0); ctx.lineTo(X2(0)+.5, h); ctx.moveTo(0, Y2(0)+.5); ctx.lineTo(w, Y2(0)+.5); ctx.stroke(); ctx.restore();
+      label(ctx, 'x₁', w - 8, Y2(0) - 9, muted, 'right'); label(ctx, 'x₂', X2(0) + 7, 10, muted, 'left');
+      // elipse (x-m)^T C^-1 (x-m) = 4, C = S/N
+      const N = X.length; const k = 2; ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle = muted; ctx.lineWidth = 1.2; ctx.beginPath();
+      for (let i = 0; i <= 120; i++){ const t = 2*Math.PI*i/120; const a1 = k*Math.sqrt(E.l1/N)*Math.cos(t), a2 = k*Math.sqrt(E.l2/N)*Math.sin(t);
+        const x = m[0] + a1*w1[0] + a2*w2[0], y = m[1] + a1*w1[1] + a2*w2[1]; if (!i) ctx.moveTo(X2(x), Y2(y)); else ctx.lineTo(X2(x), Y2(y)); } ctx.stroke(); ctx.restore();
+      // recta de prueba
+      const L = 30; ctx.save(); ctx.strokeStyle = withAlpha(acc, .9); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(X2(m[0] - L*u[0]), Y2(m[1] - L*u[1])); ctx.lineTo(X2(m[0] + L*u[0]), Y2(m[1] + L*u[1])); ctx.stroke(); ctx.restore();
+      // residuos y reconstrucciones
+      const rec = X.map(p => { const z = (p[0]-m[0])*u[0] + (p[1]-m[1])*u[1]; return [m[0] + z*u[0], m[1] + z*u[1]]; });
+      ctx.save(); ctx.strokeStyle = withAlpha(muted, .75); ctx.lineWidth = 1; X.forEach((p, i) => { ctx.beginPath(); ctx.moveTo(X2(p[0]), Y2(p[1])); ctx.lineTo(X2(rec[i][0]), Y2(rec[i][1])); ctx.stroke(); }); ctx.restore();
+      X.forEach(p => { ctx.beginPath(); ctx.arc(X2(p[0]), Y2(p[1]), 4, 0, 7); ctx.fillStyle = surf; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = ink2; ctx.stroke(); });
+      rec.forEach(p => { ctx.beginPath(); ctx.arc(X2(p[0]), Y2(p[1]), 2.6, 0, 7); ctx.fillStyle = acc; ctx.fill(); });
+      // autovectores con longitud ∝ sqrt(lambda)
+      const s1 = 2*Math.sqrt(E.l1/N), s2 = 2*Math.sqrt(E.l2/N);
+      arrow(ctx, X2(m[0]), Y2(m[1]), X2(m[0] + s1*w1[0]), Y2(m[1] + s1*w1[1]), W1, 3);
+      arrow(ctx, X2(m[0]), Y2(m[1]), X2(m[0] + Math.max(s2, .35)*w2[0]), Y2(m[1] + Math.max(s2, .35)*w2[1]), W2, 3);
+      label(ctx, 'w₁', X2(m[0] + s1*w1[0]) + 8, Y2(m[1] + s1*w1[1]), W1, 'left', 'middle', '600 13px "IBM Plex Sans", sans-serif');
+      label(ctx, 'w₂', X2(m[0] + Math.max(s2,.35)*w2[0]) + 8, Y2(m[1] + Math.max(s2,.35)*w2[1]), W2, 'left', 'middle', '600 13px "IBM Plex Sans", sans-serif');
+      dot(ctx, X2(m[0]), Y2(m[1]), 4, cssv('--ink'), surf); label(ctx, 'm', X2(m[0]) - 8, Y2(m[1]) + 12, cssv('--ink'), 'right');
+    }
+    /* --- J(phi) --- */
+    { const {ctx, w, h} = setupCanvas(c2); const mg = {l:50, r:12, t:12, b:36}; const ymax = E.l1*1.08;
+      const xs = lin(0, 180, mg.l, w - mg.r), ys = lin(0, ymax, h - mg.b, mg.t);
+      const step = ymax > 200 ? 100 : ymax > 80 ? 40 : ymax > 40 ? 20 : ymax > 16 ? 10 : 5;
+      const yt = []; for (let v = 0; v <= ymax; v += step) yt.push(v);
+      drawAxes(ctx, w, h, mg, xs, ys, {yt, xt:[0,45,90,135,180], xf:t => t + '°', xl:'ángulo φ de la recta', yl:'J(φ)'});
+      ctx.save(); ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = 0; i <= 180; i++){ const a = i*Math.PI/180, c = Math.cos(a), s = Math.sin(a); const J = trS - (c*c*S[0] + 2*c*s*S[1] + s*s*S[2]); if (!i) ctx.moveTo(xs(i), ys(J)); else ctx.lineTo(xs(i), ys(J)); }
+      ctx.stroke(); ctx.restore();
+      const a1 = degNorm(E.ang), a2 = degNorm(E.ang + Math.PI/2);
+      ctx.save(); ctx.setLineDash([4,4]); ctx.lineWidth = 1.2; ctx.strokeStyle = W1; ctx.beginPath(); ctx.moveTo(xs(a1), mg.t); ctx.lineTo(xs(a1), h - mg.b); ctx.stroke(); ctx.strokeStyle = W2; ctx.beginPath(); ctx.moveTo(xs(a2), mg.t); ctx.lineTo(xs(a2), h - mg.b); ctx.stroke(); ctx.restore();
+      tagLabel(ctx, 'w₁: J = λ₂', Math.min(xs(a1) + 6, w - mg.r - 74), ys(E.l2) - 14, W1);
+      tagLabel(ctx, 'w₂: J = λ₁', Math.min(xs(a2) + 6, w - mg.r - 74), mg.t + 10, W2);
+      dot(ctx, xs(+ph.value), ys(Jphi), 5, acc, surf);
+    }
+    /* --- coordenadas z --- */
+    { const {ctx, w, h} = setupCanvas(c3); const R = 6.4; const sc = Math.min((w - 20)/(2*R*1.15), (h - 30)/(2*R*0.75)); const ox = w/2, oy = h/2 - 4;
+      ctx.save(); ctx.strokeStyle = cssv('--axis'); ctx.beginPath(); ctx.moveTo(10, oy+.5); ctx.lineTo(w - 10, oy+.5); ctx.moveTo(ox+.5, 8); ctx.lineTo(ox+.5, h - 8); ctx.stroke(); ctx.restore();
+      label(ctx, 'z₁', w - 12, oy - 9, W1, 'right', 'middle', '600 12px "IBM Plex Sans", sans-serif'); label(ctx, 'z₂', ox + 7, 14, W2, 'left', 'middle', '600 12px "IBM Plex Sans", sans-serif');
+      X.forEach(p => { const dx = p[0]-m[0], dy = p[1]-m[1]; const z1 = dx*w1[0] + dy*w1[1], z2 = dx*w2[0] + dy*w2[1];
+        ctx.beginPath(); ctx.arc(ox + z1*sc, oy - z2*sc, 3.5, 0, 7); ctx.fillStyle = surf; ctx.fill(); ctx.lineWidth = 1.4; ctx.strokeStyle = ink2; ctx.stroke(); });
+    }
+    const rho = S[1]/Math.sqrt(S[0]*S[2]);
+    out.innerHTML = `<span class="kv">λ₁ = <b>${fmt(E.l1,2)}</b></span><span class="kv">λ₂ = <b>${fmt(E.l2,2)}</b></span><span class="kv">ángulo de w₁ = <b>${fmt(degNorm(E.ang),1)}°</b></span><span class="kv">correlación muestral ρ = <b>${fmt(rho,2)}</b></span><span class="kv">J(φ) = <b>${fmt(Jphi,2)}</b></span><span class="kv">J<sub>min</sub> = λ₂ = <b>${fmt(E.l2,2)}</b></span><span class="kv">dispersión conservada con d′=1: <b>${fmt(100*E.l1/trS,1)} %</b></span>`;
+    el._w1deg = Math.round(degNorm(E.ang)) % 180;
+  }
+  function setFromPointer(e){ if (!geo) return; const r = c1.getBoundingClientRect(); const px = e.clientX - r.left, py = e.clientY - r.top;
+    const x = CEN[0] + (px - geo.ox)/geo.sc, y = CEN[1] - (py - geo.oy)/geo.sc; const a = Math.atan2(y - geo.m[1], x - geo.m[0]);
+    ph.value = Math.round(degNorm(a)) % 180; draw(); }
+  c1.addEventListener('pointerdown', e => { dragging = true; c1.setPointerCapture(e.pointerId); setFromPointer(e); });
+  c1.addEventListener('pointermove', e => { if (dragging) setFromPointer(e); });
+  c1.addEventListener('pointerup', () => { dragging = false; });
+  [th, ra, ph].forEach(i => i.addEventListener('input', draw));
+  go.addEventListener('click', () => { ph.value = el._w1deg; draw(); });
+  return {el, draw};
+};
+
+/* ================= laboratorio: efecto de d' ================= */
+VIZ.dp = function(el){
+  const rho = $('#dp-rho', el), kk = $('#dp-k', el), c1 = $('#dp-c1', el), c2 = $('#dp-c2', el), out = $('#dp-out', el);
+  const D = 10;
+  function draw(){
+    const r = +rho.value, k = +kk.value; $('#dp-rho-o', el).textContent = fmt(r, 2); $('#dp-k-o', el).textContent = k;
+    const lam = Array.from({length:D}, (_, j) => 10*Math.pow(r, j)); const tot = lam.reduce((a,b) => a+b, 0);
+    const kept = lam.slice(0, k).reduce((a,b) => a+b, 0), J = tot - kept;
+    const acc = cssv('--accent'), muted = cssv('--muted'), surf = cssv('--surface'), ink2 = cssv('--ink-2');
+    { const {ctx, w, h} = setupCanvas(c1); const mg = {l:40, r:10, t:14, b:36};
+      const xs = lin(0.4, D + 0.6, mg.l, w - mg.r), ys = lin(0, 10.5, h - mg.b, mg.t);
+      drawAxes(ctx, w, h, mg, xs, ys, {yt:[0,2,4,6,8,10], xt:[1,2,3,4,5,6,7,8,9,10], xl:'índice j (autovalores ordenados)', yl:'λⱼ'});
+      const bw = Math.max(6, (xs(2) - xs(1)) - 6);
+      lam.forEach((l, j) => { const x = xs(j+1) - bw/2, y = ys(l), y0 = ys(0); const hgt = y0 - y; if (hgt < 0.5) return;
+        ctx.save(); ctx.beginPath(); const rr = Math.min(4, bw/2, hgt); ctx.moveTo(x, y0); ctx.lineTo(x, y + rr); ctx.quadraticCurveTo(x, y, x + rr, y); ctx.lineTo(x + bw - rr, y); ctx.quadraticCurveTo(x + bw, y, x + bw, y + rr); ctx.lineTo(x + bw, y0); ctx.closePath();
+        if (j < k){ ctx.fillStyle = acc; ctx.fill(); }
+        else { ctx.fillStyle = withAlpha(muted, .18); ctx.fill(); ctx.clip(); ctx.strokeStyle = withAlpha(muted, .7); ctx.lineWidth = 1; for (let t = -h; t < w; t += 6){ ctx.beginPath(); ctx.moveTo(x + t, y0); ctx.lineTo(x + t + (y0 - y), y); ctx.stroke(); } }
+        ctx.restore(); });
+      if (k > 0 && k < D){ const xb = (xs(k) + xs(k+1))/2; ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle = ink2; ctx.beginPath(); ctx.moveTo(xb, mg.t); ctx.lineTo(xb, h - mg.b); ctx.stroke(); ctx.restore(); label(ctx, `d′ = ${k}`, xb + 5, mg.t + 6, ink2, 'left'); }
+    }
+    { const {ctx, w, h} = setupCanvas(c2); const mg = {l:46, r:12, t:14, b:36};
+      const xs = lin(0, D, mg.l, w - mg.r), ys = lin(0, 1, h - mg.b, mg.t);
+      drawAxes(ctx, w, h, mg, xs, ys, {yt:[0,.25,.5,.75,1], yf:t => Math.round(t*100) + '%', xt:[0,2,4,6,8,10], xl:'d′', yl:'Jmin / tr(S)'});
+      ctx.save(); ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.beginPath(); let acum = 0;
+      for (let q = 0; q <= D; q++){ if (q > 0) acum += lam[q-1]; const y = ys((tot - acum)/tot); if (!q) ctx.moveTo(xs(q), y); else ctx.lineTo(xs(q), y); }
+      ctx.stroke(); ctx.restore();
+      acum = 0; for (let q = 0; q <= D; q++){ if (q > 0) acum += lam[q-1]; if (q !== k){ ctx.beginPath(); ctx.arc(xs(q), ys((tot - acum)/tot), 2.5, 0, 7); ctx.fillStyle = acc; ctx.fill(); } }
+      dot(ctx, xs(k), ys(J/tot), 5, acc, surf); label(ctx, fmt(100*J/tot, 1) + ' %', Math.min(xs(k) + 9, w - mg.r - 40), ys(J/tot) - 10, ink2, 'left');
+    }
+    out.innerHTML = `<span class="kv">tr(S) = Σλ = <b>${fmt(tot,2)}</b></span><span class="kv">conservado: Σ λⱼ (j ≤ d′) = <b>${fmt(kept,2)}</b></span><span class="kv">J<sub>min</sub> = Σ λⱼ (j > d′) = <b>${fmt(J,2)}</b></span><span class="kv">dispersión conservada = <b>${fmt(100*kept/tot,1)} %</b></span>`;
+  }
+  [rho, kk].forEach(i => i.addEventListener('input', draw));
+  return {el, draw};
+};
+
+/* ================= laboratorio: restar o no la media ================= */
+VIZ.mean = function(el){
+  const bR = $('#mean-r', el), bS = $('#mean-s', el), dist = $('#mean-d', el), c1 = $('#mean-c1', el), out = $('#mean-out', el);
+  let useS = false;
+  const A = gaussPairs(30, 11), B = gaussPairs(30, 23); const sp = 0.32;
+  function data(){ const dd = +dist.value; const dir = [Math.SQRT1_2, Math.SQRT1_2]; const c = [dd*dir[0], dd*dir[1]]; const off = [0.62, -0.62];
+    const P1 = A.map(u => [c[0] - off[0] + sp*u[0], c[1] - off[1] + sp*u[1]]), P2 = B.map(u => [c[0] + off[0] + sp*u[0], c[1] + off[1] + sp*u[1]]); return {P1, P2}; }
+  function bestErr(z1, z2){ const all = z1.map(z => [z, 0]).concat(z2.map(z => [z, 1])).sort((a,b) => a[0]-b[0]); const n = all.length; let best = 1;
+    for (const flip of [0,1]){ let errL = 0, errR = all.filter(p => p[1] !== flip).length; best = Math.min(best, errR/n);
+      for (let i = 0; i < n; i++){ if (all[i][1] === flip) errL++; else errR--; best = Math.min(best, (errL + errR)/n); } } return best; }
+  function draw(){
+    $('#mean-d-o', el).textContent = fmt(+dist.value, 1); bR.setAttribute('aria-pressed', String(!useS)); bS.setAttribute('aria-pressed', String(useS));
+    const {P1, P2} = data(); const all = P1.concat(P2); const n = all.length;
+    let a = 0, b = 0, c = 0, mx = 0, my = 0; all.forEach(p => { mx += p[0]; my += p[1]; }); mx /= n; my /= n;
+    const o = useS ? [mx, my] : [0, 0]; all.forEach(p => { const dx = p[0]-o[0], dy = p[1]-o[1]; a += dx*dx; b += dx*dy; c += dy*dy; });
+    const E = eig2([a,b,c]); const u = [Math.cos(E.ang), Math.sin(E.ang)];
+    const proj = P => P.map(p => (p[0]-o[0])*u[0] + (p[1]-o[1])*u[1]); const z1 = proj(P1), z2 = proj(P2);
+    const err = bestErr(z1, z2);
+    const C1 = cssv('--c1'), C2 = cssv('--c2'), W1 = cssv('--cw1'), muted = cssv('--muted'), surf = cssv('--surface'), ink2 = cssv('--ink-2');
+    const {ctx, w, h} = setupCanvas(c1);
+    const plotH = h - 70; const lo = -1.5, hi = 9.5; const sc = Math.min((w - 30)/(hi - lo), (plotH - 10)/(hi - lo)); const ox = 20 - lo*sc, oy = 10 + hi*sc;
+    const X2 = x => ox + x*sc, Y2 = y => oy - y*sc;
+    ctx.save(); ctx.strokeStyle = cssv('--axis'); ctx.beginPath(); ctx.moveTo(X2(lo), Y2(0)+.5); ctx.lineTo(X2(hi), Y2(0)+.5); ctx.moveTo(X2(0)+.5, Y2(lo)); ctx.lineTo(X2(0)+.5, Y2(hi)); ctx.stroke(); ctx.restore();
+    label(ctx, 'x₁', X2(hi) - 2, Y2(0) - 9, muted, 'right'); label(ctx, 'x₂', X2(0) + 6, Y2(hi) + 8, muted, 'left'); label(ctx, 'origen', X2(0) + 5, Y2(0) + 11, muted, 'left');
+    const L = 20; ctx.save(); ctx.setLineDash([6,4]); ctx.strokeStyle = W1; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X2(o[0] - L*u[0]), Y2(o[1] - L*u[1])); ctx.lineTo(X2(o[0] + L*u[0]), Y2(o[1] + L*u[1])); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, plotH); ctx.clip();
+    P1.forEach(p => { ctx.beginPath(); ctx.arc(X2(p[0]), Y2(p[1]), 3.6, 0, 7); ctx.fillStyle = C1; ctx.fill(); });
+    P2.forEach(p => { ctx.beginPath(); ctx.arc(X2(p[0]), Y2(p[1]), 3.6, 0, 7); ctx.fillStyle = C2; ctx.fill(); });
+    const uu = (u[0] + u[1] < 0) ? [-u[0], -u[1]] : u; arrow(ctx, X2(o[0]), Y2(o[1]), X2(o[0] + 1.6*uu[0]), Y2(o[1] + 1.6*uu[1]), W1, 3);
+    if (useS){ dot(ctx, X2(mx), Y2(my), 3.5, cssv('--ink'), surf); label(ctx, 'm', X2(mx) + 8, Y2(my) + 10, cssv('--ink'), 'left'); }
+    ctx.restore();
+    // tira de proyecciones
+    const all_z = z1.concat(z2); const zmin = Math.min(...all_z), zmax = Math.max(...all_z); const pad = (zmax - zmin)*0.08 + 0.05;
+    const zs = lin(zmin - pad, zmax + pad, 20, w - 20); const yb = h - 34;
+    ctx.save(); ctx.strokeStyle = cssv('--axis'); ctx.beginPath(); ctx.moveTo(20, yb + 10.5); ctx.lineTo(w - 20, yb + 10.5); ctx.stroke(); ctx.restore();
+    z1.forEach(z => { ctx.beginPath(); ctx.arc(zs(z), yb - 4, 3.2, 0, 7); ctx.fillStyle = withAlpha(C1, .8); ctx.fill(); });
+    z2.forEach(z => { ctx.beginPath(); ctx.arc(zs(z), yb + 4, 3.2, 0, 7); ctx.fillStyle = withAlpha(C2, .8); ctx.fill(); });
+    label(ctx, 'proyecciones z = w₁ᵀ(x − ' + (useS ? 'm' : '0') + ')', w/2, h - 8, ink2, 'center');
+    out.innerHTML = `<span class="kv">dirección de w₁ = <b>${fmt(degNorm(E.ang),1)}°</b></span><span class="kv">error con el mejor umbral = <b>${fmt(100*err,1)} %</b></span><span class="kv">${useS ? 'Centrado: w₁ sigue la dispersión, que aquí es la separación entre clases.' : 'Sin centrar: Σ xxᵀ = S + N m mᵀ, y el término N m mᵀ arrastra w₁ hacia la media.'}</span>`;
+  }
+  bR.addEventListener('click', () => { useS = false; draw(); }); bS.addEventListener('click', () => { useS = true; draw(); });
+  dist.addEventListener('input', draw);
+  return {el, draw};
+};
+
+/* ================= laboratorio: MDA frente a PCA ================= */
+function bestThreshold(z1, z2){ const all = z1.map(z => [z, 0]).concat(z2.map(z => [z, 1])).sort((a,b) => a[0]-b[0]); const n = all.length; let best = {err:1, t:0};
+  for (const flip of [0,1]){ let errL = 0, errR = all.filter(p => p[1] !== flip).length; if (errR/n < best.err) best = {err: errR/n, t: all[0][0] - 1e-6};
+    for (let i = 0; i < n; i++){ if (all[i][1] === flip) errL++; else errR--; const e = (errL + errR)/n; if (e < best.err) best = {err: e, t: i < n-1 ? (all[i][0] + all[i+1][0])/2 : all[i][0] + 1e-6}; } }
+  return best; }
+VIZ.mda = function(el){
+  const th = $('#mda-th', el), elg = $('#mda-el', el), se = $('#mda-se', el), ph = $('#mda-ph', el);
+  const c1 = $('#mda-c1', el), c2 = $('#mda-c2', el), c3 = $('#mda-c3', el), out = $('#mda-out', el);
+  const A = gaussPairs(70, 31), B = gaussPairs(70, 57); const s0 = 0.42;
+  function data(){ const t = (+th.value)*Math.PI/180, f = (+ph.value)*Math.PI/180; const ul = [Math.cos(t), Math.sin(t)], us = [-Math.sin(t), Math.cos(t)];
+    const sl = s0*(+elg.value), ss = s0; const usep = [Math.cos(f)*us[0] + Math.sin(f)*ul[0], Math.cos(f)*us[1] + Math.sin(f)*ul[1]]; const h = (+se.value)/2;
+    const gen = (U, sg) => U.map(u => [sg*h*usep[0] + sl*u[0]*ul[0] + ss*u[1]*us[0], sg*h*usep[1] + sl*u[0]*ul[1] + ss*u[1]*us[1]]);
+    return {P1: gen(A, 1), P2: gen(B, -1)}; }
+  function stats(P){ const n = P.length; let mx = 0, my = 0; P.forEach(p => { mx += p[0]; my += p[1]; }); mx /= n; my /= n; let a = 0, b = 0, c = 0; P.forEach(p => { const dx = p[0]-mx, dy = p[1]-my; a += dx*dx; b += dx*dy; c += dy*dy; }); return {n, m:[mx,my], S:[a,b,c]}; }
+  const quad = (S, u) => u[0]*u[0]*S[0] + 2*u[0]*u[1]*S[1] + u[1]*u[1]*S[2];
+  function hist(canvas, z1, z2, thr, title){
+    const {ctx, w, h} = setupCanvas(canvas); const mg = {l:12, r:12, t:20, b:22};
+    const all = z1.concat(z2); const lo = Math.min(...all), hi = Math.max(...all); const pad = (hi - lo)*0.05 + 1e-6;
+    const xs = lin(lo - pad, hi + pad, mg.l, w - mg.r); const nb = 26, bw = (hi - lo + 2*pad)/nb;
+    const cnt = z => { const H = new Array(nb).fill(0); z.forEach(v => { const k = Math.min(nb-1, Math.max(0, Math.floor((v - lo + pad)/bw))); H[k]++; }); return H; };
+    const H1 = cnt(z1), H2 = cnt(z2); const mx = Math.max(...H1, ...H2, 1); const ys = lin(0, mx, h - mg.b, mg.t);
+    ctx.save(); ctx.strokeStyle = cssv('--axis'); ctx.beginPath(); ctx.moveTo(mg.l, h - mg.b + .5); ctx.lineTo(w - mg.r, h - mg.b + .5); ctx.stroke(); ctx.restore();
+    const bar = (H, col) => H.forEach((v, k) => { if (!v) return; const x0 = xs(lo - pad + k*bw) + 1, x1 = xs(lo - pad + (k+1)*bw) - 1; ctx.fillStyle = withAlpha(col, .55); ctx.fillRect(x0, ys(v), Math.max(1, x1 - x0), ys(0) - ys(v)); });
+    bar(H1, cssv('--c1')); bar(H2, cssv('--c2'));
+    ctx.save(); ctx.setLineDash([4,3]); ctx.strokeStyle = cssv('--ink-2'); ctx.beginPath(); ctx.moveTo(xs(thr)+.5, mg.t - 6); ctx.lineTo(xs(thr)+.5, h - mg.b); ctx.stroke(); ctx.restore();
+    label(ctx, title, mg.l, 9, cssv('--ink-2'), 'left'); label(ctx, 'z', w - mg.r, h - 8, cssv('--muted'), 'right');
+  }
+  function draw(){
+    $('#mda-th-o', el).textContent = th.value + '°'; $('#mda-el-o', el).textContent = fmt(+elg.value, 1); $('#mda-se-o', el).textContent = fmt(+se.value, 1); $('#mda-ph-o', el).textContent = ph.value + '°';
+    const {P1, P2} = data(); const s1 = stats(P1), s2 = stats(P2), st = stats(P1.concat(P2)); const N = st.n, m = st.m;
+    const SC = [s1.S[0] + s2.S[0], s1.S[1] + s2.S[1], s1.S[2] + s2.S[2]];
+    const d1 = [s1.m[0]-m[0], s1.m[1]-m[1]], d2 = [s2.m[0]-m[0], s2.m[1]-m[1]];
+    const SB = [s1.n*d1[0]*d1[0] + s2.n*d2[0]*d2[0], s1.n*d1[0]*d1[1] + s2.n*d2[0]*d2[1], s1.n*d1[1]*d1[1] + s2.n*d2[1]*d2[1]];
+    const E = eig2(st.S); const wp = [Math.cos(E.ang), Math.sin(E.ang)];
+    const det = SC[0]*SC[2] - SC[1]*SC[1]; const D = [s1.m[0]-s2.m[0], s1.m[1]-s2.m[1]];
+    let wm = [(SC[2]*D[0] - SC[1]*D[1])/det, (-SC[1]*D[0] + SC[0]*D[1])/det]; const nm = Math.hypot(wm[0], wm[1]); wm = [wm[0]/nm, wm[1]/nm];
+    const JF = u => quad(SB, u)/quad(SC, u); const jp = JF(wp), jm = JF(wm);
+    const proj = (P, u) => P.map(p => (p[0]-m[0])*u[0] + (p[1]-m[1])*u[1]);
+    const zp1 = proj(P1, wp), zp2 = proj(P2, wp), zm1 = proj(P1, wm), zm2 = proj(P2, wm);
+    const bp = bestThreshold(zp1, zp2), bm = bestThreshold(zm1, zm2);
+    const C1 = cssv('--c1'), C2 = cssv('--c2'), W1 = cssv('--cw1'), WM = cssv('--cmda'), surf = cssv('--surface'), muted = cssv('--muted');
+    { const {ctx, w, h} = setupCanvas(c1); const R = 4.2; const sc = Math.min((w - 20)/(2*R), (h - 20)/(2*R)); const ox = w/2, oy = h/2;
+      const X2 = x => ox + x*sc, Y2 = y => oy - y*sc;
+      ctx.save(); ctx.strokeStyle = cssv('--grid'); for (let g = -8; g <= 8; g++){ ctx.beginPath(); ctx.moveTo(X2(g)+.5, 0); ctx.lineTo(X2(g)+.5, h); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, Y2(g)+.5); ctx.lineTo(w, Y2(g)+.5); ctx.stroke(); } ctx.restore();
+      P1.forEach(p => { ctx.beginPath(); ctx.arc(X2(p[0]), Y2(p[1]), 3.2, 0, 7); ctx.fillStyle = withAlpha(C1, .85); ctx.fill(); });
+      P2.forEach(p => { ctx.beginPath(); ctx.arc(X2(p[0]), Y2(p[1]), 3.2, 0, 7); ctx.fillStyle = withAlpha(C2, .85); ctx.fill(); });
+      const L = 20; const line = (u, col, dash) => { ctx.save(); ctx.setLineDash(dash); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X2(m[0] - L*u[0]), Y2(m[1] - L*u[1])); ctx.lineTo(X2(m[0] + L*u[0]), Y2(m[1] + L*u[1])); ctx.stroke(); ctx.restore(); };
+      line(wp, W1, [7,5]); line(wm, WM, []);
+      const tip = (u, col, txt) => { const k = Math.min((w/2 - 30)/sc, (h/2 - 22)/sc, 3.6); const uu = (u[1] < 0 || (u[1] === 0 && u[0] < 0)) ? [-u[0], -u[1]] : u; tagLabel(ctx, txt, X2(m[0] + k*uu[0]) + 6, Y2(m[1] + k*uu[1]), col); };
+      tip(wp, W1, 'PCA'); tip(wm, WM, 'MDA');
+      dot(ctx, X2(s1.m[0]), Y2(s1.m[1]), 4, cssv('--ink'), surf); dot(ctx, X2(s2.m[0]), Y2(s2.m[1]), 4, cssv('--ink'), surf);
+      label(ctx, 'm₁', X2(s1.m[0]) + 8, Y2(s1.m[1]) - 8, cssv('--ink')); label(ctx, 'm₂', X2(s2.m[0]) + 8, Y2(s2.m[1]) - 8, cssv('--ink'));
+    }
+    hist(c2, zp1, zp2, bp.t, 'PCA'); hist(c3, zm1, zm2, bm.t, 'MDA');
+    $('#mda-cap2', el).textContent = `Proyección sobre la dirección de PCA · error con el mejor umbral: ${fmt(100*bp.err,1)} %`;
+    $('#mda-cap3', el).textContent = `Proyección sobre la dirección de MDA · error con el mejor umbral: ${fmt(100*bm.err,1)} %`;
+    const ang = Math.acos(Math.min(1, Math.abs(wp[0]*wm[0] + wp[1]*wm[1])))*180/Math.PI;
+    out.innerHTML = `<span class="kv">criterio wᵀS<sub>B</sub>w / wᵀS<sub>C</sub>w · PCA = <b>${fmt(jp,2)}</b></span><span class="kv">MDA = σ = <b>${fmt(jm,2)}</b></span><span class="kv">con S<sub>T</sub> en el denominador: σ/(1+σ) = <b>${fmt(jm/(1+jm),3)}</b></span><span class="kv">ángulo entre direcciones = <b>${fmt(ang,1)}°</b></span>`;
+  }
+  [th, elg, se, ph].forEach(i => i.addEventListener('input', draw));
+  return {el, draw};
+};
+
+</script>

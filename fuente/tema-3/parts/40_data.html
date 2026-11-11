@@ -1,0 +1,306 @@
+<script>
+const R = String.raw;
+const SECTIONS = [
+  {id:'inicio', n:'·', t:'Inicio y notación', grp:'Tema'},
+  {id:'b1', n:'1', t:'Dimensionalidad', grp:'Teoría'},
+  {id:'b2', n:'2', t:'Dos gaussianas y Pr(e)', grp:'Teoría'},
+  {id:'b3', n:'3', t:'Reducción lineal', grp:'Teoría'},
+  {id:'b4', n:'4', t:'PCA', grp:'Teoría'},
+  {id:'b5', n:'5', t:'MDA', grp:'Teoría'},
+  {id:'b6', n:'6', t:'Enfoques no lineales', grp:'Teoría'},
+  {id:'b7', n:'7', t:'Conclusiones', grp:'Teoría'},
+  {id:'ejercicios', n:'E', t:'Ejercicios', grp:'Práctica'},
+  {id:'flashcards', n:'F', t:'Flashcards', grp:'Práctica'},
+  {id:'repaso', n:'R', t:'Repasar falladas', grp:'Práctica'},
+  {id:'resumen', n:'∑', t:'Hoja resumen', grp:'Práctica'}
+];
+
+const MAP = [
+  ['1','1','Portada. Bibliografía: Duda, Hart, Stork, cap. 3.7 y 3.8','b1'],
+  ['2','2','Course overview: preprocesado → selección → clasificación','b1'],
+  ['—','3','Manuscrita: características inútiles, \\(\\hat{\\bC}\\) singular si \\(N&lt;d\\), seleccionar \\(x_2,x_3\\)','b1'],
+  ['3','4','Índice 3.1–3.5','b1'],
+  ['4','5','Por qué decidir el número de características','b1'],
+  ['5','6','Curva en U de \\(P(E|m,n)\\); \\(\\bC\\) deficiente en rango','b1'],
+  ['6','7','Visualización y almacenamiento','b1'],
+  ['7','8','Ejemplo 1: microarrays','b1'],
+  ['8','9','WARNING; ejemplo 2: dos gaussianas equiprobables','b2'],
+  ['9','10','\\(\\Pr(e)=Q(r/2)\\), \\(r^2\\) con \\(\\bC\\) diagonal','b2'],
+  ['10','11','Ejemplo 3: separabilidad 1D/2D/3D','b2'],
+  ['11','12','Reconocimiento de caras con la SVD','b3'],
+  ['—','13','Manuscrita: \\(\\bz_i=\\bW^T\\bx_i\\), PCA frente a MDA','b3'],
+  ['12','14','Soluciones: reducir características o random forest','b3'],
+  ['13','15','\\(\\bz_k=\\bW^T(\\bx_k-\\balpha)\\) y dos criterios','b3'],
+  ['14','16','PCA: planteamiento de \\(J\\) (con anotaciones)','b4'],
+  ['15','17','Resultado: autovectores de \\(\\bS\\) (con anotaciones)','b4'],
+  ['—','18','Manuscrita: algoritmo en 6 pasos y propiedades de \\(\\bS\\)','b4'],
+  ['16','19','PCA en 2D: de correladas a incorreladas','b4'],
+  ['17','20','Demostración (I): óptimo de \\(\\bz_k\\)','b4'],
+  ['18','21','Demostración (II): SVD de \\(\\bW\\)','b4'],
+  ['19','22','Demostración (III): traza y Lagrangiano','b4'],
+  ['20','23','Demostración (IV): autovectores y \\(J_{\\min}\\)','b4'],
+  ['21','24','Ejemplo 5: reconocimiento facial','b4'],
+  ['22','25','Eigenfaces y reconstrucción','b4'],
+  ['23','26','Propiedad: hiperelipsoide','b4'],
+  ['24','27','¿Por qué restar la media? Ejemplo 4','b4'],
+  ['25','28','PCA no garantiza separar clases','b4'],
+  ['—','29','Manuscrita «Recap 16/10»: PCA, \\(\\bS_T\\), idea de MDA','b5'],
+  ['—','30','Manuscrita: \\(D\\) como cociente de volúmenes','b5'],
+  ['—','31','Manuscrita: \\(\\max_{\\bW}D(\\bW)\\), autovectores generalizados','b5'],
+  ['—','32','Foto de la pizarra: derivación de MDA','b5'],
+  ['26','33','MDA: objetivo; ejemplo 6','b5'],
+  ['27','34','Figura: dos proyecciones con histogramas','b5'],
+  ['28','35','\\(\\bm_i\\), \\(\\bm\\), \\(\\bS_T\\); MDA es supervisado','b5'],
+  ['29','36','Figura: \\(\\bm_1\\), \\(\\bm\\), \\(\\bm_2\\)','b5'],
+  ['30','37','\\(\\bS_T=\\bS_C+\\bS_B\\) (con anotaciones)','b5'],
+  ['31','38','\\(\\bW^T\\bS\\bW\\) y volumen del hiperelipsoide','b5'],
+  ['32','—','No aparece en el PDF','b5'],
+  ['33','39','Criterio discriminante y autovectores generalizados','b5'],
+  ['34','40','\\(\\prod\\sigma_i\\) y \\(d\'\\le\\min(d,c-1)\\) (con anotaciones)','b5'],
+  ['—','41','Manuscrita: MDA por grupos, \\(d\'=(c-1)K\\)','b5'],
+  ['35','42','Más de \\(\\min(d,c-1)\\) características: grupos','b5'],
+  ['36','43','Ejemplo 7: tres clases en 3D','b5'],
+  ['37','44','Fronteras de decisión sobre \\(\\bz\\)','b5'],
+  ['38','45','Enfoques no lineales: t-SNE, autoencoders','b6'],
+  ['39','46','Ejemplo 8: dígitos con PCA y t-SNE','b6'],
+  ['40','47','t-SNE sobre MNIST (sin número visible)','b6'],
+  ['41','48','Autoencoder: red con cuello de botella','b6'],
+  ['42','49','Autoencoder: encoder/decoder','b6'],
+  ['43','50','Conclusiones','b7']
+];
+
+const ERRATA = [
+  ['PDF p. 3 (manuscrita)', R`«\(\bC\) maybe singular if \(N\lt d\)»`, R`También es singular si \(N=d\): \(\rank(\hat{\bC})\le N-1\) porque los vectores centrados suman \(\mathbf 0\).`, 'b1'],
+  ['Diap. 5', R`Figura con \(n\) (patrones) y \(m\) (celdas)`, R`Choque de notación con \(N\) y con la media \(\bm\) del resto del tema.`, 'b1'],
+  ['Diap. 9', R`\(\boldsymbol\mu_{i,1}\) en negrita`, R`Es un escalar: la componente \(i\) de \(\bmu_1\). Aquí \(i\) indexa características, no clases.`, 'b2'],
+  ['PDF p. 13 (manuscrita)', R`«dominio de \(\bz_i\) (espacio \(\mathbb{R}^d\))»`, R`\(\mathbb{R}^{d'}\).`, 'b3'],
+  ['Diap. 15 (anotación)', R`\(\bS=\hat{\bC}\,(N-1)\)`, R`Vale si \(\hat{\bC}\) es la estimación insesgada (\(\frac1{N-1}\)). Con la de la p. 3 (\(\frac1N\)), \(\bS=N\hat{\bC}\). Los autovectores son los mismos en ambos casos.`, 'b4'],
+  ['Diap. 17', R`\(-\bx_k^T\bW\by_k\) y \(\nabla_{\by_k}J\)`, R`\(\bz_k\) en lugar de \(\by_k\).`, 'b4'],
+  ['Diap. 17', R`Da \(\balpha=\bm\) por hecho`, R`El paso que lo justifica falta; está desarrollado en el bloque 4.`, 'b4'],
+  ['Diap. 18', R`Segunda línea: \(\bU\bGamma^T\bV^T\bV^{-T}\cdots\)`, R`\(\bU\bGamma\bV^T\bV^{-T}\cdots\) (el primer factor es \(\bW=\bU\bGamma\bV^T\), sin trasponer \(\bGamma\)). El resultado final es correcto.`, 'b4'],
+  ['Diap. 18', R`\(\bGamma\) para dos matrices`, R`Se usa a la vez para la matriz \(d\times d'\) y para su bloque diagonal \(d'\times d'\) (abuso de notación).`, 'b4'],
+  ['Diap. 19–20', R`Lagrangiano solo con \(\bw_i^T\bw_i=E\)`, R`Falta la ortogonalidad entre columnas (que viene de \(\bW=\bU_L\)). Sin ella, el máximo repetiría \(\bw_1\) en todas las columnas.`, 'b4'],
+  ['Diap. 20', R`«minimizing the function»`, R`<em>Maximizing</em> \(\sum\bw_i^T\bS\bw_i\) (equivale a minimizar \(J\)).`, 'b4'],
+  ['Diap. 20', R`«eigenvalues of \(\bS\) are positive»`, R`No negativos (\(\lambda_j\ge0\)): \(\bS\) es semidefinida positiva.`, 'b4'],
+  ['Diap. 22', R`Última componente \(z_d\times\bw_{d'}\)`, R`\(z_{d'}\times\bw_{d'}\).`, 'b4'],
+  ['Diap. 24', R`«correlation matrix»`, R`Aquí significa \(\sum_k\bx_k\bx_k^T\) (sin restar la media), no la matriz de coeficientes de correlación normalizados.`, 'b4'],
+  ['PDF p. 29 y 31 (manuscritas)', R`\(\bm\): «mean of \(\bm_i\), \(i=1\dots c\)»`, R`\(\bm=\frac1N\sum_iN_i\bm_i\) es la media de todos los datos; coincide con la media simple de las \(\bm_i\) solo si todos los \(N_i\) son iguales.`, 'b5'],
+  ['PDF p. 30 (manuscrita)', R`«optimize respect to \(\bS\)»`, R`Se optimiza respecto a \(\bW\).`, 'b5'],
+  ['PDF p. 30 (manuscrita)', R`\(\bS_{C_j,z}=\cdots=\bW\bS_{C_j,x}\bW\)`, R`Falta la traspuesta: \(\bW^T\bS_{C_j,x}\bW\).`, 'b5'],
+  ['PDF p. 31 (manuscrita)', R`\(\bS_B\bw_j=\sigma_i\)`, R`\(\bS_B\bw_j=\sigma_j\bS_C\bw_j\).`, 'b5'],
+  ['PDF p. 32 (pizarra)', R`«eigenvalues that are \(\ge1\)» (lectura de la foto)`, R`La diap. 34 dice «non-zero». Las dos lecturas responden a preguntas distintas; se explica en el bloque 5.`, 'b5'],
+  ['Diap. 32', R`—`, R`No aparece en el PDF: de la 31 se pasa a la 33.`, 'b5'],
+  ['Diap. 33', R`«definition of \(\bS_B\) in slide 29»`, R`\(\bS_B\) se define en la diap. 30 (la 29 es una figura). Probablemente numeración de una versión anterior.`, 'b5'],
+  ['Diap. 34', R`\(\rank(\bS_C)=d\)`, R`Requiere datos suficientes: \(\rank(\bS_C)\le N-c\). Si \(N-c\lt d\), \(\bS_C^{-1}\) no existe.`, 'b5'],
+  ['PDF p. 40 (anotación)', R`«RANGO: nº de autovalores \(\neq0\)»`, R`Solo para matrices diagonalizables. Aquí vale porque \(\bS_C^{-1}\bS_B\) es semejante a una matriz simétrica.`, 'b5'],
+  ['Ejercicio 1, enunciado', R`«diagonal matrix whose elements are \(n\) generalized eigenvectors \(\lambda_j\)»`, R`<em>Eigenvalues</em>.`, 'ejercicios'],
+  ['Ejercicio 1, nota', R`«\(\bW^T\bW=\mathbf I\)»`, R`No se cumple en general: lo que se cumple es \(\bW^T\bS_C\bW=\mathbf I\). La demostración no lo necesita.`, 'ejercicios'],
+  ['Ejercicio 1, solución', R`\([\bw_1\ \bw_2\ \cdots\ \bw_3]\)`, R`\([\bw_1\ \bw_2\ \cdots\ \bw_d]\).`, 'ejercicios'],
+  ['Ejercicio 2, solución', R`«\(\bS\) is positive definite», «which is a convex one»`, R`\(\bS\) es semidefinida en general. Maximizar una función convexa sobre una bola no es un problema convexo; el resultado es correcto por otro motivo.`, 'ejercicios'],
+  ['Ejercicio 3, solución', R`\(A=\sum_{i=1}^{c}\alpha_i\)`, R`\(A=\sum_{i=1}^{c-1}\alpha_i\).`, 'ejercicios'],
+  ['Ejercicio 4.2, solución', R`\(\bS_C\) = dispersión total`, R`En teoría (diap. 30–33) \(\bS_C\) es intra-clase. Las dos elecciones dan los mismos \(\bw\).`, 'ejercicios'],
+  ['Ejercicio 5', R`Solo norma unidad en las columnas`, R`Sin ortogonalidad entre columnas la solución degenera (todas iguales a \(\bw_1\)).`, 'ejercicios']
+];
+
+const QUIZ = {
+b1: [
+ {id:'b1q1', q:R`Tienes \(N=50\) vectores de dimensión \(d=50\) y calculas \(\hat{\bC}=\frac1N\sum_k(\bx_k-\hat{\bmu})(\bx_k-\hat{\bmu})^T\). ¿Qué puedes asegurar?`, opts:[
+  {t:R`Es invertible, porque \(N=d\).`, fb:R`Los \(N\) vectores centrados suman \(\mathbf 0\), así que el rango es como mucho \(N-1=49\lt 50\).`},
+  {t:R`Es singular: su rango es como mucho \(N-1=49\).`, ok:1, fb:R`Restar \(\hat{\bmu}\) hace que \(\sum_k(\bx_k-\hat{\bmu})=\mathbf 0\): los 50 vectores generan como mucho un subespacio de dimensión 49 dentro de \(\mathbb{R}^{50}\).`},
+  {t:R`Es invertible si los datos son gaussianos.`, fb:R`La distribución no cambia el álgebra: el rango está acotado por \(N-1\) sea cual sea la pdf.`},
+  {t:R`Solo sería singular si \(N\lt d\); aquí es invertible.`, fb:R`Es justo el matiz de la anotación de la p. 3: con \(N=d\) también es singular.`}]},
+ {id:'b1q2', q:R`En la figura de la diapositiva 5, sigue la curva de \(n=20\) patrones de entrenamiento. Al aumentar el número de celdas \(m\) desde 1 hasta 1000, \(P(E)\)…`, opts:[
+  {t:R`…decrece siempre y se estabiliza en torno a 0,25.`, fb:R`Ese es el comportamiento de la curva \(n=\infty\). Con 20 muestras, los parámetros de un modelo complejo se estiman mal.`},
+  {t:R`…primero decrece, alcanza un mínimo y luego crece hacia 0,5.`, ok:1, fb:R`Es la curva en U: pasado el mínimo, el error de estimación domina sobre la ganancia de detalle.`},
+  {t:R`…crece desde el principio.`, fb:R`Al principio añadir detalle ayuda: todas las curvas bajan al inicio.`},
+  {t:R`…es constante, porque el error de Bayes no depende de \(m\).`, fb:R`El error del clasificador <em>entrenado</em> depende de \(m\) y de \(n\). Solo el límite \(n=\infty\) se comporta como un modelo con parámetros conocidos.`}]},
+ {id:'b1q3', q:R`¿Cuál de estas afirmaciones <strong>no</strong> es una de las razones de la diapositiva 4 y, además, es falsa?`, opts:[
+  {t:R`Algunas características no aportan información relevante al problema.`, fb:R`Sí es una de las razones de la diapositiva.`},
+  {t:R`Algunas características son estadísticamente dependientes de otras.`, fb:R`Sí aparece: es la redundancia.`},
+  {t:R`Algunas características no se ajustan a la pdf asumida.`, fb:R`Sí aparece en la diapositiva.`},
+  {t:R`Una característica con varianza pequeña es siempre irrelevante y hay que quitarla.`, ok:1, fb:R`No está en la diapositiva y es falsa: una característica de varianza pequeña puede separar perfectamente las clases si sus medias difieren. Lo que cuenta es \(|\mu_1-\mu_2|/\sigma\), no \(\sigma\) sola.`}]},
+ {id:'b1q4', q:R`Un clasificador gaussiano con covarianza completa en \(d=6830\) dimensiones (microarrays). ¿Cuántos parámetros libres tiene una sola matriz \(\bC\)?`, opts:[
+  {t:R`\(6830\)`, fb:R`Esos son los parámetros de la media (o los de una covarianza diagonal).`},
+  {t:R`\(6830^2\approx46{,}6\) millones`, fb:R`Cuenta dos veces cada covarianza cruzada: \(\bC\) es simétrica.`},
+  {t:R`\(\frac{6830\cdot6831}{2}\approx23{,}3\) millones`, ok:1, fb:R`Diagonal (\(d\)) más triángulo superior (\(\frac{d(d-1)}{2}\)) da \(\frac{d(d+1)}{2}=23\,327\,865\), con solo 64 muestras disponibles.`},
+  {t:R`\(2\cdot6830\)`, fb:R`No corresponde a ningún conteo de los parámetros de \(\bC\).`}]},
+ {id:'b1q5', q:R`En sus apuntes (PDF p. 3) el profesor se queda con \((x_2,x_3)\) de \(\bx\). Eso equivale a \(\bz=\bW^T\bx\) con…`, opts:[
+  {t:R`…\(\bW\in\mathbb{R}^{d\times2}\) cuyas columnas son \(\mathbf e_2\) y \(\mathbf e_3\) (columnas de la identidad).`, ok:1, fb:R`\(\bW^T\bx=(\mathbf e_2^T\bx,\ \mathbf e_3^T\bx)^T=(x_2,x_3)^T\). Seleccionar es un caso particular de transformación lineal.`},
+  {t:R`…\(\bW\in\mathbb{R}^{2\times d}\) cuyas columnas son \(\mathbf e_2\) y \(\mathbf e_3\).`, fb:R`\(\mathbf e_j\in\mathbb{R}^d\) no cabe como columna de una matriz de 2 filas, y \(\bW\) tiene que ser \(d\times d'\).`},
+  {t:R`…\(\bW\) formada por los dos autovectores principales de \(\bS\).`, fb:R`Eso es PCA: combina todas las características en lugar de seleccionar dos.`},
+  {t:R`…ninguna \(\bW\): seleccionar no se puede escribir como \(\bz=\bW^T\bx\).`, fb:R`Sí se puede, con columnas de la identidad.`}]}
+],
+b2: [
+ {id:'b2q1', q:R`En el ejemplo 2 (dos gaussianas equiprobables con la misma \(\bC\)), la probabilidad de error del clasificador de Bayes depende únicamente de…`, opts:[
+  {t:R`…\(r\), la distancia de Mahalanobis entre \(\bmu_1\) y \(\bmu_2\).`, ok:1, fb:R`\(\Pr(e)=Q(r/2)\) con \(r^2=(\bmu_1-\bmu_2)^T\bC^{-1}(\bmu_1-\bmu_2)\).`},
+  {t:R`…la distancia euclídea \(\|\bmu_1-\bmu_2\|\).`, fb:R`Ignora la covarianza: con la misma distancia euclídea, las clases pueden estar muy separadas o casi solapadas según \(\bC\).`},
+  {t:R`…el número de características \(d\), directamente.`, fb:R`\(d\) solo influye a través de \(r\).`},
+  {t:R`…el determinante \(|\bC|\).`, fb:R`\(|\bC|\) se cancela al restar los logaritmos de las dos verosimilitudes (paso 2 de la derivación).`}]},
+ {id:'b2q2', q:R`Si \(r=2\), ¿cuánto vale \(\Pr(e)\)?`, opts:[
+  {t:R`\(Q(2)\approx0{,}023\)`, fb:R`Falta el \(/2\): el umbral está a \(r/2\) desviaciones típicas de cada media.`},
+  {t:R`\(Q(1)\approx0{,}159\)`, ok:1, fb:R`\(\Pr(e)=Q(r/2)=Q(1)=0{,}1587\).`},
+  {t:R`\(Q(4)\approx3\cdot10^{-5}\)`, fb:R`Eso sería \(Q(2r)\).`},
+  {t:R`\(0{,}5\)`, fb:R`0,5 es el error con \(r=0\) (medias iguales).`}]},
+ {id:'b2q3', q:R`Características independientes y parámetros conocidos. Añades una característica independiente cuya media es la misma en las dos clases (\(\mu_{d+1,1}=\mu_{d+1,2}\)). \(\Pr(e)\)…`, opts:[
+  {t:R`…disminuye.`, fb:R`Su término en \(r^2\) es \(\left(\frac{0}{\sigma_{d+1}}\right)^2=0\): \(r\) no cambia.`},
+  {t:R`…no cambia.`, ok:1, fb:R`Aporta 0 a \(r^2\). Con parámetros conocidos es inocua; con parámetros estimados sería perjudicial (añade parámetros sin información, diap. 5).`},
+  {t:R`…aumenta.`, fb:R`Con parámetros conocidos no puede aumentar: \(r^2\) es una suma de términos \(\ge0\).`},
+  {t:R`…se hace 0.`, fb:R`Para eso haría falta \(r\to\infty\).`}]},
+ {id:'b2q4', q:R`Características independientes con contribuciones decrecientes \(D'_i=0{,}5/i\). Cuando \(d\to\infty\)…`, opts:[
+  {t:R`…\(\Pr(e)\to0\).`, fb:R`La serie \(\sum_i 1/i^2\) converge, así que \(r\) no crece sin límite.`},
+  {t:R`…\(\Pr(e)\) converge a un valor positivo, aproximadamente \(0{,}374\).`, ok:1, fb:R`\(r^2\to0{,}25\cdot\pi^2/6=0{,}411\), \(r\to0{,}641\) y \(\Pr(e)\to Q(0{,}321)=0{,}374\). Son características «poco relevantes».`},
+  {t:R`…\(\Pr(e)\to0{,}5\).`, fb:R`Añadir características nunca aumenta \(\Pr(e)\) aquí; con \(d=1\) ya vale \(Q(0{,}25)=0{,}401\lt 0{,}5\).`},
+  {t:R`…\(\Pr(e)\) oscila sin converger.`, fb:R`\(r^2\) crece de forma monótona y acotada, así que converge.`}]},
+ {id:'b2q5', q:R`La diap. 5 dice que demasiadas características empeoran el error; la diap. 9, que con \(d\to\infty\) el error tiende a 0. ¿Cómo se reconcilian?`, opts:[
+  {t:R`En la diap. 9 los parámetros \(\bmu_i,\bC\) son conocidos; en la diap. 5 se estiman con un número finito de muestras.`, ok:1, fb:R`Con parámetros conocidos solo cuenta la información (\(r^2\) crece); con parámetros estimados aparece además el error de estimación, que crece con la complejidad.`},
+  {t:R`La diap. 9 es incorrecta: añadir características siempre acaba aumentando el error.`, fb:R`La derivación de \(Q(r/2)\) es exacta bajo sus hipótesis.`},
+  {t:R`La diap. 5 solo vale para clases no gaussianas.`, fb:R`La U aparece con cualquier modelo cuyos parámetros se estiman con pocos datos, también con gaussianas.`},
+  {t:R`La diap. 9 solo vale para \(d=1\).`, fb:R`Vale para cualquier \(d\); de hecho trata el límite \(d\to\infty\).`}]},
+ {id:'b2q6', q:R`\(\boldsymbol\delta=\bmu_1-\bmu_2=(1,1)^T\). Compara \(\bC=\mathbf I\) con \(\bC=\begin{pmatrix}1&0{,}8\\0{,}8&1\end{pmatrix}\). Con la covarianza correlada…`, opts:[
+  {t:R`…\(r^2=1{,}11\lt 2\): el error es mayor que con características independientes.`, ok:1, fb:R`\(\bC^{-1}=\frac{1}{0{,}36}\begin{pmatrix}1&-0{,}8\\-0{,}8&1\end{pmatrix}\Rightarrow r^2=\frac{0{,}4}{0{,}36}=1{,}11\). La segunda característica es casi redundante con la primera en esa dirección.`},
+  {t:R`…\(r^2=2\), igual que con \(\bC=\mathbf I\).`, fb:R`La correlación cambia \(\bC^{-1}\) y, con ella, \(r\).`},
+  {t:R`…\(r^2>2\), porque la correlación siempre ayuda.`, fb:R`No siempre: aquí \(\boldsymbol\delta\) va en la dirección de mayor varianza y la correlación perjudica. (Con \(\boldsymbol\delta=(1,-1)^T\) saldría \(r^2=10\), pero esa no es la pregunta.)`},
+  {t:R`…no se puede calcular sin datos.`, fb:R`Los parámetros son conocidos: basta con aplicar la fórmula de \(r^2\).`}]}
+],
+b3: [
+ {id:'b3q1', q:R`En \(\bz_k=\bW^T(\bx_k-\balpha)\) con \(d=100\) y \(d'=5\), las dimensiones de \(\bW\) son…`, opts:[
+  {t:R`\(100\times5\)`, ok:1, fb:R`\(\bW\in\mathbb{R}^{d\times d'}\): una columna por característica nueva.`},
+  {t:R`\(5\times100\)`, fb:R`Esa es \(\bW^T\).`},
+  {t:R`\(100\times100\)`, fb:R`Así no se reduciría la dimensión.`},
+  {t:R`\(5\times5\)`, fb:R`No podría multiplicar a un vector de 100 componentes.`}]},
+ {id:'b3q2', q:R`¿Qué método necesita las etiquetas de clase para construir \(\bW\)?`, opts:[
+  {t:R`PCA`, fb:R`PCA ignora las clases (apunte de la p. 13): solo usa \(\bS\).`},
+  {t:R`MDA`, ok:1, fb:R`MDA necesita \(\bm_i\), \(\bS_{C,i}\) y \(\bS_B\), y para eso hay que saber a qué clase pertenece cada vector.`},
+  {t:R`Los dos`, fb:R`PCA no las usa.`},
+  {t:R`Ninguno`, fb:R`MDA sí las usa.`}]},
+ {id:'b3q3', q:R`¿Cuál es el criterio con el que PCA elige \(\bW\)?`, opts:[
+  {t:R`Minimizar el error cuadrático medio de reconstrucción de los \(\bx_k\).`, ok:1, fb:R`\(J=\sum_k\|\bW\bz_k+\balpha-\bx_k\|_2^2\) (diap. 14).`},
+  {t:R`Maximizar la separación entre las clases proyectadas.`, fb:R`Ese es el criterio de MDA.`},
+  {t:R`Minimizar directamente \(\Pr(e)\).`, fb:R`Ninguno de los dos lo hace; PCA ni siquiera conoce las clases.`},
+  {t:R`Maximizar \(|\bW^T\bS_B\bW|/|\bW^T\bS_C\bW|\).`, fb:R`Es el criterio discriminante de MDA (diap. 33).`}]},
+ {id:'b3q4', q:R`Diapositiva 11: si las filas de \(\bX\) son los vectores ya centrados y \(\bX=\bU_X\bGamma_X\bV^T\), las columnas de \(\bV\) son…`, opts:[
+  {t:R`…los autovectores de \(\bS=\bX^T\bX\).`, ok:1, fb:R`\(\bX^T\bX=\bV(\bGamma_X^T\bGamma_X)\bV^T\): son las direcciones de PCA, con \(\lambda_j=s_j^2\).`},
+  {t:R`…los autovectores de \(\bX\bX^T\).`, fb:R`Esos son las columnas de \(\bU_X\), vectores de \(\mathbb{R}^N\).`},
+  {t:R`…las imágenes originales normalizadas.`, fb:R`Las imágenes son las filas de \(\bX\), no las columnas de \(\bV\).`},
+  {t:R`…los autovectores generalizados de \(\bS_B\) y \(\bS_C\).`, fb:R`Eso es MDA; la SVD de \(\bX\) no usa clases.`}]},
+ {id:'b3q5', q:R`Con \(\|\bw_j\|=1\), la componente \(z_{k,j}=\bw_j^T(\bx_k-\balpha)\) es…`, opts:[
+  {t:R`…la coordenada de \(\bx_k-\balpha\) a lo largo de la dirección \(\bw_j\).`, ok:1, fb:R`Es la longitud con signo de la proyección de \(\bx_k-\balpha\) sobre la recta generada por \(\bw_j\).`},
+  {t:R`…la distancia de \(\bx_k\) a \(\balpha\).`, fb:R`Eso sería \(\|\bx_k-\balpha\|\), que no depende de \(\bw_j\).`},
+  {t:R`…la componente \(j\) de \(\bx_k\).`, fb:R`Solo si \(\bw_j=\mathbf e_j\) y \(\balpha=\mathbf 0\).`},
+  {t:R`…el error de reconstrucción de \(\bx_k\).`, fb:R`El error es \(\bx_k-\hat{\bx}_k\), un vector de \(\mathbb{R}^d\).`}]}
+],
+b4: [
+ {id:'b4q1', q:R`En PCA, las columnas de \(\bW\) son…`, opts:[
+  {t:R`…los autovectores de \(\bS\) asociados a los \(d'\) mayores autovalores.`, ok:1, fb:R`Maximizan \(\tr(\bW^T\bS\bW)\) y, por tanto, minimizan \(J\) (diap. 15 y 20).`},
+  {t:R`…los autovectores de \(\bS\) asociados a los \(d'\) menores autovalores.`, fb:R`Esos dan el máximo error: \(J\) sería la suma de los autovalores grandes.`},
+  {t:R`…los autovectores generalizados de \(\bS_B\bw=\sigma\bS_C\bw\).`, fb:R`Eso es MDA (diap. 33); PCA no usa las clases.`},
+  {t:R`…las \(d'\) características originales de mayor varianza.`, fb:R`PCA no selecciona características originales: las combina. Solo coincide si \(\bS\) es diagonal.`}]},
+ {id:'b4q2', q:R`\(\bS\) (con \(d=4\)) tiene autovalores \(9,\ 4,\ 1,\ 0{,}5\). Con \(d'=2\), ¿cuánto vale \(J_{\min}\)?`, opts:[
+  {t:R`\(1{,}5\)`, ok:1, fb:R`Suma de los autovalores descartados: \(1+0{,}5\).`},
+  {t:R`\(13\)`, fb:R`Eso es lo conservado (\(9+4\)), no el error.`},
+  {t:R`\(0{,}5\)`, fb:R`Solo el último; con \(d'=2\) se descartan dos autovalores.`},
+  {t:R`\(14{,}5\)`, fb:R`Es \(\tr(\bS)\): el error con \(d'=0\).`}]},
+ {id:'b4q3', q:R`¿Qué relación hay entre \(\bS\) y la covarianza insesgada \(\hat{\bC}=\frac{1}{N-1}\sum_k(\bx_k-\bm)(\bx_k-\bm)^T\)?`, opts:[
+  {t:R`Tienen los mismos autovectores; los autovalores de \(\bS\) son \(N-1\) veces los de \(\hat{\bC}\).`, ok:1, fb:R`\(\bS=(N-1)\hat{\bC}\), y multiplicar por una constante positiva solo escala los autovalores (anotación de la diap. 15).`},
+  {t:R`Tienen autovectores distintos; por eso PCA debe hacerse con \(\bS\).`, fb:R`Escalar una matriz no cambia sus autovectores: PCA con una u otra da las mismas direcciones.`},
+  {t:R`Son la misma matriz.`, fb:R`Difieren en el factor \(N-1\).`},
+  {t:R`\(\bS=\hat{\bC}/(N-1)\).`, fb:R`Al revés: \(\bS=(N-1)\hat{\bC}\).`}]},
+ {id:'b4q4', q:R`Sobre el desplazamiento óptimo \(\balpha\) en PCA, ¿qué afirmación es correcta?`, opts:[
+  {t:R`Cualquier \(\balpha=\bm+\bW\mathbf c\) es óptimo; \(\balpha=\bm\) es la elección natural y deja los \(\bz_k\) con media cero.`, ok:1, fb:R`La condición de óptimo es \((\mathbf I-\bP)(\bm-\balpha)=\mathbf 0\): \(\bm-\balpha\) debe estar en el espacio de columnas de \(\bW\).`},
+  {t:R`\(\balpha=\bm\) solo si los datos son gaussianos.`, fb:R`La derivación no usa ninguna pdf.`},
+  {t:R`Cualquier \(\balpha\) da el mismo \(J\).`, fb:R`Un \(\balpha\) con componente fuera del espacio de columnas de \(\bW\) aumenta \(J\).`},
+  {t:R`\(\balpha=\mathbf 0\) siempre, porque la media se puede restar después.`, fb:R`Con \(\balpha=\mathbf 0\) el subespacio pasa por el origen y PCA se desvía hacia la media (diap. 24).`}]},
+ {id:'b4q5', q:R`Maximizas \(\sum_{i=1}^{d'}\bw_i^T\bS\bw_i\) imponiendo solo \(\|\bw_i\|=1\), sin exigir \(\bw_i^T\bw_j=0\). Si \(\lambda_1>\lambda_2\), el máximo se alcanza con…`, opts:[
+  {t:R`…todas las columnas iguales a \(\bw_1\), con valor \(d'\lambda_1\).`, ok:1, fb:R`Cada sumando se maximiza por separado con \(\bw_1\). Por eso hace falta \(\bW^T\bW=\mathbf I\), que viene de \(\bW=\bU_L\) (diap. 18).`},
+  {t:R`…los \(d'\) autovectores principales, con valor \(\sum_{i\le d'}\lambda_i\).`, fb:R`Es la solución con columnas ortonormales; sin esa restricción, repetir \(\bw_1\) da más.`},
+  {t:R`…nada: el problema no tiene máximo.`, fb:R`Con la norma fija, cada sumando está acotado por \(\lambda_1\).`},
+  {t:R`…los \(d'\) autovectores de menor autovalor.`, fb:R`Eso minimiza la función, no la maximiza.`}]},
+ {id:'b4q6', q:R`Los datos están lejos del origen y haces PCA con \(\sum_k\bx_k\bx_k^T\) en lugar de \(\bS\). El primer autovector tiende a…`, opts:[
+  {t:R`…apuntar hacia la media \(\bm\), porque \(\sum_k\bx_k\bx_k^T=\bS+N\bm\bm^T\).`, ok:1, fb:R`El término de rango 1 \(N\bm\bm^T\) domina cuando \(\|\bm\|\) es grande (diap. 24, ejemplo 4).`},
+  {t:R`…coincidir con el de \(\bS\), porque solo cambia una constante.`, fb:R`La diferencia \(N\bm\bm^T\) no es un múltiplo de la identidad: cambia los autovectores.`},
+  {t:R`…ser el vector nulo.`, fb:R`Un autovector nunca es nulo.`},
+  {t:R`…ser perpendicular a \(\bm\).`, fb:R`El término \(N\bm\bm^T\) empuja justo en la dirección de \(\bm\).`}]}
+],
+b5: [
+ {id:'b5q1', q:R`Un problema con \(c=4\) clases y \(d=50\) características. ¿Cuántas características puede dar MDA como máximo?`, opts:[
+  {t:R`\(3\)`, ok:1, fb:R`\(d'\le\min(d,c-1)=\min(50,3)=3\), porque \(\rank(\bS_B)\le c-1\).`},
+  {t:R`\(4\)`, fb:R`Las \(c\) medias \(\bm_i-\bm\) son linealmente dependientes (\(\sum_iN_i(\bm_i-\bm)=\mathbf 0\)): solo generan \(c-1\) dimensiones.`},
+  {t:R`\(50\)`, fb:R`Ese sería el límite de PCA, no el de MDA.`},
+  {t:R`\(49\)`, fb:R`No depende de \(d-1\), sino de \(c-1\).`}]},
+ {id:'b5q2', q:R`En la demostración de \(\bS_T=\bS_C+\bS_B\), los términos cruzados \(\sum_{\bx\in D_i}(\bx-\bm_i)(\bm_i-\bm)^T\) se anulan porque…`, opts:[
+  {t:R`…\(\sum_{\bx\in D_i}(\bx-\bm_i)=\mathbf 0\), por definición de \(\bm_i\).`, ok:1, fb:R`\((\bm_i-\bm)^T\) no depende de \(\bx\) y sale del sumatorio; lo que queda es \(N_i\bm_i-N_i\bm_i=\mathbf 0\).`},
+  {t:R`…\(\bm_i=\bm\) para todas las clases.`, fb:R`Si fuera así, \(\bS_B\) sería nula y no habría nada que separar.`},
+  {t:R`…\(\bS_C\) es simétrica.`, fb:R`La simetría no hace cero ningún término.`},
+  {t:R`…las clases son gaussianas.`, fb:R`La descomposición es puramente algebraica: vale para cualquier distribución.`}]},
+ {id:'b5q3', q:R`Las columnas de la \(\bW\) de MDA son…`, opts:[
+  {t:R`…los autovectores generalizados \(\bS_B\bw_j=\sigma_j\bS_C\bw_j\) de mayores \(\sigma_j\).`, ok:1, fb:R`Diap. 33: maximizan \(|\bW^T\bS_B\bW|/|\bW^T\bS_C\bW|\).`},
+  {t:R`…los autovectores de \(\bS_T\) de mayores autovalores.`, fb:R`Eso es PCA, que mezcla la dispersión útil con la perjudicial.`},
+  {t:R`…los autovectores de \(\bS_B\) de mayores autovalores.`, fb:R`Ignora la forma de las clases (\(\bS_C\)): con clases alargadas, falla.`},
+  {t:R`…los autovectores de \(\bS_C\) de menores autovalores.`, fb:R`Haría las clases estrechas, pero sin mirar si sus medias quedan separadas.`}]},
+ {id:'b5q4', q:R`Si \(\bW\) contiene \(d'\) autovectores generalizados, ¿cuánto vale \(\dfrac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}\)?`, opts:[
+  {t:R`\(\prod_{i=1}^{d'}\sigma_i\)`, ok:1, fb:R`De \(\bW^T\bS_B\bW=(\bW^T\bS_C\bW)\bSigma\) y \(|\mathbf A\mathbf B|=|\mathbf A||\mathbf B|\) sale \(|\bSigma|\) (diap. 34).`},
+  {t:R`\(\sum_{i=1}^{d'}\sigma_i\)`, fb:R`La suma sale con trazas; aquí hay determinantes, que dan productos.`},
+  {t:R`\(\sigma_{\max}\)`, fb:R`Solo con \(d'=1\).`},
+  {t:R`\(1\)`, fb:R`Eso pasaría si \(\bS_B=\bS_C\).`}]},
+ {id:'b5q5', q:R`Dos clases (\(c=2\)). La dirección de MDA es…`, opts:[
+  {t:R`…\(\bw\propto\bS_C^{-1}(\bm_1-\bm_2)\).`, ok:1, fb:R`\(\bS_B=\frac{N_1N_2}{N}(\bm_1-\bm_2)(\bm_1-\bm_2)^T\), así que \(\bS_B\bw\) siempre apunta hacia \(\bm_1-\bm_2\).`},
+  {t:R`…\(\bw\propto\bm_1-\bm_2\), siempre.`, fb:R`Solo si \(\bS_C\propto\mathbf I\). Con clases alargadas hay que girarla con \(\bS_C^{-1}\).`},
+  {t:R`…el autovector principal de \(\bS_T\).`, fb:R`Esa es la de PCA; en el ejemplo de la tarjeta 5.4 da separación nula.`},
+  {t:R`…perpendicular a \(\bm_1-\bm_2\).`, fb:R`Sobre esa dirección las dos medias se proyectan en el mismo punto cuando \(\bS_C\propto\mathbf I\).`}]},
+ {id:'b5q6', q:R`El ejercicio 4 usa la dispersión total \(\bS_T\) en el denominador en lugar de \(\bS_C\). ¿Qué cambia?`, opts:[
+  {t:R`Nada en las direcciones: mismos autovectores, y los autovalores pasan a \(\frac{\sigma}{1+\sigma}\).`, ok:1, fb:R`\(\bS_B\bw=\sigma\bS_C\bw\iff\bS_B\bw=\frac{\sigma}{1+\sigma}\bS_T\bw\), usando \(\bS_T=\bS_C+\bS_B\). El orden de los autovalores se conserva.`},
+  {t:R`Las direcciones cambian: hay que recalcular \(\bW\).`, fb:R`Los autovectores son exactamente los mismos.`},
+  {t:R`Los autovalores pasan a ser \(\sigma+1\).`, fb:R`Pasan a \(\frac{\sigma}{1+\sigma}\), en \([0,1)\).`},
+  {t:R`MDA se convierte en PCA.`, fb:R`PCA no usa \(\bS_B\) en absoluto.`}]}
+],
+b6: [
+ {id:'b6q1', q:R`Según la diapositiva 39, t-SNE reduce la dimensionalidad…`, opts:[
+  {t:R`…preservando las distancias entre vectores.`, ok:1, fb:R`Es la definición de la diapositiva. Con más precisión, conserva sobre todo las vecindades locales.`},
+  {t:R`…maximizando la separación entre clases con sus etiquetas.`, fb:R`Eso es MDA; t-SNE no usa etiquetas.`},
+  {t:R`…proyectando sobre los autovectores de \(\bS\).`, fb:R`Eso es PCA, que es lineal.`},
+  {t:R`…eligiendo al azar \(d'\) características.`, fb:R`Eso recuerda a random forest (diap. 12).`}]},
+ {id:'b6q2', q:R`En el ejemplo 8 (dígitos manuscritos), ¿qué muestran las dos visualizaciones en 2D?`, opts:[
+  {t:R`Con t-SNE aparecen 10 grupos separados; con PCA la mayoría de los dígitos se solapan.`, ok:1, fb:R`Dos direcciones lineales de máxima dispersión no bastan para separar 10 clases complejas.`},
+  {t:R`PCA separa mejor, porque es óptimo.`, fb:R`PCA es óptimo para reconstruir, no para separar clases.`},
+  {t:R`Las dos son idénticas.`, fb:R`Son muy distintas: es el mensaje de la diapositiva.`},
+  {t:R`t-SNE solo separa el 0 y el 1.`, fb:R`Al revés: en PCA solo el 0 y el 1 quedan en los extremos.`}]},
+ {id:'b6q3', q:R`En un autoencoder, la representación reducida es…`, opts:[
+  {t:R`…la capa central \(\bz\) (cuello de botella), de menor dimensión que la entrada.`, ok:1, fb:R`El codificador lleva \(\bx\) a \(\bz\); el decodificador intenta recuperar \(\bx\) desde \(\bz\).`},
+  {t:R`…la salida \(\hat{\bx}\).`, fb:R`\(\hat{\bx}\) tiene la dimensión original: es la reconstrucción.`},
+  {t:R`…la entrada \(\bx\).`, fb:R`Es lo que se quiere comprimir.`},
+  {t:R`…las etiquetas de clase.`, fb:R`El autoencoder no usa etiquetas.`}]},
+ {id:'b6q4', q:R`Un autoencoder lineal (sin funciones de activación) entrenado con error cuadrático de reconstrucción…`, opts:[
+  {t:R`…reconstruye sobre el mismo subespacio que PCA.`, ok:1, fb:R`Su pérdida es exactamente el \(J\) de la diap. 14, cuyo óptimo es el subespacio de los \(d'\) autovectores principales.`},
+  {t:R`…da la misma \(\bW\) que MDA.`, fb:R`No usa etiquetas, así que no puede reproducir MDA.`},
+  {t:R`…no aprende nada útil.`, fb:R`Aprende el subespacio de PCA.`},
+  {t:R`…necesita \(d'\le c-1\).`, fb:R`Esa limitación es de MDA.`}]}
+],
+b7: [
+ {id:'b7q1', q:R`¿Cuál de estas afirmaciones es una conclusión de la diapositiva 43?`, opts:[
+  {t:R`PCA no necesita las etiquetas \(y_k\) para reducir características.`, ok:1, fb:R`Es no supervisado: solo usa \(\bm\) y \(\bS\).`},
+  {t:R`PCA garantiza la separación de clases.`, fb:R`La diapositiva dice justo lo contrario.`},
+  {t:R`MDA no tiene ninguna limitación en el número de características.`, fb:R`Tiene \(d'\le\min(d,c-1)\).`},
+  {t:R`Los métodos no lineales sustituyen siempre a PCA y MDA.`, fb:R`La diapositiva solo dice que existen otros métodos.`}]},
+ {id:'b7q2', q:R`Dos clases separadas en una dirección de poca varianza total, y alargadas en otra. Con \(d'=1\), PCA…`, opts:[
+  {t:R`…puede quedarse con la dirección del alargamiento y descartar justo la que separaba las clases.`, ok:1, fb:R`Es lo que pasa en la diap. 25 y en el ejemplo de la tarjeta 5.4.`},
+  {t:R`…siempre conserva la dirección que separa las clases.`, fb:R`PCA no sabe qué separa las clases: no ve las etiquetas.`},
+  {t:R`…da la misma dirección que MDA.`, fb:R`Solo coincide en casos particulares.`},
+  {t:R`…no se puede aplicar.`, fb:R`Se puede aplicar siempre; el problema es el resultado.`}]},
+ {id:'b7q3', q:R`Quieres guardar una base de imágenes ocupando menos y poder reconstruirlas. ¿Qué método encaja?`, opts:[
+  {t:R`PCA`, ok:1, fb:R`Minimiza el error de reconstrucción y permite \(\hat{\bx}=\bW\bz+\bm\) (eigenfaces, diap. 22).`},
+  {t:R`MDA`, fb:R`Su objetivo es separar clases, necesita etiquetas y da como mucho \(c-1\) características.`},
+  {t:R`Ninguno de los dos permite reconstruir.`, fb:R`PCA sí.`},
+  {t:R`t-SNE`, fb:R`No da una transformación que se pueda invertir para reconstruir.`}]},
+ {id:'b7q4', q:R`¿Cómo se evita la limitación de MDA en el número de características, según el PDF?`, opts:[
+  {t:R`Aplicando MDA sobre subconjuntos de características y concatenando los resultados.`, ok:1, fb:R`Diap. 35 y 43: con \(K\) grupos, \(d'=(c-1)K\).`},
+  {t:R`Usando \(\bS_T\) en lugar de \(\bS_C\).`, fb:R`Cambia los autovalores, no su número: los autovectores son los mismos.`},
+  {t:R`Inventando clases adicionales.`, fb:R`No es lo que propone el PDF.`},
+  {t:R`Tomando también los autovectores con \(\sigma_j=0\).`, fb:R`Esos no aportan discriminación y anulan el criterio.`}]},
+ {id:'b7q5', q:R`Una vez calculada la \(\bW\) de MDA, para transformar un vector nuevo \(\bx\) de clase desconocida…`, opts:[
+  {t:R`…basta con \(\bz=\bW^T\bx\); las etiquetas solo hacían falta para calcular \(\bW\).`, ok:1, fb:R`Después se clasifica \(\bz\) con el detector bayesiano en \(\mathbb{R}^{d'}\) (diap. 37).`},
+  {t:R`…hay que conocer su clase para elegir \(\bW\).`, fb:R`\(\bW\) es única para todas las clases.`},
+  {t:R`…hay que recalcular \(\bS_B\) y \(\bS_C\) con él.`, fb:R`No: \(\bW\) se calcula una vez con el entrenamiento.`},
+  {t:R`…no se puede: MDA solo transforma los datos de entrenamiento.`, fb:R`Eso le pasa a t-SNE, no a MDA.`}]}
+]
+};
+</script>

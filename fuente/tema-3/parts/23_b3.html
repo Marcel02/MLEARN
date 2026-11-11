@@ -1,0 +1,112 @@
+<section class="view" id="v-b3" data-sec="b3">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 3 · Final del apartado 3.1</div>
+    <h1>Reducción lineal: \(\bz_k=\bW^T(\bx_k-\balpha)\)</h1>
+    <p class="lede">La transformación que estudia todo el tema y las dos filosofías para elegir \(\bW\): reconstruir bien (PCA) o separar bien las clases (MDA).</p>
+    <div class="meta"><span class="chip">Diap. 11–13</span><span class="chip">PDF p. 12–15</span><span class="chip">incluye manuscrita p. 13</span></div>
+  </div>
+
+  <!-- 3.1 -->
+  <article class="concept" data-cid="b3-1">
+    <header><h3>Reconocimiento de caras: de \(\mathbb{R}^d\) a \(\mathbb{R}^2\)</h3><span class="ref">Diap. 11 · PDF p. 12</span></header>
+    <div class="summary">
+      <p>Cada imagen se <strong>aplana</strong> en un vector de píxeles \(\bx_i\in\mathbb{R}^d\). Se proyecta sobre un subespacio de dimensión 2 con dos vectores de la matriz \(\bV\) de la SVD de \(\bX\):</p>
+      \[\bz_i=\begin{bmatrix}\bV_m^T\\ \bV_n^T\end{bmatrix}\bx_i\in\mathbb{R}^2,\]
+      <p>y se clasifica en ese plano (Naomi Watts frente a Bill Gates, con una frontera de decisión curva).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p><strong>Aplanar.</strong> Una imagen de \(32\times32\) píxeles se convierte en un vector de \(d=1024\) componentes apilando sus filas (o columnas). Cada píxel es una característica.</p>
+      <p><strong>Qué es «\(\bV\) en la SVD de \(\bX\)».</strong> La diapositiva no lo desarrolla. Lo hago aquí porque conecta con PCA:</p>
+      <ol class="steps">
+        <li>Coloca los \(N\) vectores como filas de una matriz \(\bX\in\mathbb{R}^{N\times d}\) (fila \(k\) = \(\bx_k^T\)). Supón de momento que ya se les ha restado la media.</li>
+        <li>Entonces \(\bX^T\bX=\sum_{k=1}^N\bx_k\bx_k^T\). Es la matriz de dispersión \(\bS\) de la diap. 15 (con los datos centrados).</li>
+        <li>La SVD es \(\bX=\bU_X\bGamma_X\bV^T\), con \(\bU_X\), \(\bV\) ortogonales y \(\bGamma_X\) diagonal con los valores singulares \(s_j\ge0\) (\(\bU_X\), \(\bGamma_X\), \(s_j\): etiquetas mías, para no chocar con la \(\bU\) y la \(\bGamma\) de la diap. 17).</li>
+        <li>Sustituyendo: \(\bX^T\bX=\bV\bGamma_X^T\bU_X^T\bU_X\bGamma_X\bV^T=\bV(\bGamma_X^T\bGamma_X)\bV^T\), porque \(\bU_X^T\bU_X=\mathbf I\).</li>
+        <li>Esa expresión es una diagonalización de \(\bS\): las columnas de \(\bV\) son los autovectores de \(\bS\), y sus autovalores son \(\lambda_j=s_j^2\). Es decir, los vectores de \(\bV\) son las direcciones de PCA.</li>
+      </ol>
+      <p>Dos detalles de la diapositiva: no resta la media (sobre esto vuelve la diap. 24) y usa dos vectores \(\bV_m,\bV_n\) genéricos, no necesariamente los dos primeros.</p>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 13</span>
+        <p>Concreta el ejemplo: \(\bX_{ij}\) con \(i=1,\dots,5\) imágenes y \(j\in\{1,2\}\) personas, \(c=2\) clases y \(d=2^{10}\) características. Reescribe la proyección como \(\bz_i=\bW^T\bx_i=\begin{bmatrix}\bw_m^T\\ \bw_n^T\end{bmatrix}\bx_i\), con \(\bW^T\in\mathbb{R}^{d'\times d}\).</p>
+        <p>Y plantea la pregunta del tema: «<em>How to build this matrix</em> con menos características y sin que la probabilidad de error se vea muy afectada (<em>not much affected</em>)».</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 3.2 -->
+  <article class="concept" data-cid="b3-2">
+    <header><h3>Dos soluciones: reducir características o random forest</h3><span class="ref">Diap. 12 · PDF p. 14</span></header>
+    <div class="summary">
+      <p><strong>Reducir el número de características:</strong> reducir el tamaño de \(\bx\) según algún criterio (este tema). <strong>Random forest:</strong> generar \(K\) clasificadores eligiendo en cada uno \(d'&lt;d\) características al azar y combinar las \(K\) decisiones (capítulo 5).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>Las dos atacan el mismo problema (demasiadas características para los datos disponibles) de forma distinta. Reducir características construye <em>un</em> espacio pequeño y entrena ahí un único clasificador. Random forest no reduce de forma global: cada uno de los \(K\) clasificadores ve pocas características (así cada uno estima pocos parámetros), y la combinación de las \(K\) decisiones recupera la información repartida. En este tema solo se desarrolla la primera.</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 3.3 -->
+  <article class="concept" data-cid="b3-3">
+    <header><h3>La transformación lineal y sus dimensiones</h3><span class="ref">Diap. 13 · PDF p. 15</span></header>
+    <div class="summary">
+      \[\bz_k=\bW^T(\bx_k-\balpha),\qquad \bx\in\mathbb{R}^d,\quad \bz\in\mathbb{R}^{d'},\quad \bW^T\in\mathbb{R}^{d'\times d},\quad d'&lt;d.\]
+      <p>Primero se traslada el origen a \(\balpha\); después se toman \(d'\) «medidas» del vector trasladado, una por cada columna \(\bw_j\) de \(\bW\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Dimensiones.</strong> \((\bx_k-\balpha)\) es \(d\times1\); \(\bW^T\) es \(d'\times d\); el producto es \(d'\times1\). Por tanto \(\bW\) es \(d\times d'\): <em>alto y estrecho</em>, con una columna por cada característica nueva.</li>
+        <li><strong>Componente a componente.</strong> Si \(\bW=[\bw_1\ \cdots\ \bw_{d'}]\), la fila \(j\) de \(\bW^T\) es \(\bw_j^T\), así que la componente \(j\) de \(\bz_k\) es \(z_{k,j}=\bw_j^T(\bx_k-\balpha)\), un producto escalar (\(z_{k,j}\): etiqueta mía).</li>
+        <li><strong>Interpretación geométrica.</strong> Si \(\|\bw_j\|=1\), \(\bw_j^T(\bx_k-\balpha)\) es la coordenada de \(\bx_k-\balpha\) a lo largo de la dirección \(\bw_j\): la longitud (con signo) de su sombra sobre esa recta. \(\bz_k\) es la lista de esas \(d'\) coordenadas.</li>
+        <li><strong>¿Para qué \(\balpha\)?</strong> Para elegir el origen desde el que se mide. Sin él, las direcciones \(\bw_j\) pasarían todas por el origen de coordenadas, que puede estar lejos de los datos. En PCA se demostrará que el óptimo es \(\balpha=\bm\) (bloque 4). En MDA la diap. 31 usa \(\bz_k=\bW^T\bx_k\), sin \(\balpha\): ahí da igual porque las dispersiones no cambian al trasladar todos los datos.</li>
+        <li><strong>Las dos formas de elegir \(\bW\)</strong> que propone la diapositiva:
+          <ul>
+            <li>Proyectar sobre el subespacio que <strong>minimiza el error cuadrático medio de reconstrucción</strong> ⇒ PCA.</li>
+            <li>Proyectar sobre el subespacio que <strong>maximiza la separación entre las clases</strong> resultantes ⇒ MDA.</li>
+          </ul></li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span>
+        <p>\(d=3\), \(d'=2\), \(\balpha=\mathbf 0\), \(\bW=\begin{pmatrix}1/\sqrt2&0\\1/\sqrt2&0\\0&1\end{pmatrix}\), \(\bx=(2,\,0,\,5)^T\).</p>
+        <p>\(\bz=\bW^T\bx=\begin{pmatrix}1/\sqrt2&1/\sqrt2&0\\0&0&1\end{pmatrix}\begin{pmatrix}2\\0\\5\end{pmatrix}=\begin{pmatrix}\sqrt2\\5\end{pmatrix}\approx\begin{pmatrix}1{,}414\\5\end{pmatrix}.\)</p>
+        <p>La primera característica nueva combina \(x_1\) y \(x_2\) (coordenada sobre la diagonal del plano \(x_1x_2\)); la segunda es \(x_3\) tal cual.</p>
+      </div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 13</span>
+        <p>Titula «<em>Linear dimensionality reduction</em>» y resume las dos filosofías: (1) <strong>PCA</strong>: <em>ignore classes associated to \(\bx\)</em>; minimizar \(\|\bx-\hat{\bx}\|_2\) (<em>reconstruction error</em>). (2) <strong>MDA</strong>: <em>considers classes of \(\bx_i\)</em>; que las clases queden lo más separadas posible en el dominio de \(\bz_i\).</p>
+      </div>
+      <div class="note errata"><span class="lab">Posible errata · PDF p. 13</span>
+        <p>El apunte dice «en el dominio de \(\bz_i\) (espacio \(\mathbb{R}^d\))». Debe ser \(\mathbb{R}^{d'}\): \(\bz_i\) tiene \(d'\) componentes.</p>
+      </div>
+      <div class="note trap"><span class="lab">Errores habituales</span>
+        <p>Confundir \(\bW\) (\(d\times d'\)) con \(\bW^T\) (\(d'\times d\)); confundir \(d\) (dimensión original) con \(d'\) (dimensión reducida); pensar que \(\bz_k\) tiene que ser un subconjunto de las componentes de \(\bx_k\). Solo lo es si las columnas de \(\bW\) son columnas de la identidad.</p>
+      </div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <!-- 3.4 -->
+  <article class="concept" data-cid="b3-4">
+    <header><h3>PCA frente a MDA: primer contacto</h3><span class="ref">Diap. 13 + manuscrita p. 13</span></header>
+    <div class="summary">
+      <p>Vista previa de lo que se desarrolla en los bloques 4 y 5. Las dos técnicas usan la misma forma \(\bz=\bW^T(\bx-\balpha)\); cambian el criterio, la información que usan y la matriz de la que salen los \(\bw_j\).</p>
+    </div>
+    <div class="inner">
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>PCA (bloque 4)</th><th>MDA (bloque 5)</th></tr></thead>
+        <tbody>
+          <tr><td>Criterio</td><td>Minimizar \(J=\sum_k\|\bW\bz_k+\balpha-\bx_k\|^2\)</td><td>Maximizar \(\dfrac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}\)</td></tr>
+          <tr><td>¿Usa etiquetas?</td><td>No (no supervisado)</td><td>Sí (supervisado)</td></tr>
+          <tr><td>Columnas de \(\bW\)</td><td>Autovectores de \(\bS\): \(\bS\bw_j=\lambda_j\bw_j\)</td><td>Autovectores generalizados: \(\bS_B\bw_j=\sigma_j\bS_C\bw_j\)</td></tr>
+          <tr><td>Cuáles se eligen</td><td>Los de los \(d'\) mayores \(\lambda_j\)</td><td>Los de los \(d'\) mayores \(\sigma_j\)</td></tr>
+          <tr><td>Máximo \(d'\)</td><td>\(d\)</td><td>\(\min(d,\,c-1)\)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b3"></div>
+  <div class="pager"></div>
+</section>

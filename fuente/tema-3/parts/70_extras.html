@@ -1,0 +1,143 @@
+<script>
+/* ================= flashcards: datos ================= */
+const FLASH = [
+ {id:'f1', cat:'Dimensionalidad', q:R`Rango de \(\hat{\bC}\) estimada con \(N\) vectores en \(\mathbb{R}^d\)`, a:R`\[\rank(\hat{\bC})\le\min(d,\,N-1)\]`, use:R`Los \(N\) vectores centrados suman \(\mathbf 0\). Singular si \(N\le d\): LDA/QDA no se pueden calcular (diap. 5).`},
+ {id:'f2', cat:'Dimensionalidad', q:R`Parámetros libres de una covarianza \(d\times d\)`, a:R`\[\frac{d(d+1)}{2}\]`, use:R`Diagonal + triángulo superior. Crece como \(d^2\) con los mismos datos: por eso hay que reducir \(d\) (diap. 4).`},
+ {id:'f3', cat:'Pr(e)', q:R`Probabilidad de error: dos gaussianas equiprobables con la misma \(\bC\)`, a:R`\[\Pr(e)=Q\!\left(\tfrac r2\right),\quad r^2=(\bmu_1-\bmu_2)^T\bC^{-1}(\bmu_1-\bmu_2)\]`, use:R`Ejemplo 2 (diap. 9). \(r\) es la distancia de Mahalanobis; en 1D, \(r=D'\).`},
+ {id:'f4', cat:'Pr(e)', q:R`\(r^2\) con características independientes`, a:R`\[r^2=\sum_{i=1}^d\left(\frac{\mu_{i,1}-\mu_{i,2}}{\sigma_i}\right)^2\]`, use:R`\(\bC\) diagonal. Cada característica suma su \(D_i'^2\ge0\): quitar una relevante aumenta \(\Pr(e)\).`},
+ {id:'f5', cat:'Pr(e)', q:R`Definición de \(Q(t)\) y valores útiles`, a:R`\[Q(t)=\frac{1}{\sqrt{2\pi}}\int_t^\infty e^{-u^2/2}du\]`, use:R`\(Q(0)=0{,}5\), \(Q(1)=0{,}159\), \(Q(2)=0{,}023\), \(Q(3)=0{,}0013\). Etiqueta mía: el PDF escribe la integral.`},
+ {id:'f6', cat:'Pr(e)', q:R`¿Cuándo \(\Pr(e)\to0\) al crecer \(d\)?`, a:R`Si las características son <strong>independientes</strong>, <strong>relevantes</strong> (contribuciones que no se anulan) y los parámetros son <strong>conocidos</strong>.`, use:R`Con parámetros estimados aparece la curva en U (diap. 5). Con \(D_i'=D'/i\), \(r^2\to D'^2\pi^2/6\): no tiende a 0.`},
+ {id:'f7', cat:'Transformación', q:R`Transformación lineal del tema y dimensiones`, a:R`\[\bz_k=\bW^T(\bx_k-\balpha),\quad\bW\in\mathbb{R}^{d\times d'},\ d'\lt d\]`, use:R`Diap. 13. Componente \(j\): \(\bw_j^T(\bx_k-\balpha)\). PCA y MDA solo difieren en cómo eligen \(\bW\).`},
+ {id:'f8', cat:'PCA', q:R`Criterio de PCA`, a:R`\[J=\sum_{k=1}^N\|\bW\bz_k+\balpha-\bx_k\|_2^2\quad(\min)\]`, use:R`Error cuadrático de reconstrucción (diap. 14). No usa etiquetas.`},
+ {id:'f9', cat:'PCA', q:R`Solución de PCA`, a:R`\[\bz_k=\bW^T(\bx_k-\bm),\ \ \bS\bw_j=\lambda_j\bw_j,\ \ \bW=[\bw_1\cdots\bw_{d'}]\]`, use:R`Autovectores de los \(d'\) mayores autovalores (diap. 15). \(\balpha=\bm\).`},
+ {id:'f10', cat:'PCA', q:R`Matriz de dispersión \(\bS\) y su relación con la covarianza`, a:R`\[\bS=\sum_k(\bx_k-\bm)(\bx_k-\bm)^T=(N-1)\hat{\bC}\]`, use:R`Con la covarianza insesgada. Con la de máxima verosimilitud, \(\bS=N\hat{\bC}\). Mismos autovectores.`},
+ {id:'f11', cat:'PCA', q:R`Propiedades de \(\bS\)`, a:R`Simétrica, semidefinida positiva, \(\lambda_j\ge0\), autovectores ortogonales.`, use:R`\(\lambda_j=\sum_kz_{k,j}^2\): dispersión a lo largo de \(\bw_j\). En \(\bz\), \(\bW^T\bS\bW=\mathrm{diag}(\lambda_j)\): incorreladas (p. 18).`},
+ {id:'f12', cat:'PCA', q:R`\(\bz_k\) óptimo para una \(\bW\) cualquiera`, a:R`\[\bz_k=(\bW^T\bW)^{-1}\bW^T(\bx_k-\bm)\]`, use:R`Anulando \(\nabla_{\bz_k}J\) (diap. 17). Con \(\bW^T\bW=\mathbf I\) queda \(\bW^T(\bx_k-\bm)\).`},
+ {id:'f13', cat:'PCA', q:R`¿Por qué \(\balpha=\bm\)?`, a:R`\[(\mathbf I-\bP)(\bm-\balpha)=\mathbf 0\]`, use:R`Cualquier \(\balpha=\bm+\bW\mathbf c\) es óptimo (mismo subespacio afín). \(\bm\) deja los \(\bz_k\) con media cero.`},
+ {id:'f14', cat:'PCA', q:R`El proyector de la diap. 18`, a:R`\[\bW(\bW^T\bW)^{-1}\bW^T=\bU_L\bU_L^T\]`, use:R`Solo depende del subespacio de columnas: \(\bGamma\) y \(\bV\) de la SVD no importan ⇒ se toma \(\bW^T\bW=\mathbf I\).`},
+ {id:'f15', cat:'PCA', q:R`Truco de la traza (diap. 19)`, a:R`\[\sum_k(\bx_k-\bm)^T\bW\bW^T(\bx_k-\bm)=\tr(\bW^T\bS\bW)\]`, use:R`Escalar = traza, linealidad y \(\tr(\mathbf X\mathbf Y)=\tr(\mathbf Y\mathbf X)\). Es \(\sum_i\bw_i^T\bS\bw_i\).`},
+ {id:'f16', cat:'PCA', q:R`Error mínimo de PCA`, a:R`\[J_{\min}=\sum_{i=d'+1}^{d}\lambda_i\]`, use:R`Suma de los autovalores descartados (diap. 20). Con \(d'=d\), \(J_{\min}=0\).`},
+ {id:'f17', cat:'PCA', q:R`¿Por qué hace falta \(\bW^T\bW=\mathbf I\) y no solo \(\|\bw_i\|=1\)?`, a:R`Sin ortogonalidad, el máximo de \(\sum_i\bw_i^T\bS\bw_i\) es repetir \(\bw_1\): valor \(d'\lambda_1\).`, use:R`Hueco del Lagrangiano de las diap. 19–20 y del ejercicio 5.`},
+ {id:'f18', cat:'PCA', q:R`Hiperelipsoide de \(\bS\) (diap. 23)`, a:R`\[\sum_i\frac{z_i^2}{K\lambda_i}=1\quad\text{semiejes }\sqrt{K\lambda_i}\]`, use:R`De \((\bx-\bm)^T\bS^{-1}(\bx-\bm)=K\) con \(\bS=\bW\bLambda\bW^T\). Eje largo en \(\bw_1\).`},
+ {id:'f19', cat:'PCA', q:R`Matriz sin restar la media`, a:R`\[\sum_k\bx_k\bx_k^T=\bS+N\bm\bm^T\]`, use:R`Si los datos están lejos del origen, el primer autovector apunta hacia \(\bm\) (diap. 24).`},
+ {id:'f20', cat:'PCA', q:R`Reconstrucción con eigenfaces`, a:R`\[\tilde{\bx}=\bW\bz+\bm=\bm+\sum_{j=1}^{d'}z_j\bw_j\]`, use:R`Diap. 22. Almacenamiento y reconocimiento.`},
+ {id:'f21', cat:'MDA', q:R`Media global en función de las medias de clase`, a:R`\[\bm=\frac1N\sum_{i=1}^cN_i\bm_i\]`, use:R`Media ponderada, no la media simple de las \(\bm_i\) (diap. 28).`},
+ {id:'f22', cat:'MDA', q:R`Dispersión intra-clase \(\bS_C\)`, a:R`\[\bS_C=\sum_{i=1}^c\sum_{\bx\in D_i}(\bx-\bm_i)(\bx-\bm_i)^T\]`, use:R`Lo que se quiere pequeño en \(\bz\) (diap. 30).`},
+ {id:'f23', cat:'MDA', q:R`Dispersión entre clases \(\bS_B\)`, a:R`\[\bS_B=\sum_{i=1}^cN_i(\bm_i-\bm)(\bm_i-\bm)^T\]`, use:R`«How disperse are the means». Rango \(\le c-1\).`},
+ {id:'f24', cat:'MDA', q:R`Descomposición de la dispersión total`, a:R`\[\bS_T=\bS_C+\bS_B\]`, use:R`Los cruzados se anulan porque \(\sum_{\bx\in D_i}(\bx-\bm_i)=\mathbf 0\). Explica por qué PCA falla (diap. 30).`},
+ {id:'f25', cat:'MDA', q:R`Dispersión de \(\bz=\bW^T\bx\)`, a:R`\[\bS\to\bW^T\bS\bW\]`, use:R`Vale para \(\bS_C\), \(\bS_B\) y cada \(\bS_{C,i}\) (diap. 31).`},
+ {id:'f26', cat:'MDA', q:R`Volumen del hiperelipsoide de \(\bS\)`, a:R`\[V=V_d|\bS|^{1/2}K^{d/2}\]`, use:R`Semiejes \(\sqrt{K\lambda_i}\) ⇒ \(V=V_d\prod\sqrt{K\lambda_i}\). En el cociente de volúmenes \(V_{d'}\) y \(K\) se cancelan.`},
+ {id:'f27', cat:'MDA', q:R`Criterio discriminante de MDA`, a:R`\[\bW=\arg\max_{\bW}\frac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}\]`, use:R`Cociente de volúmenes al cuadrado, \(D^2\) (diap. 33, p. 30–32).`},
+ {id:'f28', cat:'MDA', q:R`Solución de MDA`, a:R`\[\bS_B\bw_j=\sigma_j\bS_C\bw_j\iff\bS_C^{-1}\bS_B\bW=\bW\bSigma\]`, use:R`Autovectores generalizados de los \(d'\) mayores \(\sigma_j\). No son ortogonales en general.`},
+ {id:'f29', cat:'MDA', q:R`Valor del criterio con autovectores generalizados`, a:R`\[\frac{|\bW^T\bS_B\bW|}{|\bW^T\bS_C\bW|}=\prod_{i=1}^{d'}\sigma_i\]`, use:R`De \(\bW^T\bS_B\bW=(\bW^T\bS_C\bW)\bSigma\) (diap. 34).`},
+ {id:'f30', cat:'MDA', q:R`Dimensión máxima con MDA`, a:R`\[d'\le\min(d,\,c-1)\]`, use:R`\(\rank(\bS_B)\le c-1\). Ejemplo del profesor: \(c=3\), \(d=1000\Rightarrow d'\le2\).`},
+ {id:'f31', cat:'MDA', q:R`MDA con dos clases`, a:R`\[\bw\propto\bS_C^{-1}(\bm_1-\bm_2)\]`, use:R`\(\bS_B=\frac{N_1N_2}{N}(\bm_1-\bm_2)(\bm_1-\bm_2)^T\). Misma dirección que LDA del tema 2.`},
+ {id:'f32', cat:'MDA', q:R`\(\bS_T\) en el denominador en lugar de \(\bS_C\)`, a:R`Mismos autovectores; autovalores \(\dfrac{\sigma}{1+\sigma}\).`, use:R`Solución oficial del ejercicio 4. Se deduce de \(\bS_T=\bS_C+\bS_B\).`},
+ {id:'f33', cat:'MDA', q:R`MDA por grupos de características`, a:R`\[d'=(c-1)\cdot K\]`, use:R`\(K\) grupos, cada uno con más de \(c-1\) características (diap. 35, p. 41).`},
+ {id:'f34', cat:'MDA', q:R`Gaussianas en el espacio reducido`, a:R`\[\bmu_i=\bW^T\bm_i,\qquad\bC_i=\frac{1}{N_i}\bW^T\bS_{C,i}\bW\]`, use:R`Para el clasificador bayesiano del tema 2 sobre \(\bz\) (diap. 37).`},
+ {id:'f35', cat:'No lineal', q:R`t-SNE`, a:R`Reducción no lineal que preserva las distancias (sobre todo las vecindades) entre vectores.`, use:R`Visualización (ejemplo 8, dígitos). No da una \(\bW\) aplicable a vectores nuevos.`},
+ {id:'f36', cat:'No lineal', q:R`Autoencoder`, a:R`Red codificador \(\to\) cuello de botella \(\bz\) \(\to\) decodificador, entrenada para \(\hat{\bx}\approx\bx\).`, use:R`Lineal y con error cuadrático equivale a PCA (mismo \(J\)). La reducción es la capa \(\bz\).`}
+];
+
+/* ================= ejercicios: pistas y resueltos ================= */
+function initExercises(){
+  $$('.ex').forEach(ex => {
+    const id = ex.dataset.eid, hints = $$('.hint', ex), btn = $('.hint-btn', ex);
+    const paint = () => { const n = (state.hints[id] || {}).n || 0; hints.forEach((h, i) => h.hidden = i >= n);
+      btn.textContent = n >= hints.length ? 'Ocultar pistas' : `Ver pista ${n + 1}`; };
+    btn.addEventListener('click', () => { const n = (state.hints[id] || {}).n || 0; state.hints[id] = {n: n >= hints.length ? 0 : n + 1, t: Date.now()}; paint(); save(); });
+    const done = $('.ex-done', ex);
+    const paintDone = () => { const on = !!(state.ex[id] || {}).solved; done.setAttribute('aria-pressed', String(on)); done.textContent = on ? 'Resuelto' : 'Marcar como resuelto'; };
+    done.addEventListener('click', () => { const on = !(state.ex[id] || {}).solved; state.ex[id] = {solved: on, t: Date.now()}; paintDone(); save(); });
+    ex._paint = () => { paint(); paintDone(); };
+    ex._paint();
+  });
+}
+
+/* ================= flashcards: lógica ================= */
+let fcOrder = FLASH.map((_, i) => i), fcPos = 0, fcFlip = false, fcFilter = 'all', fcCatSel = '';
+function fcStatus(id){ return (state.flash[id] || {}).s || ''; }
+function fcList(){ return fcOrder.filter(i => { const c = FLASH[i]; const s = fcStatus(c.id);
+  if (fcCatSel && c.cat !== fcCatSel) return false;
+  if (fcFilter === 'again') return s === 'again'; if (fcFilter === 'known') return s === 'known'; if (fcFilter === 'new') return !s; return true; }); }
+function fcRender(){
+  const list = fcList(); const card = $('#fcCard');
+  $$('#fcFilter button').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.f === fcFilter));
+    const n = FLASH.filter(c => (!fcCatSel || c.cat === fcCatSel) && (b.dataset.f === 'all' || (b.dataset.f === 'new' ? !fcStatus(c.id) : fcStatus(c.id) === b.dataset.f))).length;
+    b.textContent = ({all:'Todas', again:'Por repasar', new:'Sin marcar', known:'Sabidas'})[b.dataset.f] + ` (${n})`; });
+  if (!list.length){ $('#fcQ').textContent = 'No hay tarjetas con este filtro.'; $('#fcCatF').textContent = ''; $('.fc-front', card).hidden = false; $('.fc-back', card).hidden = true; $('#fcPos').textContent = ''; card.className = 'fc-card'; return; }
+  fcPos = Math.max(0, Math.min(fcPos, list.length - 1));
+  const c = FLASH[list[fcPos]];
+  $('#fcCatF').textContent = c.cat; $('#fcCatB').textContent = c.cat;
+  $('#fcQ').innerHTML = '<span>' + c.q + '</span>'; $('#fcA').innerHTML = c.a; $('#fcUse').innerHTML = c.use;
+  $('.fc-front', card).hidden = fcFlip; $('.fc-back', card).hidden = !fcFlip;
+  const s = fcStatus(c.id); card.className = 'fc-card' + (s ? ' st-' + s : '');
+  $('#fcPos').textContent = `Tarjeta ${fcPos + 1} de ${list.length}` + (s === 'known' ? ' · marcada como sabida' : s === 'again' ? ' · marcada para repasar' : '');
+  renderMath(card);
+}
+function fcMark(s){ const list = fcList(); if (!list.length) return; const c = FLASH[list[fcPos]]; state.flash[c.id] = {s, t: Date.now()}; save();
+  const after = fcList(); if (after.length === list.length) fcPos = (fcPos + 1) % after.length; fcFlip = false; fcRender(); }
+function initFlash(){
+  const sel = $('#fcCat'); [...new Set(FLASH.map(c => c.cat))].forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+  sel.addEventListener('change', () => { fcCatSel = sel.value; fcPos = 0; fcFlip = false; fcRender(); });
+  $$('#fcFilter button').forEach(b => b.addEventListener('click', () => { fcFilter = b.dataset.f; fcPos = 0; fcFlip = false; fcRender(); }));
+  $('#fcCard').addEventListener('click', () => { fcFlip = !fcFlip; fcRender(); });
+  $('#fcPrev').addEventListener('click', () => { const n = fcList().length; if (n){ fcPos = (fcPos - 1 + n) % n; fcFlip = false; fcRender(); } });
+  $('#fcNext').addEventListener('click', () => { const n = fcList().length; if (n){ fcPos = (fcPos + 1) % n; fcFlip = false; fcRender(); } });
+  $('#fcKnown').addEventListener('click', () => fcMark('known'));
+  $('#fcAgain').addEventListener('click', () => fcMark('again'));
+  $('#fcShuffle').addEventListener('click', () => { for (let i = fcOrder.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [fcOrder[i], fcOrder[j]] = [fcOrder[j], fcOrder[i]]; } fcPos = 0; fcFlip = false; fcRender(); });
+  document.addEventListener('keydown', e => {
+    if (currentId() !== 'flashcards' || e.target.closest('input, select, textarea')) return;
+    if (e.key === ' ' && e.target.id !== 'fcCard' && !e.target.closest('button')){ e.preventDefault(); fcFlip = !fcFlip; fcRender(); }
+    else if (e.key === 'ArrowRight'){ $('#fcNext').click(); } else if (e.key === 'ArrowLeft'){ $('#fcPrev').click(); }
+    else if (e.key === '1'){ fcMark('again'); } else if (e.key === '2'){ fcMark('known'); }
+  });
+  fcRender();
+}
+
+/* ================= hoja resumen: descarga ================= */
+const SHEET_CSS = `body{font-family:Georgia,"Times New Roman",serif;color:#111;margin:18mm 14mm;font-size:12.5px;line-height:1.45}
+.sheet-title{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:4px;font-family:Helvetica,Arial,sans-serif}
+.sheet-title b{font-size:15px}.sheet-title span{font-size:11px;color:#555}
+.sh-block{break-inside:avoid;margin-top:10px}
+.sh-block h3{font:700 12px Helvetica,Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#0a4f86;border-bottom:1px solid #bbb;padding-bottom:3px;margin:0 0 2px}
+.sh-block h3 i,.sh-k i{font-style:normal;color:#666;font-weight:400;text-transform:none;letter-spacing:0}
+.sh-row{display:grid;grid-template-columns:44mm 1fr;gap:2px 10px;padding:3px 0;border-bottom:1px dotted #ccc;align-items:baseline}
+.sh-k{font:500 11px Helvetica,Arial,sans-serif;color:#333}
+.katex{font-size:1.02em}.katex-display{margin:.2em 0}
+@page{size:A4;margin:12mm}`;
+async function initSheet(){
+  const btn = $('#sheetDl'), msg = $('#sheetMsg');
+  let dl = null;
+  try { dl = window.claude && typeof window.claude.use === 'function' ? await window.claude.use('downloads') : null; } catch(e){ dl = null; }
+  if (!dl){
+    let framed = true; try { framed = window.self !== window.top; } catch(e){ framed = true; }
+    if (!framed){
+      btn.textContent = 'Imprimir hoja resumen';
+      msg.textContent = 'Se imprime solo la hoja. Elige «Guardar como PDF» si prefieres un archivo.';
+      btn.addEventListener('click', () => { document.body.classList.add('print-sheet'); window.print(); });
+      window.addEventListener('afterprint', () => document.body.classList.remove('print-sheet'));
+    } else { btn.hidden = true; msg.textContent = 'Para imprimirla, usa la opción Imprimir de tu navegador con esta sección abierta.'; }
+    return;
+  }
+  btn.addEventListener('click', async () => {
+    const kcss = $$('style').map(s => s.textContent).find(t => t.includes('KaTeX_Main')) || '';
+    const doc = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Hoja resumen · MLEARN tema 3</title><style>${kcss}</style><style>${SHEET_CSS}</style></head><body>${$('#sheet').innerHTML}</body></html>`;
+    btn.disabled = true;
+    try { await dl.save({filename: 'hoja-resumen-mlearn-tema3.html', data: doc}); msg.textContent = 'Descargada. Ábrela y usa Imprimir (o Guardar como PDF).'; }
+    catch(e){ msg.textContent = e && e.code === 'declined' ? 'Descarga cancelada.' : 'No se ha podido descargar aquí. Usa Imprimir del navegador con esta sección abierta.'; }
+    btn.disabled = false;
+  });
+}
+
+/* ================= integración con el motor ================= */
+function initExtras(){ initExercises(); initFlash(); initSheet(); }
+function extraStats(id){
+  if (id === 'ejercicios'){ const ids = $$('.ex').map(e => e.dataset.eid); return {done: ids.filter(i => (state.ex[i] || {}).solved).length, total: ids.length}; }
+  if (id === 'flashcards'){ return {done: FLASH.filter(c => fcStatus(c.id) === 'known').length, total: FLASH.length}; }
+  return {done: 0, total: 0};
+}
+function extraLabel(id, st){ return id === 'ejercicios' ? `${st.extraDone}/${st.extraTotal} resueltos` : `${st.extraDone}/${st.extraTotal} sabidas`; }
+function refreshExtras(){ $$('.ex').forEach(ex => ex._paint && ex._paint()); fcRender(); }
+</script>

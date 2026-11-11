@@ -1,0 +1,209 @@
+<section class="view" id="v-ejercicios" data-sec="ejercicios">
+  <div class="sec-head">
+    <div class="eyebrow">Hoja de ejercicios · Chapter 3 · febrero 2026</div>
+    <h1>Ejercicios del tema 3</h1>
+    <p class="lede">Los cinco ejercicios de la hoja, con su notación. Intenta cada uno, pide las pistas de una en una y despliega la solución solo al final. Todas las cuentas están comprobadas numéricamente.</p>
+    <div class="meta"><span class="chip">ExercisesChapter3MLEARN.pdf</span><span class="chip">5 ejercicios</span></div>
+  </div>
+  <div class="note trap"><span class="lab">Notación de la hoja frente a la de las diapositivas</span>
+    <p>La hoja llama \(\lambda_j\) a los autovalores <em>generalizados</em> (en las diapositivas de MDA son \(\sigma_j\)), usa \(n\) para el número de vectores que forman \(\bW\) en el ejercicio 1 (en teoría, \(d'\)) e indexa las muestras con \(n=1,\dots,N\) en los ejercicios 2, 4 y 5.</p>
+  </div>
+
+  <!-- EJ 1 -->
+  <article class="ex concept-like" data-eid="ex1">
+    <header><h3><span class="cnum">E1</span> Autovectores generalizados y el valor de \(J\)</h3><span class="ref">Herramientas: diap. 33–34</span></header>
+    <div class="ex-body">
+      <p>Sean \(\bS_B\) y \(\bS_C\) dos matrices reales simétricas \(d\times d\). Los autovectores generalizados se definen por \(\bS_B\bw_j=\lambda_j\bS_C\bw_j\), y los autovalores salen de \(|\bS_B-\lambda_j\bS_C|=0\). Si \(\bS_C\) es definida positiva, los autovectores pueden normalizarse de forma que \(\bw_i^T\bS_C\bw_j=\delta_{ij}\) y \(\bw_i^T\bS_B\bw_j=\lambda_j\delta_{ij}\). Se agrupan \(n\ (&lt;d)\) vectores \(\bw_j\) en las columnas de \(\bW\) y se construyen \(\tilde{\bS}_C=\bW^T\bS_C\bW\) y \(\tilde{\bS}_B=\bW^T\bS_B\bW\).</p>
+      <ol>
+        <li>Demuestra que \(\tilde{\bS}_C\) es la identidad \(n\times n\) y que \(\tilde{\bS}_B\) es diagonal con los \(n\) autovalores generalizados \(\lambda_j\).</li>
+        <li>Calcula \(J=|\tilde{\bS}_B|/|\tilde{\bS}_C|\).</li>
+        <li>Si \(\bS_B\) y \(\bS_C\) son las matrices de dispersión entre clases e intra-clase de los vectores \(\bx\), demuestra que \(J\) no cambia si los vectores se transforman como \(\by=\mathbf Q\mathbf D\bW^T\bx\), con \(\mathbf Q\) una rotación (ortogonal) y \(\mathbf D\) diagonal no singular.</li>
+      </ol>
+      <p class="small">Nota de la hoja: «ten en cuenta que \(\bW^T\bW=\mathbf I\) y que \(\bW\bW^T\) es singular. Usa \(|\mathbf A\mathbf B|=|\mathbf A||\mathbf B|\)».</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> La entrada \((i,j)\) de \(\bW^T\bS_C\bW\) es \(\bw_i^T\bS_C\bw_j\). Mira qué dice la normalización.</div>
+      <div class="hint" hidden><b>Pista 2.</b> Para \(\tilde{\bS}_B\), sustituye \(\bS_B\bw_j=\lambda_j\bS_C\bw_j\) dentro de \(\bw_i^T\bS_B\bw_j\). Para el apartado 2 basta con el determinante de una diagonal.</div>
+      <div class="hint" hidden><b>Pista 3.</b> Si \(\by=\mathbf T\bx\) con \(\mathbf T\) lineal, las dispersiones de \(\by\) son \(\mathbf T\bS\mathbf T^T\) (tarjeta 5.5). Con \(\mathbf T=\mathbf Q\mathbf D\bW^T\) todas las matrices que quedan son cuadradas \(n\times n\): ya puedes usar \(|\mathbf A\mathbf B|=|\mathbf A||\mathbf B|\).</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <p><strong>Antes de empezar: por qué se puede normalizar así</strong> (la hoja lo da por hecho).</p>
+      <ol class="steps">
+        <li><strong>\(\bS_C\)-ortogonalidad.</strong> Con \(\lambda_i\neq\lambda_j\): \(\bw_i^T\bS_B\bw_j=\lambda_j\bw_i^T\bS_C\bw_j\). Usando la simetría, también \(\bw_i^T\bS_B\bw_j=(\bS_B\bw_i)^T\bw_j=\lambda_i(\bS_C\bw_i)^T\bw_j=\lambda_i\bw_i^T\bS_C\bw_j\). Restando: \((\lambda_i-\lambda_j)\bw_i^T\bS_C\bw_j=0\Rightarrow\bw_i^T\bS_C\bw_j=0\).</li>
+        <li><strong>Escala.</strong> Como \(\bS_C\) es definida positiva, \(\bw_j^T\bS_C\bw_j&gt;0\), y se puede dividir \(\bw_j\) por \(\sqrt{\bw_j^T\bS_C\bw_j}\) para que valga 1. (Un autovector generalizado sigue siéndolo al escalarlo.)</li>
+      </ol>
+      <p><strong>Apartado 1.</strong></p>
+      <ol class="steps">
+        <li>\((\tilde{\bS}_C)_{ij}=\bw_i^T\bS_C\bw_j=\delta_{ij}\) para \(i,j=1,\dots,n\): unos en la diagonal y ceros fuera. \(\tilde{\bS}_C=\mathbf I_n\).</li>
+        <li>\((\tilde{\bS}_B)_{ij}=\bw_i^T\bS_B\bw_j=\bw_i^T(\lambda_j\bS_C\bw_j)=\lambda_j\bw_i^T\bS_C\bw_j=\lambda_j\delta_{ij}\). Es decir, \(\tilde{\bS}_B=\mathrm{diag}(\lambda_1,\dots,\lambda_n)\).</li>
+        <li>La solución oficial lo escribe con la matriz completa de \(d\) autovectores, \(\bW^T\bS_C\bW=\mathbf I\) y \(\bW^T\bS_B\bW=\bLambda\), y observa que quitar columnas de \(\bW\) equivale a quedarse con el bloque \(n\times n\) de arriba a la izquierda.</li>
+      </ol>
+      <p><strong>Apartado 2.</strong> \(|\tilde{\bS}_C|=|\mathbf I|=1\) y el determinante de una diagonal es el producto de la diagonal: \(J=\prod_{i=1}^n\lambda_i\). Es el resultado de la diap. 34 (con \(\sigma_i\)).</p>
+      <p><strong>Apartado 3.</strong></p>
+      <ol class="steps">
+        <li><strong>Dimensiones.</strong> \(\bW^T\bx\in\mathbb{R}^n\), y \(\mathbf D\), \(\mathbf Q\) son \(n\times n\). Llamo \(\mathbf T=\mathbf Q\mathbf D\bW^T\) (\(n\times d\), etiqueta mía), de modo que \(\by=\mathbf T\bx\).</li>
+        <li><strong>Dispersiones de \(\by\).</strong> Las medias se transforman igual (\(\bm_{i,y}=\mathbf T\bm_i\)), así que cada diferencia \(\by-\bm_{i,y}=\mathbf T(\bx-\bm_i)\). Con el argumento de la tarjeta 5.5: \(\bS_{C,y}=\mathbf T\bS_C\mathbf T^T\) y \(\bS_{B,y}=\mathbf T\bS_B\mathbf T^T\) (comprobado numéricamente con datos de 4 clases).</li>
+        <li><strong>Sustituir.</strong> \(\bS_{C,y}=\mathbf Q\mathbf D(\bW^T\bS_C\bW)\mathbf D^T\mathbf Q^T=\mathbf Q\mathbf D\tilde{\bS}_C\mathbf D\mathbf Q^T\), y \(\bS_{B,y}=\mathbf Q\mathbf D\tilde{\bS}_B\mathbf D\mathbf Q^T\) (\(\mathbf D^T=\mathbf D\) por ser diagonal).</li>
+        <li><strong>Determinantes.</strong> Todos los factores son \(n\times n\): \(|\bS_{B,y}|=|\mathbf Q|\,|\mathbf D|\,|\tilde{\bS}_B|\,|\mathbf D|\,|\mathbf Q^T|\), y lo mismo con \(\tilde{\bS}_C\).</li>
+        <li><strong>Dividir.</strong> \(\dfrac{|\bS_{B,y}|}{|\bS_{C,y}|}=\dfrac{|\mathbf Q|^2|\mathbf D|^2|\tilde{\bS}_B|}{|\mathbf Q|^2|\mathbf D|^2|\tilde{\bS}_C|}=\dfrac{|\tilde{\bS}_B|}{|\tilde{\bS}_C|}=J\). Hace falta \(|\mathbf D|\neq0\) (\(\mathbf D\) no singular) y \(|\mathbf Q|=\pm1\neq0\).</li>
+        <li><strong>Lectura.</strong> El argumento vale para cualquier matriz invertible \(n\times n\) aplicada después de \(\bW^T\), no solo para \(\mathbf Q\mathbf D\): el criterio de MDA depende del subespacio, no de la base (tarjeta 5.6, paso 3).</li>
+        <li><strong>Para qué sirve la nota «\(\bW\bW^T\) es singular».</strong> Para no caer en \(|\bW^T\bS\bW|=|\bW^T||\bS||\bW|\): \(\bW\) no es cuadrada y su determinante no existe. La propiedad \(|\mathbf A\mathbf B|=|\mathbf A||\mathbf B|\) solo se aplica cuando los factores son cuadrados, por eso hay que agrupar primero \(\bW^T\bS\bW\).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Erratas en la hoja</span>
+        <p>(1) El enunciado dice «<em>diagonal matrix whose elements are \(n\) generalized eigenvectors \(\lambda_j\)</em>»: son autovalores. (2) La nota afirma \(\bW^T\bW=\mathbf I\), y no es cierto en general: con esta normalización lo que se cumple es \(\bW^T\bS_C\bW=\mathbf I\) (comprobado numéricamente; \(\bW^T\bW\neq\mathbf I\)). La demostración no lo necesita. (3) La solución escribe las columnas como \([\bw_1\ \bw_2\ \cdots\ \bw_3]\); debe ser \(\bw_d\). (4) El enunciado escribe \(\lambda_{ij}\delta_{ij}\); basta con \(\lambda_j\delta_{ij}\).</p>
+      </div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 2 -->
+  <article class="ex concept-like" data-eid="ex2">
+    <header><h3><span class="cnum">E2</span> La dirección de máxima potencia</h3><span class="ref">Herramientas: diap. 19–20, 23</span></header>
+    <div class="ex-body">
+      <p>Con la transformación \(z_n=\bw^T(\bx_n-\bm)\), que convierte cada \(\bx_n\in\mathbb{R}^d\) en un escalar, demuestra que el máximo de \(\sum_{n=1}^Nz_n^2\) con la restricción de norma unidad para \(\bw\) se obtiene cuando \(\bw\) es el autovector asociado al mayor autovalor de \(\bS=\sum_{n=1}^N(\bx_n-\bm)(\bx_n-\bm)^T\).</p>
+      <p class="small">Pista de la hoja: define un Lagrangiano para maximizar \(\sum_nz_n^2\) con la restricción \(\bw^T\bw\le1\).</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> Escribe \(z_n^2=z_nz_n^T\) y saca \(\bw\) del sumatorio: \(\sum_nz_n^2\) es una forma cuadrática en \(\bw\).</div>
+      <div class="hint" hidden><b>Pista 2.</b> \(L(\bw,\lambda)=\bw^T\bS\bw+\lambda(1-\bw^T\bw)\). Deriva respecto a \(\bw\) e iguala a cero.</div>
+      <div class="hint" hidden><b>Pista 3.</b> En un punto estacionario, ¿cuánto vale \(\bw^T\bS\bw\)? Hay \(d\) candidatos; elige el mejor. Para un argumento global, escribe \(\bw\) en la base de autovectores.</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Forma cuadrática.</strong> \(z_n\) es un escalar, así que \(z_n^2=z_nz_n^T=\bw^T(\bx_n-\bm)(\bx_n-\bm)^T\bw\). Sumando: \(\sum_nz_n^2=\bw^T\left[\sum_n(\bx_n-\bm)(\bx_n-\bm)^T\right]\bw=\bw^T\bS\bw\).</li>
+        <li><strong>Lagrangiano.</strong> \(L(\bw,\lambda)=\bw^T\bS\bw+\lambda(1-\bw^T\bw)\). Gradiente: \(\nabla_{\bw}L=2\bS\bw-2\lambda\bw=\mathbf 0\Rightarrow\bS\bw=\lambda\bw\). Los puntos estacionarios son los autovectores de \(\bS\) y el multiplicador es su autovalor.</li>
+        <li><strong>Cuál de los \(d\).</strong> En un autovector unitario, \(\bw^T\bS\bw=\lambda\bw^T\bw=\lambda\). El valor del objetivo es el propio autovalor: el máximo es \(\lambda_{\max}\), con su autovector.</li>
+        <li><strong>Argumento global</strong> (cierra el razonamiento sin hablar de convexidad). Con la base ortonormal de autovectores \(\bu_j\) (etiqueta mía, \(\lambda_1\ge\dots\ge\lambda_d\ge0\)), cualquier \(\bw\) unitario es \(\bw=\sum_ja_j\bu_j\) con \(\sum_ja_j^2=1\). Entonces \(\bw^T\bS\bw=\sum_j\lambda_ja_j^2\le\lambda_1\sum_ja_j^2=\lambda_1\), con igualdad si todo el peso está en \(\bu_1\).</li>
+        <li><strong>Por qué la pista usa \(\le1\).</strong> Si \(\|\bw\|=t\le1\), \(\bw^T\bS\bw=t^2\,\hat{\bw}^T\bS\hat{\bw}\) con \(\hat{\bw}\) unitario: se gana siempre llevando \(t\) a 1. El máximo sobre la bola está en su borde y coincide con el del problema con igualdad.</li>
+        <li><strong>Conexión.</strong> Es PCA con \(d'=1\) (diap. 19–20 con \(E=1\)) y la «dirección de máxima dispersión» del hiperelipsoide (diap. 23).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Matices sobre la solución oficial</span>
+        <p>Dice que \(\bS\) es definida positiva: en general es semidefinida (tarjeta 4.3). Y llama «convexo» al problema relajado: maximizar una función convexa sobre una bola no es un problema de optimización convexa (convexo sería minimizarla). La conclusión es correcta por el argumento de los pasos 4 y 5.</p>
+      </div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 3 -->
+  <article class="ex concept-like" data-eid="ex3">
+    <header><h3><span class="cnum">E3</span> El rango de \(\bS_B\) es \(\min(d,c-1)\)</h3><span class="ref">Herramientas: diap. 30, 34</span></header>
+    <div class="ex-body">
+      <p>Sean \(\bm_i\in\mathbb{R}^{d\times1}\), \(i=1,\dots,c\), linealmente independientes y \(\bm=\frac1c\sum_{i=1}^c\bm_i\). Demuestra que el rango de la matriz de dispersión de los \(\bm_i\),</p>
+      \[\bS_B=\sum_{i=1}^c(\bm_i-\bm)(\bm_i-\bm)^T=\begin{bmatrix}\bm_1-\bm&\bm_2-\bm&\cdots&\bm_c-\bm\end{bmatrix}\begin{bmatrix}(\bm_1-\bm)^T\\(\bm_2-\bm)^T\\ \vdots\\(\bm_c-\bm)^T\end{bmatrix},\]
+      <p>es \(\min(d,c-1)\), siguiendo estos pasos: (1) las columnas de \(\bS_B\) son combinaciones lineales de los \(c\) vectores \(\bm_i-\bm\); (2) los vectores \(\bm_i-\bm\) son linealmente dependientes, y por qué eso da \(\rank(\bS_B)\le\min(d,c-1)\); (3) \(c-1\) de ellos son independientes, así que \(\rank(\bS_B)=\min(d,c-1)\).</p>
+      <p class="small">Pista de la hoja: los \(\bx_i\) son linealmente independientes si \(\sum_{i=1}^c\alpha_i\bx_i=\mathbf 0\) implica \(\alpha_i=0\) para todo \(i\).</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> Llama \(\bM=[\bm_1-\bm\ \cdots\ \bm_c-\bm]\) (\(d\times c\)). Entonces \(\bS_B=\bM\bM^T\), y la columna \(j\) de \(\bS_B\) es \(\bM\) por la columna \(j\) de \(\bM^T\).</div>
+      <div class="hint" hidden><b>Pista 2.</b> Suma los \(c\) vectores \(\bm_i-\bm\) y usa la definición de \(\bm\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> Supón \(\sum_{i=1}^{c-1}\alpha_i(\bm_i-\bm)=\mathbf 0\), sustituye \(\bm=\frac1c\sum_{i=1}^c\bm_i\), agrupa los coeficientes de cada \(\bm_i\) (incluido \(\bm_c\)) y aplica la independencia de los \(\bm_i\).</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <p><strong>Paso 1.</strong></p>
+      <ol class="steps">
+        <li>Con \(\bM=[\bm_1-\bm\ \cdots\ \bm_c-\bm]\in\mathbb{R}^{d\times c}\) (etiqueta mía), \(\bS_B=\bM\bM^T\) (es la factorización del enunciado).</li>
+        <li>La columna \(j\) de \(\bS_B\) es \(\bM\) multiplicada por la columna \(j\) de \(\bM^T\), es decir, \(\sum_{i=1}^c(\bm_i-\bm)_j\,(\bm_i-\bm)\): una combinación lineal de los \(\bm_i-\bm\) cuyos coeficientes son las componentes \(j\) de esos mismos vectores.</li>
+        <li>Por tanto el espacio de columnas de \(\bS_B\) está contenido en el de \(\bM\): \(\rank(\bS_B)\le\rank(\bM)\).</li>
+      </ol>
+      <p><strong>Paso 2.</strong></p>
+      <ol class="steps">
+        <li>\(\sum_{i=1}^c(\bm_i-\bm)=\sum_i\bm_i-c\bm=\sum_i\bm_i-\frac cc\sum_i\bm_i=\mathbf 0\). Es una combinación lineal nula con todos los coeficientes iguales a 1 (no todos nulos): los \(c\) vectores son dependientes y \(\rank(\bM)\le c-1\).</li>
+        <li>Además, \(\bS_B\) es \(d\times d\), así que su rango no supera \(d\). Junto con el paso 1: \(\rank(\bS_B)\le\min(d,c-1)\).</li>
+      </ol>
+      <p><strong>Paso 3.</strong></p>
+      <ol class="steps">
+        <li>Supón \(\sum_{i=1}^{c-1}\alpha_i(\bm_i-\bm)=\mathbf 0\) y llama \(A=\sum_{i=1}^{c-1}\alpha_i\).</li>
+        <li>Desarrolla: \(\sum_{i=1}^{c-1}\alpha_i\bm_i-A\bm=\sum_{i=1}^{c-1}\alpha_i\bm_i-\frac Ac\sum_{i=1}^{c}\bm_i=\sum_{i=1}^{c-1}\left(\alpha_i-\frac Ac\right)\bm_i-\frac Ac\bm_c=\mathbf 0\).</li>
+        <li>Es una combinación lineal nula de \(\bm_1,\dots,\bm_c\), que son independientes: todos sus coeficientes son cero. El de \(\bm_c\) da \(A/c=0\Rightarrow A=0\); los demás, \(\alpha_i-0=0\Rightarrow\alpha_i=0\).</li>
+        <li>Luego \(\bm_1-\bm,\dots,\bm_{c-1}-\bm\) son independientes y \(\rank(\bM)=c-1\).</li>
+        <li><strong>De \(\bM\) a \(\bS_B\)</strong> (paso que la solución oficial no hace explícito): \(\rank(\bM\bM^T)=\rank(\bM)\). Si \(\bM\bM^T\bv=\mathbf 0\), entonces \(\bv^T\bM\bM^T\bv=\|\bM^T\bv\|^2=0\), luego \(\bM^T\bv=\mathbf 0\). \(\bM\bM^T\) y \(\bM^T\) tienen el mismo núcleo y, por tanto, el mismo rango, que es el de \(\bM\). Así \(\rank(\bS_B)=c-1\).</li>
+        <li><strong>¿Y el \(\min(d,\cdot)\)?</strong> Con la hipótesis del enunciado, \(c\) vectores independientes en \(\mathbb{R}^d\) obligan a \(c\le d\), así que \(\min(d,c-1)=c-1\). Si las medias no fueran independientes (por ejemplo \(c&gt;d\)), solo quedaría la cota \(\le\min(d,c-1)\), que es lo que usa la diap. 34. (Comprobado numéricamente: con \(d=6\) y \(c=2,3,5,6\) el rango es \(c-1\); con \(c=9\), es 6.)</li>
+      </ol>
+      <p><strong>Con los pesos de las diapositivas.</strong> La diap. 30 usa \(\bS_B=\sum_iN_i(\bm_i-\bm)(\bm_i-\bm)^T\) con \(\bm\) ponderada. El argumento es igual: \(\sum_iN_i(\bm_i-\bm)=\mathbf 0\) da la dependencia, y \(\bS_B=\bM\,\mathrm{diag}(N_i)\,\bM^T\) tiene el mismo rango.</p>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Errata en la solución oficial</span>
+        <p>En el paso 3 define \(A=\sum_{i=1}^{c}\alpha_i\), pero solo hay \(c-1\) coeficientes: es \(A=\sum_{i=1}^{c-1}\alpha_i\). Además concluye diciendo que «\(\bm_c\) no puede escribirse como combinación de los \(\bm_i\)»; el argumento limpio es que todos los coeficientes de la combinación nula deben anularse.</p>
+      </div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 4 -->
+  <article class="ex concept-like" data-eid="ex4">
+    <header><h3><span class="cnum">E4</span> El cociente de Rayleigh generalizado (MDA con \(d'=1\))</h3><span class="ref">Herramientas: diap. 30, 33</span></header>
+    <div class="ex-body">
+      <p>Sea la transformación de un vector \(\bx\) de \(d\) componentes en una característica escalar \(z_n=\bw^T(\bx_n-\bm)\), \(n=1,\dots,N\).</p>
+      <ol>
+        <li>Calcula el vector \(\bw\) que resuelve \(\displaystyle\max_{\bw}\frac{\bw^T\bS_B\bw}{\bw^T\bS_C\bw}\).</li>
+        <li>Define las matrices \(\bS_B\) y \(\bS_C\) si se quiere maximizar la discriminabilidad entre clases.</li>
+      </ol>
+      <p class="small">Es el problema de teoría con \(d'=1\). Pista de la hoja: calcula el gradiente del cociente respecto a \(\bw\).</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> \(\nabla\frac fg=\frac{g\nabla f-f\nabla g}{g^2}\), con \(\nabla_{\bw}(\bw^T\bA\bw)=2\bA\bw\) para \(\bA\) simétrica.</div>
+      <div class="hint" hidden><b>Pista 2.</b> El denominador no se anula si \(\bS_C\) es de rango completo: iguala a cero el numerador y despeja \(\bS_B\bw\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> Llama \(\lambda\) al cociente: te queda la ecuación del ejercicio 1. ¿Qué autovector da el cociente más grande? Para el apartado 2, mira la diap. 30.</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <p><strong>Apartado 1.</strong></p>
+      <ol class="steps">
+        <li><strong>Gradiente.</strong> \(\nabla_{\bw}\dfrac{\bw^T\bS_B\bw}{\bw^T\bS_C\bw}=\dfrac{2\bS_B\bw\,(\bw^T\bS_C\bw)-(\bw^T\bS_B\bw)\,2\bS_C\bw}{(\bw^T\bS_C\bw)^2}\).</li>
+        <li><strong>Igualar a cero.</strong> Con \(\bS_C\) de rango completo (definida positiva), \(\bw^T\bS_C\bw&gt;0\) y basta con el numerador: \(\bS_B\bw\,(\bw^T\bS_C\bw)=(\bw^T\bS_B\bw)\,\bS_C\bw\).</li>
+        <li><strong>Despejar.</strong> \(\bS_B\bw=\dfrac{\bw^T\bS_B\bw}{\bw^T\bS_C\bw}\bS_C\bw=\lambda\,\bS_C\bw\), con \(\lambda\) igual al propio cociente. Es la ecuación de autovectores generalizados del ejercicio 1.</li>
+        <li><strong>Cuál.</strong> En cada solución el cociente vale su \(\lambda\). El máximo es el autovector generalizado del <strong>mayor</strong> autovalor generalizado (equivalentemente, el autovector de \(\bS_C^{-1}\bS_B\) de mayor autovalor). Por el ejercicio 1, es el valor de \(J\) con \(n=1\).</li>
+      </ol>
+      <p><strong>Apartado 2.</strong></p>
+      <ol class="steps">
+        <li>Según la teoría (diap. 30–33): \(\bS_B=\sum_{i=1}^cN_i(\bm_i-\bm)(\bm_i-\bm)^T\) (entre clases) y \(\bS_C=\sum_{i=1}^c\sum_{\bx\in D_i}(\bx-\bm_i)(\bx-\bm_i)^T\) (suma de las intra-clase).</li>
+        <li>La solución oficial propone \(\bS_C\) = dispersión <em>total</em>. También es válido: con \(\bS_T=\bS_C+\bS_B\), \(\bS_B\bw=\sigma\bS_C\bw\iff\bS_B\bw=\frac{\sigma}{1+\sigma}\bS_T\bw\). Mismo \(\bw\); el cociente pasa a \(\frac{\sigma}{1+\sigma}\in[0,1)\) y conserva el orden (comprobado numéricamente).</li>
+        <li><strong>Caso de dos clases.</strong> \(\bS_B\) tiene rango 1 y la solución es explícita: \(\bw\propto\bS_C^{-1}(\bm_1-\bm_2)\) (tarjeta 5.8).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Discrepancia con la teoría</span>
+        <p>La solución oficial dice que \(\bS_C\) es la matriz de dispersión total; en las diapositivas, \(\bS_C\) es la intra-clase. No cambia la dirección óptima (paso 2 del apartado 2), pero sí el valor del cociente.</p>
+      </div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 5 -->
+  <article class="ex concept-like" data-eid="ex5">
+    <header><h3><span class="cnum">E5</span> La \(\bW\) de máxima potencia</h3><span class="ref">Herramientas: diap. 18–20</span></header>
+    <div class="ex-body">
+      <p>¿Qué matriz \(\bW\) de dimensiones \(d\times d'\) (\(d'&lt;d\)) maximiza la potencia del vector \(\bz_n=\bW^T(\bx_n-\bm)\) si se impone que las columnas de \(\bW\) tengan norma unidad?</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> La potencia es \(\sum_n\|\bz_n\|^2\). Escríbela como una traza, como en la diap. 19.</div>
+      <div class="hint" hidden><b>Pista 2.</b> Queda \(\sum_{i=1}^{d'}\bw_i^T\bS\bw_i\). Si solo exiges \(\|\bw_i\|=1\), cada sumando se puede maximizar por separado. ¿Qué sale?</div>
+      <div class="hint" hidden><b>Pista 3.</b> Para que la respuesta tenga sentido hace falta \(\bW^T\bW=\mathbf I\). Con eso, usa el reparto \(p_j\) de la tarjeta 4.8.</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Potencia como traza.</strong> \(\sum_n\|\bz_n\|^2=\sum_n(\bx_n-\bm)^T\bW\bW^T(\bx_n-\bm)=\tr(\bW^T\bS\bW)=\sum_{i=1}^{d'}\bw_i^T\bS\bw_i\) (mismos pasos que la tarjeta 4.7). Dividir por \(N\) para hablar de potencia media no cambia el máximo.</li>
+        <li><strong>Solo con norma unidad.</strong> Cada sumando es como el ejercicio 2, y su máximo es \(\lambda_1\) con \(\bw_i=\bw_1\). Así que, en sentido estricto, la respuesta al enunciado tal como está es <em>poner todas las columnas iguales a \(\bw_1\)</em>, con potencia \(d'\lambda_1\). Esa \(\bW\) tiene rango 1: las \(d'\) características son idénticas y no sirve.</li>
+        <li><strong>Con columnas ortonormales.</strong> Lo que se quiere de verdad (y lo que impone la diap. 18 con \(\bW=\bU_L\)) es \(\bW^T\bW=\mathbf I\). Escribiendo \(\bS=\sum_j\lambda_j\bu_j\bu_j^T\): \(\tr(\bW^T\bS\bW)=\sum_j\lambda_jp_j\) con \(0\le p_j\le1\) y \(\sum_jp_j=d'\) (tarjeta 4.8).</li>
+        <li><strong>Óptimo.</strong> \(p_j=1\) para los \(d'\) mayores \(\lambda_j\): \(\bW\) contiene los \(d'\) autovectores de \(\bS\) de mayores autovalores, y la potencia máxima es \(\sum_{i=1}^{d'}\lambda_i\). Es la solución oficial.</li>
+        <li><strong>Relación con PCA.</strong> Con \(\bW^T\bW=\mathbf I\), potencia \(+\ J=\tr(\bS)\): maximizar la potencia de \(\bz\) es lo mismo que minimizar el error de reconstrucción (comprobado numéricamente).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Enunciado incompleto</span>
+        <p>Con solo «columnas de norma unidad» la solución degenera (todas iguales a \(\bw_1\); comprobado numéricamente: \(2\lambda_1&gt;\lambda_1+\lambda_2\)). La respuesta oficial es correcta si se exige además que las columnas sean ortogonales, \(\bW^T\bW=\mathbf I\). Es el mismo hueco que el de las diap. 19–20.</p>
+      </div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <div class="pager"></div>
+</section>
