@@ -129,6 +129,7 @@ python3 build_local.py "../../Tema 2 - Decision Theory"
 | 2026-11-12 | Tema 2 (Decision Theory): primera versión completa, con los ejercicios asignados 1, 2, 4, 5, 7.1–7.3, 9, 10 y 11. |
 | 2026-11-12 | Temas 2 y 3: figuras de las diapositivas (24 y 16) y esquemas propios (7 y 3) en las explicaciones. |
 | 2026-11-12 | README: enlaces directos a cada lección, a los ejercicios, a las flashcards y a la hoja resumen. |
+| 2026-11-12 | Temas 2 y 3: botón «Temas» en la cabecera y enlace «← Todos los temas» en el índice para volver a la portada. |
 
 ## Origen del contenido
 

@@ -9,3 +9,17 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.lightbox').forEach(l => l.remove()); });
 </script>
+<script>
+/* ================= volver a la portada de temas ================= */
+(function(){
+  const ONLINE = 'https://marcel02.github.io/MLEARN/';
+  let href = ONLINE, newTab = false;
+  try {
+    const loc = window.location;
+    if (/github\.io$/.test(loc.hostname)) href = '../';                       /* GitHub Pages: la portada está un nivel arriba */
+    else if (loc.protocol === 'file:' && /\/mlearn[^\/]*\/tema%20\d/i.test(loc.pathname)) href = '../index.html';   /* copia del repositorio */
+    else if (loc.protocol !== 'file:') newTab = true;                          /* otra web (p. ej. claude.ai): pestaña nueva */
+  } catch (e) { newTab = true; }
+  document.querySelectorAll('.js-home').forEach(a => { a.href = href; if (newTab){ a.target = '_blank'; a.rel = 'noopener'; } });
+})();
+</script>
