@@ -21,5 +21,6 @@ t2_b10.html
 50_app.html
 60_viz.html
 t2_viz.html
+65_fig.html
 70_extras.html
 99_boot.html

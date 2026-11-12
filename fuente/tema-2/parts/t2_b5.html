@@ -41,6 +41,7 @@
     <div class="summary">
       \[f_x(x)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac12\frac{(x-\mu)^2}{\sigma^2}},\qquad f_{\bx}(\bx)=\frac{1}{(2\pi)^{d/2}|\bC|^{1/2}}\exp\!\left(-\tfrac12(\bx-\bmu)^T\bC^{-1}(\bx-\bmu)\right),\]
       <p>con \(\bmu=E\{\bx\}\in\mathbb{R}^d\) y \(\bC=E\{(\bx-\bmu)(\bx-\bmu)^T\}\in\mathbb{R}^{d\times d}\). La covarianza es semidefinida positiva (autovalores reales no negativos).</p>
+      <div class="fig-row"><figure class="fig slide" data-fig="t2-p36"><div class="frame"><img src="img/t2-p36.webp" width="863" height="744" loading="lazy" alt="Gaussiana con colas a dos sigmas"></div><figcaption><span class="src">Diap. 32 · PDF p. 36</span>Gaussiana univariante. Cada cola sombreada fuera de \(\mu\pm2\sigma\) vale 2,28 %, no 2,5 % (errata).</figcaption></figure><figure class="fig slide" data-fig="t2-p38"><div class="frame"><img src="img/t2-p38.webp" width="1200" height="370" loading="lazy" alt="Campana gaussiana en dos dimensiones"></div><figcaption><span class="src">Manuscrita · PDF p. 38</span>Apunte manuscrito: al cortar la campana 2D a altura constante sale una elipse ligada a \(\bC_k\).</figcaption></figure></div>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ol class="steps">
@@ -61,6 +62,7 @@
     <header><h3>Transformaciones lineales, blanqueado y elipsoides</h3><span class="ref">Diap. 34–37 · PDF p. 39–42</span></header>
     <div class="summary">
       <p>Una transformación lineal de una gaussiana es gaussiana. Con \(\bA\in\mathbb{R}^{d\times k}\) y \(\bz=\bA^T\bx\): \(\bmu_{\bz}=\bA^T\bmu_{\bx}\) y \(\bC_{\bz}=\bA^T\bC_{\bx}\bA\). Con la descomposición espectral \(\bC=\bU\bLambda\bU^T\), la transformación \(\bA=\bU\bLambda^{-1/2}\) <strong>blanquea</strong> \(\bx\) (deja \(\bC_{\bz}=\mathbf I\)).</p>
+      <figure class="fig slide" data-fig="t2-p42"><div class="frame"><img src="img/t2-p42.webp" width="1200" height="849" loading="lazy" alt="Elipsoide con sus ejes propios"></div><figcaption><span class="src">Diap. 37 · PDF p. 42</span>Los ejes del elipsoide siguen los autovectores \(\bu_1,\bu_2\) de \(\bC\), y sus semiejes son proporcionales a \(\sqrt{\lambda_1}\) y \(\sqrt{\lambda_2}\). Blanquear con \(\bA=\bU\bLambda^{-1/2}\) lo convierte en una circunferencia.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ol class="steps">
@@ -85,6 +87,7 @@
       <p>Tomando logaritmos (función creciente) para librarse de la exponencial:</p>
       \[g_i(\bx)=\ln f(\bx|\omega_i)+\ln\Pr(\omega_i)=-\tfrac12(\bx-\bmu_i)^T\bC_i^{-1}(\bx-\bmu_i)-\tfrac d2\ln(2\pi)-\tfrac12\ln|\bC_i|+\ln\Pr(\omega_i).\]
       <p>Es una función cuadrática de \(\bx\). Las fronteras \(g_i(\bx)=g_j(\bx)\) son hipercuádricas: <strong>QDA</strong>.</p>
+      <figure class="fig slide" data-fig="t2-p43"><div class="frame"><img src="img/t2-p43.webp" width="1200" height="789" loading="lazy" alt="Clústeres gaussianos y plano de decisión"></div><figcaption><span class="src">Diap. 38 · PDF p. 43</span>Dos clases gaussianas en 3D. Con covarianzas esféricas iguales, la frontera es un plano; con \(\Pr(\omega_1)=0{,}8\) se desplaza hacia la clase menos probable.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ol class="steps">
@@ -104,8 +107,10 @@
       <p>Igualando \(g_i(\bx)=g_j(\bx)\):</p>
       \[\bx^T\!\left(\tfrac12\bC_j^{-1}-\tfrac12\bC_i^{-1}\right)\!\bx+\left(\bmu_i^T\bC_i^{-1}-\bmu_j^T\bC_j^{-1}\right)\bx-\tfrac12\bmu_i^T\bC_i^{-1}\bmu_i+\tfrac12\bmu_j^T\bC_j^{-1}\bmu_j-\tfrac12\ln\frac{|\bC_i|}{|\bC_j|}+\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}=0.\]
       <p>La forma depende de los autovalores de \(\bA\): hiperplanos, hiperesferas, hiperelipsoides, hiperparaboloides o hiperhiperboloides.</p>
+      <figure class="fig slide" data-fig="t2-p48"><div class="frame"><img src="img/t2-p48.webp" width="1200" height="916" loading="lazy" alt="Seis fronteras de decisión en dos dimensiones"></div><figcaption><span class="src">Diap. 41 · PDF p. 48</span>Con \(c=2\) y \(d=2\), según las covarianzas, la frontera (dibujada en el plano de abajo) es una recta, una circunferencia, una elipse, una parábola o una hipérbola.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <div class="fig-row"><figure class="fig slide" data-fig="t2-p49"><div class="frame"><img src="img/t2-p49.webp" width="1200" height="726" loading="lazy" alt="Superficies frontera en tres dimensiones"></div><figcaption><span class="src">Diap. 42 · PDF p. 49</span>Con \(d=3\) las fronteras son cuádricas: planos, cilindros, paraboloides, hiperboloides…</figcaption></figure><figure class="fig slide" data-fig="t2-p50"><div class="frame"><img src="img/t2-p50.webp" width="1200" height="937" loading="lazy" alt="Cuatro clases gaussianas"></div><figcaption><span class="src">Diap. 43 · PDF p. 50</span>Con \(c=4\) clases, cada par tiene su frontera; \(\omega_4\) ocupa dos regiones separadas.</figcaption></figure></div>
       <ol class="steps">
         <li><strong>Desarrollar la forma cuadrática.</strong> \((\bx-\bmu_i)^T\bC_i^{-1}(\bx-\bmu_i)=\bx^T\bC_i^{-1}\bx-2\bmu_i^T\bC_i^{-1}\bx+\bmu_i^T\bC_i^{-1}\bmu_i\), usando que \(\bC_i^{-1}\) es simétrica.</li>
         <li><strong>Restar \(g_i-g_j\)</strong> y agrupar por grados: término cuadrático con \(\bA=\frac12(\bC_j^{-1}-\bC_i^{-1})\), lineal con \(\bv^T=\bmu_i^T\bC_i^{-1}-\bmu_j^T\bC_j^{-1}\) y el resto en \(e\). El \(\frac d2\ln2\pi\) se cancela.</li>

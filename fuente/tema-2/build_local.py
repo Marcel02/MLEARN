@@ -4,6 +4,12 @@ root = pathlib.Path(__file__).parent
 P = root / 'parts'
 vend = root.parent / 'vendor' / 'package' / 'dist'
 fonts = root.parent / 'vendor-fonts'
+def inline_imgs(html):
+    """Sustituye src="img/x.webp" por la imagen incrustada en base64."""
+    def rep(m):
+        data = base64.b64encode((root / 'img' / m.group(1)).read_bytes()).decode()
+        return 'src="data:image/webp;base64,' + data + '"'
+    return re.sub(r'src="img/([^"]+\.webp)"', rep, html)
 out_dir = pathlib.Path(sys.argv[1])
 out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -44,6 +50,7 @@ kjs = (vend / 'katex.min.js').read_text()
 ajs = (vend / 'contrib' / 'auto-render.min.js').read_text()
 body = body.replace('<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>', '<script>' + kjs + '</script>')
 body = body.replace('<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>', '<script>' + ajs + '</script>')
+body = inline_imgs(body)
 assert 'cdnjs' not in body and 'googleapis' not in head, 'quedan recursos externos'
 
 reset = ('<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}'

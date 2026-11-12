@@ -36,6 +36,7 @@ Los temas 2 y 3 siguen el mismo modelo:
 
 - **Teoría por bloques**, en el orden del PDF, con «Diapositiva X · PDF p. Y» en cada tarjeta, un resumen visible y la explicación a fondo desplegable. Las derivaciones se revelan paso a paso.
 - **Cajas destacadas**: apuntes manuscritos del profesor, errores habituales, erratas del material y conexiones con otros temas.
+- **Figuras**: recortes de las figuras de las diapositivas (con «Diap. X · PDF p. Y» y un pie que explica qué mirar; se amplían al pulsarlas) y esquemas propios donde el PDF no tiene figura: geometría del error de PCA, S_T = S_C + S_B, matriz de costes, Neyman-Pearson, frontera LDA, RDA, Naive Bayes y el árbol de frecuencias del test médico.
 - **Laboratorios interactivos**: en el tema 2, MAP y riesgo mínimo en 1D, fronteras LDA/QDA en 2D, sesgo del estimador ML, ROC con Neyman-Pearson y matriz de confusión, y el test diagnóstico con prevalencias reales; en el tema 3, Pr(e) = Q(r/2), PCA en 2D, efecto de d′, restar o no la media, y MDA frente a PCA.
 - **Tests** de 4–6 preguntas por bloque, con explicación de cada opción y modo «Repasar falladas».
 - **Ejercicios** de la hoja con tres pistas graduales y solución paso a paso, comprobada numéricamente. En el tema 2 solo están los que mandó el profesor: 1, 2, 4, 5, 7.1, 7.2, 7.3, 9, 10 y 11.
@@ -56,7 +57,7 @@ MLEARN/
 │   ├── hoja-resumen.html   la misma hoja en formato web
 │   └── LEEME.txt           instrucciones para compartir la carpeta
 └── fuente/
-    ├── tema-2/             piezas y scripts que generan el index.html del tema 2
+    ├── tema-2/             piezas (parts/), figuras (img/) y scripts que generan el index.html del tema 2
     └── tema-3/             ídem para el tema 3
 ```
 
@@ -85,6 +86,7 @@ python3 build_local.py "../../Tema 2 - Decision Theory"
 | 2026-11-11 | Tema 3 (Feature Selection): primera versión completa. |
 | 2026-11-11 | Portada `index.html` para abrir los temas con GitHub Pages. |
 | 2026-11-12 | Tema 2 (Decision Theory): primera versión completa, con los ejercicios asignados 1, 2, 4, 5, 7.1–7.3, 9, 10 y 11. |
+| 2026-11-12 | Temas 2 y 3: figuras de las diapositivas (24 y 16) y esquemas propios (7 y 3) en las explicaciones. |
 
 ## Origen del contenido
 

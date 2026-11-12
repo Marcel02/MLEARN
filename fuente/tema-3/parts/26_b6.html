@@ -23,6 +23,7 @@
     <header><h3>t-SNE y el ejemplo de los dígitos</h3><span class="ref">Diap. 39–40 · PDF p. 46–47</span></header>
     <div class="summary">
       <p><strong>t-SNE:</strong> reducción de dimensionalidad que <strong>preserva las distancias entre vectores</strong>. Ejemplo 8: base de datos NIST de 6000 dígitos manuscritos llevada a 2D. Con PCA, casi todas las clases se mezclan (solo el 0 y el 1 quedan en los extremos). Con t-SNE aparecen 10 grupos bien separados, uno por dígito. La diap. 40 repite el mapa de t-SNE dibujando cada punto con su imagen.</p>
+      <figure class="fig slide" data-fig="t3-p46"><div class="frame"><img src="img/t3-p46.webp" width="1200" height="593" loading="lazy" alt="Dígitos visualizados con PCA y con t-SNE"></div><figcaption><span class="src">Diap. 39 · PDF p. 46</span>Dígitos manuscritos con PCA (izquierda) y con t-SNE (derecha), coloreados por dígito. PCA a 2D lo mezcla casi todo; t-SNE forma un grupo por dígito porque conserva las vecindades, no las distancias globales.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ul>
@@ -44,6 +45,7 @@
     <header><h3>Autoencoders: una red con cuello de botella</h3><span class="ref">Diap. 41–42 · PDF p. 48–49</span></header>
     <div class="summary">
       <p>Un <strong>autoencoder</strong> es una red neuronal cuya salida intenta reproducir su entrada: \(x_1,\dots,x_6\to\) capa oculta «<em>bottleneck</em>» \(z_1,z_2,z_3\to\hat x_1,\dots,\hat x_6\). La parte que va de \(x\) a \(z\) es el <strong>codificador</strong> \(q_\theta(x)\); la que va de \(z\) a \(\hat x\), el <strong>decodificador</strong> \(p_\phi(z)\). La capa estrecha \(z\) es la <strong>representación latente</strong>, de menor dimensión: las características reducidas.</p>
+      <div class="fig-row"><figure class="fig slide" data-fig="t3-p48"><div class="frame"><img src="img/t3-p48.webp" width="1008" height="904" loading="lazy" alt="Autoencoder con cuello de botella"></div><figcaption><span class="src">Diap. 41 · PDF p. 48</span>Red con una capa oculta estrecha (el cuello de botella \(z_1,z_2,z_3\)); la salida \(\hat x\) intenta reproducir la entrada.</figcaption></figure><figure class="fig slide" data-fig="t3-p49"><div class="frame"><img src="img/t3-p49.webp" width="1200" height="715" loading="lazy" alt="Esquema codificador y decodificador"></div><figcaption><span class="src">Diap. 42 · PDF p. 49</span>Codificador y decodificador: \(z\) es la representación latente y \(\hat x\) la reconstrucción.</figcaption></figure></div>
     </div>
     <details class="deep"><summary>Explicación a fondo: relación con PCA</summary><div class="deep-body">
       <ol class="steps">

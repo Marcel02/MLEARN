@@ -43,4 +43,29 @@
 @media print{ body.print-sheet .view{display:none!important} body.print-sheet #v-resumen{display:block!important} body.print-sheet #v-resumen .sec-head{display:none} .sheet{border:0;padding:0} }
 .tbl,.katex-display{position:relative}
 .concept>header .ref,.ex>header .ref{white-space:normal;max-width:100%}
+/* figuras: recortes de diapositivas y esquemas propios */
+.fig{margin:16px 0 8px}
+.fig .frame{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;justify-content:center;cursor:zoom-in}
+.fig .frame img{display:block;max-width:100%;height:auto;max-height:480px;object-fit:contain}
+.fig.dgf .frame{background:var(--surface);cursor:default;padding:12px 8px}
+.fig figcaption{font-family:var(--f-ui);font-size:13px;line-height:1.5;color:var(--ink-2);margin-top:7px}
+.fig figcaption .src{font-family:var(--f-mono);font-size:11px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-right:6px;white-space:nowrap}
+.fig-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;align-items:start}
+.fig-row .fig{margin:16px 0 8px}
+.dg{display:block;width:100%;height:auto;max-width:720px;margin:0 auto;color:var(--ink);font-family:var(--f-ui);overflow:visible}
+.dg text{fill:currentColor;font-size:13px}
+.dg .t-mut{fill:var(--muted)} .dg .t-c1{fill:var(--c1)} .dg .t-c2{fill:var(--c2)} .dg .t-acc{fill:var(--accent)}
+.dg .s-ink{stroke:currentColor;fill:none} .dg .s-mut{stroke:var(--muted);fill:none} .dg .s-line{stroke:var(--line)} .dg .s-grid{stroke:var(--grid)} .dg .s-axis{stroke:var(--axis)}
+.dg .s-c1{stroke:var(--c1)} .dg .s-c2{stroke:var(--c2)} .dg .s-acc{stroke:var(--accent)}
+.dg path.s-c1,.dg path.s-c2,.dg path.s-acc,.dg path.s-ink,.dg line{fill:none}
+.dg .f-ink{fill:currentColor} .dg .f-mut{fill:var(--muted)} .dg .f-surf{fill:var(--surface)} .dg .f-s2{fill:var(--surface-2)} .dg .f-none{fill:none}
+.dg .f-c1{fill:var(--c1)} .dg .f-c2{fill:var(--c2)} .dg .f-acc{fill:var(--accent)}
+.dg .fa-c1{fill:color-mix(in srgb,var(--c1) 18%,transparent)} .dg .fa-c2{fill:color-mix(in srgb,var(--c2) 22%,transparent)} .dg .fa-acc{fill:color-mix(in srgb,var(--accent) 16%,transparent)}
+.dg .f-ok{fill:var(--ok-soft)} .dg .f-bad{fill:var(--bad-soft)} .dg .f-hatch1{fill:url(#t2np-h)}
+.dg .w2{stroke-width:2} .dg .dash{stroke-dasharray:5 4}
+.lightbox{position:fixed;inset:0;z-index:100;background:rgba(10,14,20,.86);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px;padding:8px}
+@media print{ .fig .frame{border:0;padding:0} .fig .frame img{max-height:none} }
+.dg .s-k{stroke:var(--cmda)} .dg .f-k{fill:var(--cmda)} .dg .t-k{fill:var(--cmda)} .dg .fa-k{fill:color-mix(in srgb,var(--cmda) 16%,transparent)} .dg path.s-k{fill:none}
+@media (max-width:640px){ .fig.dgf .frame{overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch} .fig.dgf .dg{min-width:540px} }
 </style>

@@ -27,6 +27,7 @@
       <p>Suponiendo que los vectores \(\bx_{k,i}\in D_i\) de cada clase son estadísticamente independientes, la verosimilitud es \(f(D_i|\boldsymbol\theta_i)=\prod_{k=1}^{N_{c_i}}f_{\bx}(\bx_{k,i}|\boldsymbol\theta_i)\), y</p>
       \[\hat{\boldsymbol\theta}_{i,ML}=\arg\max_{\boldsymbol\theta_i}f(D_i|\boldsymbol\theta_i)=\arg\max_{\boldsymbol\theta_i}\ln f(D_i|\boldsymbol\theta_i).\]
       <p>Condición necesaria: \(\nabla_{\boldsymbol\theta_i}\ln f(D_i|\boldsymbol\theta_i)=\mathbf 0\).</p>
+      <figure class="fig slide" data-fig="t2-p64"><div class="frame"><img src="img/t2-p64.webp" width="1200" height="906" loading="lazy" alt="Verosimilitud y log-verosimilitud en función del parámetro"></div><figcaption><span class="src">Diap. 55 · PDF p. 64</span>Arriba, la densidad de cada muestra \(f(\bx_{k,i}|\theta)\) como función de \(\theta\); en el centro, su producto \(f(\mathcal D_i|\theta)\), con el máximo en \(\hat\theta_{ML}\); abajo, el logaritmo, con el máximo en el mismo punto.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ol class="steps">
@@ -107,6 +108,7 @@
     <header><h3>Implementación de QDA y LDA</h3><span class="ref">Diap. 61–62 · PDF p. 71–75</span></header>
     <div class="summary">
       <p>Con \(S_k=\{\bx_i\mid y_i=\omega_k\}\) y \(N_k=|S_k|\): \(\hat\Pr(\omega_k)=\frac{N_k}{N}\), \(\hat\bmu_k=\frac{1}{N_k}\sum_{\bx\in S_k}\bx\). <strong>QDA</strong> (covarianzas distintas): \(\hat\bC_k=\frac{1}{N_k}\sum_{\bx\in S_k}(\bx-\hat\bmu_k)(\bx-\hat\bmu_k)^T\). <strong>LDA</strong> (covarianza común): \(\hat\bC=\frac1N\sum_{k=1}^cN_k\hat\bC_k\). En el iris, LDA da fronteras rectas y QDA curvas (diap. 62).</p>
+      <figure class="fig slide" data-fig="t2-p74"><div class="frame"><img src="img/t2-p74.webp" width="1200" height="652" loading="lazy" alt="LDA frente a QDA en iris"></div><figcaption><span class="src">Diap. 62 · PDF p. 74</span>Iris con LDA (fronteras rectas: una covarianza común) y con QDA (fronteras curvas: una covarianza por clase).</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ul>

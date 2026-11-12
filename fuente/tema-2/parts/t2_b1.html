@@ -10,6 +10,7 @@
     <header><h3>Objetivo: una regla \(\hat y=h_{\boldsymbol\theta}(\bx)\) y sus regiones de decisión</h3><span class="ref">Diap. 1–4 · PDF p. 1–4</span></header>
     <div class="summary">
       <p>Partimos de un conjunto etiquetado \(D=\{(\bx_1,y_1),\dots,(\bx_N,y_N)\}\), con vectores de características \(\bx_i\in\mathbb{R}^d\) y etiquetas \(y_i\in\mathcal Y=\{\omega_1,\dots,\omega_c\}\). Queremos una regla \(\hat y=h_{\boldsymbol\theta}(\bx)\) que prediga bien la clase de vectores nuevos. Clasificación <strong>binaria</strong> si \(|\mathcal Y|=2\) (spam/no spam) y <strong>multiclase</strong> si \(|\mathcal Y|&gt;2\).</p>
+      <figure class="fig slide" data-fig="t2-p4"><div class="frame"><img src="img/t2-p4.webp" width="1200" height="396" loading="lazy" alt="Regiones de decisión en el conjunto iris"></div><figcaption><span class="src">Diap. 4 · PDF p. 4</span>Iris con dos características: cada color de fondo es una región de decisión y las líneas entre colores son las fronteras. A la izquierda, fronteras curvas; a la derecha, un clasificador lineal (anotación del profesor) con fronteras rectas.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ul>
@@ -72,6 +73,7 @@
     <header><h3>Dos interpretaciones de la probabilidad y qué estamos calculando</h3><span class="ref">Diap. 8–10 · PDF p. 8–10</span></header>
     <div class="summary">
       <p>\(\Pr(\omega_j)\) se interpreta como <strong>frecuencia</strong> (la del décimo de lotería: cuántas veces aparece cada clase); \(\Pr(\omega_j|\bx)\) como <strong>fiabilidad o creencia</strong> (lo seguros que estamos de la clase tras ver \(\bx\)). El esquema de la diap. 9: la naturaleza elige \(\omega_j\), nosotros solo vemos \(\bx\), y con el modelo \(f_{\bx}(\bx|\omega_j)\) y las priors calculamos \(\Pr(\omega_j|\bx)\).</p>
+      <figure class="fig slide" data-fig="t2-p9"><div class="frame"><img src="img/t2-p9.webp" width="1200" height="726" loading="lazy" alt="Qué estamos calculando"></div><figcaption><span class="src">Diap. 9 · PDF p. 9</span>La naturaleza está en un estado \(\omega_j\) que genera la observación \(\bx\). Con el modelo \(f(\bx|\omega_j)\) y la prior \(\Pr(\omega_j)\) se recorre el camino al revés, hasta \(\Pr(\omega_j|\bx)\).</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <p>La diap. 10 da el contexto histórico: el ensayo de Thomas Bayes (1702–1761) se publicó en 1763, dos años después de su muerte, y trata de inferir las causas a partir de los efectos observados (más tarde lo formuló con precisión Laplace). Kant (1724–1804) discute en la <em>Crítica de la razón pura</em> (1781) el conocimiento <em>a priori</em>, no basado en la experiencia. En nuestro problema, la «causa» es la clase y el «efecto» es el vector medido: la regla de Bayes invierte el sentido del modelo.</p>
@@ -83,6 +85,7 @@
     <header><h3>Etapas del diseño de un clasificador supervisado</h3><span class="ref">Diap. 11–12 · PDF p. 11–12</span></header>
     <div class="summary">
       <p>Preprocesado → extracción de características → recogida de datos, que se parten en una base de <strong>entrenamiento</strong> y otra de <strong>test</strong> → selección de características → elección del algoritmo ⇄ entrenamiento → test → clasificador. Con flechas de vuelta: si el test sale mal, se revisan pasos anteriores.</p>
+      <figure class="fig slide" data-fig="t2-p11"><div class="frame"><img src="img/t2-p11.webp" width="1200" height="809" loading="lazy" alt="Etapas del diseño de un clasificador"></div><figcaption><span class="src">Diap. 11 · PDF p. 11</span>La base de datos se divide en entrenamiento (1) y test (2). El bucle entre selección de características, elección del algoritmo, entrenamiento y test se repite hasta obtener el clasificador.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ul>

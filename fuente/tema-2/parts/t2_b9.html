@@ -76,6 +76,7 @@
       <p>Con \(\omega_1\): paciente sano y \(\omega_2\): paciente enfermo (positivo). TP = enfermos diagnosticados como enfermos; FP = sanos diagnosticados como enfermos; TN = sanos como sanos; FN = enfermos como sanos.</p>
       \[R=\Pr(\bx\in R_2|\omega_2)\simeq\tfrac{TP}{TP+FN},\quad S=\Pr(\bx\in R_1|\omega_1)\simeq\tfrac{TN}{TN+FP},\quad P=\Pr(\omega_2|\bx\in R_2)\simeq\tfrac{TP}{TP+FP},\]
       \[F_{score}=\frac{2P\cdot R}{P+R},\qquad A=\Pr(\omega_1)S+\Pr(\omega_2)R\simeq\frac{TP+TN}{TP+TN+FP+FN}=1-P_e.\]
+      <div class="fig-row"><figure class="fig slide" data-fig="t2-p88"><div class="frame"><img src="img/t2-p88.webp" width="1200" height="702" loading="lazy" alt="Métricas sobre dos densidades con anotaciones"></div><figcaption><span class="src">Diap. 73 · PDF p. 88</span>TP, FP, TN y FN en palabras y sobre las dos densidades: detección (verde) = TP, falsa alarma (rojo) = FP. La zona rosa está rotulada «TN», pero según su propia leyenda es FN (errata).</figcaption></figure><figure class="fig slide" data-fig="t2-p90"><div class="frame"><img src="img/t2-p90.webp" width="1053" height="1414" loading="lazy" alt="Diagrama de precisión y recall"></div><figcaption><span class="src">Diap. 75 · PDF p. 90</span>De los seleccionados (círculo), la fracción de verdaderos positivos es la precisión; de los relevantes (mitad izquierda), la fracción detectada es el recall.</figcaption></figure></div>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <ol class="steps">

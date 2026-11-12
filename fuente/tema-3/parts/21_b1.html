@@ -11,6 +11,7 @@
     <header><h3>Dónde encaja el tema en el curso</h3><span class="ref">Diap. 1–3 · PDF p. 1, 2, 4</span></header>
     <div class="summary">
       <p>La cadena del curso es <strong>pre-processing → feature selection → classification</strong>. Este tema es el eslabón central: recibe \(\bx\in\mathbb{R}^d\) y entrega \(\bz\in\mathbb{R}^{d'}\) con \(d'&lt;d\), que es lo que luego verán los clasificadores. Las dos técnicas del tema son <strong>PCA</strong> y <strong>MDA</strong>.</p>
+      <figure class="fig slide" data-fig="t3-p2"><div class="frame"><img src="img/t3-p2.webp" width="1200" height="795" loading="lazy" alt="Course overview de la asignatura"></div><figcaption><span class="src">Diap. 2 · PDF p. 2</span>El tema 3 es la caja «Feature selection» (PCA y MDA, recuadradas), entre el preprocesado y la clasificación. La tabla de abajo es el resto del curso.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <p>La diapositiva 2 enmarca la selección de características dentro de una tabla de clasificadores. Lo que interesa para este tema son las notas al pie, porque cada una explica <em>por qué</em> la dimensión importa para ese clasificador:</p>
@@ -66,6 +67,7 @@
     <header><h3>Curva en U del error y covarianza singular</h3><span class="ref">Diap. 5 · PDF p. 6</span></header>
     <div class="summary">
       <p>Con una base de entrenamiento pequeña, añadir características puede <strong>empeorar</strong> la probabilidad de error: la curva \(P(E)\) frente a la complejidad tiene forma de <strong>U</strong>. Solo con infinitos datos la curva baja siempre. Además, si \(N\) es pequeño frente a \(d\), la matriz de covarianza estimada es <strong>deficiente en rango</strong> (singular).</p>
+      <figure class="fig slide" data-fig="t3-p6"><div class="frame"><img src="img/t3-p6.webp" width="1200" height="742" loading="lazy" alt="Curvas en U de la probabilidad de error"></div><figcaption><span class="src">Diap. 5 · PDF p. 6</span>Curvas de \(P(E|m,n)\) frente al número de celdas \(m\), una por cada tamaño de entrenamiento \(n\). Con \(n\) finito, cada curva baja, toca un mínimo y vuelve a subir; solo la de \(n=\infty\) baja siempre.</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <p><strong>Cómo leer la figura</strong> (de Duda, Hart y Stork). Eje horizontal: \(m\), número de celdas, una medida de la complejidad del modelo (más celdas = más parámetros a estimar). Cada curva corresponde a un número \(n\) de patrones de entrenamiento.</p>
@@ -129,6 +131,7 @@
     <header><h3>Ejemplo 1: datos de microarrays</h3><span class="ref">Diap. 7 · PDF p. 8</span></header>
     <div class="summary">
       <p>Base de datos NCI: <strong>6830 genes</strong> (características) medidos en líneas celulares de 14 tipos de tumor. Es el caso extremo \(N\ll d\): hay muchísimas más características que muestras.</p>
+      <figure class="fig slide" data-fig="t3-p8"><div class="frame"><img src="img/t3-p8.webp" width="696" height="1350" loading="lazy" alt="Mapa de calor de expresión génica"></div><figcaption><span class="src">Diap. 7 · PDF p. 8</span>Datos de microarrays: cada fila es un gen y cada columna una línea celular (verde y rojo, nivel de expresión). Son 6830 genes (\(d\)) para solo 64 muestras (\(N\)): \(d\gg N\).</figcaption></figure>
     </div>
     <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
       <p>La lista de la diapositiva suma \(5+7+9+9+1+6+8+2+6+1+1+7+1+1=64\) muestras (la cabecera dice «60 cell lines»: las 4 restantes son repeticiones, las etiquetadas <em>-repro</em>). Con \(d=6830\) y \(N=64\):</p>

@@ -1,0 +1,11 @@
+<script>
+/* ================= figuras: ampliar al pulsar ================= */
+document.addEventListener('click', e => {
+  const fr = e.target.closest('.fig.slide .frame'); if (!fr) return;
+  const img = fr.querySelector('img'); if (!img) return;
+  const lb = document.createElement('div'); lb.className = 'lightbox'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-label', 'Figura ampliada (pulsa para cerrar)');
+  const big = document.createElement('img'); big.src = img.src; big.alt = img.alt; lb.appendChild(big);
+  lb.addEventListener('click', () => lb.remove()); document.body.appendChild(lb);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.lightbox').forEach(l => l.remove()); });
+</script>
