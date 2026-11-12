@@ -6,21 +6,62 @@ Cada tema tiene su propia carpeta con una **plataforma de estudio interactiva**:
 
 ## Temas
 
-| Tema | Contenido | Estado | Carpeta |
-|---|---|---|---|
-| **2** | **Decision theory: Bayes, MAP, riesgo mínimo, Neyman-Pearson, LDA/QDA, estimación ML, ROC y métricas** | **Disponible** | [`Tema 2 - Decision Theory`](Tema%202%20-%20Decision%20Theory/) |
-| **3** | **Feature selection: dimensionalidad, PCA, MDA, enfoques no lineales** | **Disponible** | [`Tema 3 - Feature Selection`](Tema%203%20-%20Feature%20Selection/) |
-| 4 | k vecinos, lógica difusa, SVM, redes neuronales, árboles de decisión | Pendiente | — |
-| 5 | Random forest | Pendiente | — |
-| 6 | K-means y clustering | Pendiente | — |
+| Tema | Contenido | Estado | Abrir online | Carpeta |
+|---|---|---|---|---|
+| **2** | **Decision theory: Bayes, MAP, riesgo mínimo, Neyman-Pearson, LDA/QDA, estimación ML, ROC y métricas** | **Disponible** | [▶ Abrir](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/) | [`Tema 2 - Decision Theory`](Tema%202%20-%20Decision%20Theory/) |
+| **3** | **Feature selection: dimensionalidad, PCA, MDA, enfoques no lineales** | **Disponible** | [▶ Abrir](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/) | [`Tema 3 - Feature Selection`](Tema%203%20-%20Feature%20Selection/) |
+| 4 | k vecinos, lógica difusa, SVM, redes neuronales, árboles de decisión | Pendiente | — | — |
+| 5 | Random forest | Pendiente | — | — |
+| 6 | K-means y clustering | Pendiente | — | — |
 
 La lista de temas pendientes sale del *course overview* de las diapositivas (diap. 2 del tema 3 y 29 del tema 2). Se irá completando a medida que avance la asignatura.
 
+## Ir directo a cada lección
+
+Cada enlace abre la plataforma del tema directamente en ese bloque, sin descargar nada. El progreso se guarda en tu navegador.
+
+### Tema 2 · Decision theory
+
+| Bloque | Lección | Diapositivas |
+|---|---|---|
+| — | [Inicio, notación, mapa del PDF y erratas](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#inicio) | — |
+| 1 | [Introducción y Bayes](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b1) | 1–12 |
+| 2 | [Regla MAP](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b2) | 13–16 |
+| 3 | [Riesgo mínimo (MBR)](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b3) | 17–22 |
+| 4 | [Neyman-Pearson y minimax](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b4) | 23–28 |
+| 5 | [Discriminantes y clases gaussianas (QDA)](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b5) | 29–43 |
+| 6 | [LDA y casos particulares](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b6) | 44–50 |
+| 7 | [Estimación por máxima verosimilitud](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b7) | 51–62 |
+| 8 | [RDA y Naive Bayes](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b8) | 63–65 |
+| 9 | [Indicadores de rendimiento y curva ROC](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b9) | 66–75 |
+| 10 | [Test médico, precisión frente a recall y conclusiones](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#b10) | 76–85 |
+| E | [Ejercicios 1, 2, 4, 5, 7.1–7.3, 9, 10 y 11](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#ejercicios) | — |
+| F | [Flashcards](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#flashcards) | — |
+| R | [Repasar las preguntas falladas](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#repaso) | — |
+| ∑ | [Hoja resumen](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/#resumen) · [PDF](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/hoja-resumen.pdf) | — |
+
+### Tema 3 · Feature selection
+
+| Bloque | Lección | Diapositivas |
+|---|---|---|
+| — | [Inicio, notación, mapa del PDF y erratas](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#inicio) | — |
+| 1 | [Dimensionalidad](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#b1) | 1–7 |
+| 2 | [Dos gaussianas y Pr(e)](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#b2) | 8–10 |
+| 3 | [Reducción lineal](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#b3) | 11–13 |
+| 4 | [PCA](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#b4) | 14–25 |
+| 5 | [MDA](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#b5) | 26–37 |
+| 6 | [Enfoques no lineales: t-SNE y autoencoders](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#b6) | 38–42 |
+| 7 | [Conclusiones](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#b7) | 43 |
+| E | [Ejercicios](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#ejercicios) | — |
+| F | [Flashcards](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#flashcards) | — |
+| R | [Repasar las preguntas falladas](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#repaso) | — |
+| ∑ | [Hoja resumen](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#resumen) · [PDF](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/hoja-resumen.pdf) | — |
+
 ## Abrir online
 
-Con GitHub Pages activado, la portada está en **https://marcel02.github.io/MLEARN/** y cada tema se abre desde ahí sin descargar nada (el tema 2, en https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/, y el tema 3, en https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/).
+La web del repositorio está publicada con GitHub Pages: la portada, con todos los temas, está en **https://marcel02.github.io/MLEARN/**. Los enlaces de arriba llevan directamente a cada lección.
 
-Para activarlo (una sola vez): **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main`, carpeta `/ (root)` → Save**. En uno o dos minutos el enlace funciona. GitHub Pages es gratis en repositorios públicos; en uno privado necesita un plan de pago, y la web queda pública aunque el repositorio no lo sea.
+Si alguna vez dejara de funcionar, revisa **Settings → Pages**: *Source: Deploy from a branch*, rama `main`, carpeta `/ (root)`.
 
 ## Cómo usarlo sin conexión
 
@@ -87,6 +128,7 @@ python3 build_local.py "../../Tema 2 - Decision Theory"
 | 2026-11-11 | Portada `index.html` para abrir los temas con GitHub Pages. |
 | 2026-11-12 | Tema 2 (Decision Theory): primera versión completa, con los ejercicios asignados 1, 2, 4, 5, 7.1–7.3, 9, 10 y 11. |
 | 2026-11-12 | Temas 2 y 3: figuras de las diapositivas (24 y 16) y esquemas propios (7 y 3) en las explicaciones. |
+| 2026-11-12 | README: enlaces directos a cada lección, a los ejercicios, a las flashcards y a la hoja resumen. |
 
 ## Origen del contenido
 
