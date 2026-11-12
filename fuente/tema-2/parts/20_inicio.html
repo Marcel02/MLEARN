@@ -1,0 +1,60 @@
+<section class="view" id="v-inicio" data-sec="inicio">
+  <div class="hero">
+    <div class="eyebrow">MLEARN · Tema 2 · Duda, Hart &amp; Stork, cap. 2 y 3</div>
+    <h1>Teoría de la decisión</h1>
+    <p class="lede">Plataforma de estudio construida sobre las 102 páginas del tema 2 (85 diapositivas y los apuntes manuscritos del profesor) y la hoja de ejercicios. Notación exacta del PDF: \(\bx\in\mathbb{R}^d\), \(\omega_i\), \(\Pr(\omega_i)\), \(f_{\bx|\omega_i}(\bx|\omega_i)\), \(\Pr(\omega_i|\bx)\), \(\pi_{ij}\), \(C(\omega_i|\bx)\), \(g_i(\bx)\), \(\bmu_i\), \(\bC_i\).</p>
+  </div>
+
+  <div class="cards3">
+    <div class="mini"><h4>Cómo está organizado</h4><p>Cada concepto tiene un resumen visible y una explicación a fondo desplegable. Las derivaciones se revelan paso a paso con «Siguiente paso».</p></div>
+    <div class="mini"><h4>Etiquetas de cada tarjeta</h4><p>Todas indican «Diapositiva X · PDF p. Y». Las cajas de colores recogen apuntes del profesor, errores habituales, erratas y conexiones con el tema 3.</p></div>
+    <div class="mini"><h4>Ejercicios</h4><p>Solo los que mandó el profesor: 1, 2, 4, 5, 7.1, 7.2, 7.3, 9, 10 y 11, con pistas y solución paso a paso comprobada en código.</p></div>
+  </div>
+
+  <div class="legend" style="margin:6px 0 4px">
+    <span><i class="dot" style="background:var(--prof)"></i>Apuntes del profesor</span>
+    <span><i class="dot" style="background:var(--trap)"></i>Error habitual</span>
+    <span><i class="dot" style="background:var(--err)"></i>Posible errata</span>
+    <span><i class="dot" style="background:var(--link)"></i>Conexión con el tema 3</span>
+  </div>
+
+  <h2>Notación del tema</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Símbolo</th><th>Significado</th><th>Dónde aparece</th></tr></thead>
+    <tbody>
+      <tr><td>\(\bx\in\mathbb{R}^d\)</td><td>Vector de características (columna) de dimensión \(d\).</td><td>Diap. 3, 6</td></tr>
+      <tr><td>\(\omega_1,\dots,\omega_c\)</td><td>Estados de la naturaleza (clases); \(c\) es el número de clases.</td><td>Diap. 3, 6</td></tr>
+      <tr><td>\(\Pr(\omega_i)\)</td><td>Probabilidad a priori de la clase \(\omega_i\); \(\sum_i\Pr(\omega_i)=1\).</td><td>Diap. 6</td></tr>
+      <tr><td>\(f_{\bx|\omega_i}(\bx|\omega_i)\)</td><td>Densidad condicionada a la clase (verosimilitud). A veces abreviada \(f(\bx|\omega_i)\).</td><td>Diap. 6–7</td></tr>
+      <tr><td>\(\Pr(\omega_i|\bx)\)</td><td>Probabilidad a posteriori de la clase dado \(\bx\).</td><td>Diap. 6–7</td></tr>
+      <tr><td>\(f_{\bx}(\bx)\)</td><td>Evidencia: \(\sum_jf_{\bx|\omega_j}(\bx|\omega_j)\Pr(\omega_j)\).</td><td>Diap. 6</td></tr>
+      <tr><td>\(R_i\)</td><td>Región de decisión de \(\omega_i\): puntos donde se decide \(\omega_i\).</td><td>Diap. 18</td></tr>
+      <tr><td>\(\pi_{ij}\)</td><td>Coste de decidir \(\omega_i\) cuando la clase verdadera es \(\omega_j\).</td><td>Diap. 17</td></tr>
+      <tr><td>\(C(\omega_i|\bx)\)</td><td>Riesgo condicional de decidir \(\omega_i\): \(\sum_j\pi_{ij}\Pr(\omega_j|\bx)\).</td><td>Diap. 18</td></tr>
+      <tr><td>\(\mathcal R\)</td><td>Riesgo de Bayes (coste medio total).</td><td>Diap. 17</td></tr>
+      <tr><td>\(P_D,\ P_{FA}\)</td><td>Probabilidad de detección y de falsa alarma.</td><td>Diap. 24, 67</td></tr>
+      <tr><td>\(g_i(\bx)\)</td><td>Función discriminante: se decide \(\omega_i\) si \(g_i(\bx)&gt;g_j(\bx)\ \forall j\neq i\).</td><td>Diap. 31</td></tr>
+      <tr><td>\(\bmu_i,\ \bC_i\)</td><td>Media y matriz de covarianza de la clase \(i\) (gaussiana).</td><td>Diap. 31, 33</td></tr>
+      <tr><td>\(D'\)</td><td>Discriminabilidad: \(|\mu_2-\mu_1|/\sigma\).</td><td>Diap. 71</td></tr>
+      <tr><td>\(\boldsymbol\theta_i,\ D_i,\ N_{c_i}\)</td><td>Parámetros de la pdf de la clase \(i\), sus vectores de entrenamiento y cuántos son.</td><td>Diap. 51–54</td></tr>
+      <tr><td>\(TP,FP,TN,FN\)</td><td>Verdaderos/falsos positivos y negativos (\(\omega_2\) = clase «positiva»).</td><td>Diap. 73</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note trap"><span class="lab">Choques de notación que conviene tener presentes</span>
+    <p><strong>\(\Pr(\omega_i|\omega_j)\)</strong> (diap. 13, 17, 19) no es una posterior: significa «probabilidad de <em>decidir</em> \(\omega_i\) cuando la clase verdadera es \(\omega_j\)», es decir \(\Pr(\bx\in R_i|\omega_j)\). <strong>\(R\)</strong> designa a la vez las regiones \(R_i\) y el recall \(R\) (diap. 74), y \(\mathcal R\) el riesgo. <strong>\(P\)</strong> es la precisión, no una probabilidad. <strong>\(\alpha\)</strong> aparece con tres sentidos: nivel de falsa alarma en Neyman-Pearson (diap. 24), coste de acertar en la diap. 21 y peso de la regularización en RDA (diap. 63). <strong>\(\gamma\)</strong> es el umbral de MBR (diap. 20), el multiplicador/umbral de NP (diap. 25) y el peso de la regularización hacia \(\hat\sigma^2\mathbf I\) (diap. 63).</p>
+  </div>
+
+  <h2>Mapa diapositiva ↔ página del PDF</h2>
+  <p class="small">El PDF original tiene 102 páginas (lo subiste en dos partes: 1–50 y 50–102). Contiene 85 diapositivas numeradas, varias páginas manuscritas sin número y una copia anotada de la diapositiva 62. Algunas diapositivas no muestran su número; las he numerado por posición.</p>
+  <div class="map-grid"><div class="tbl"><table>
+    <thead><tr><th>Diap.</th><th>PDF p.</th><th>Contenido</th><th>Bloque</th></tr></thead>
+    <tbody id="mapBody"></tbody>
+  </table></div></div>
+
+  <h2>Erratas y dudas detectadas en el material</h2>
+  <p class="small">Cada una aparece también en su tarjeta. Donde el material es ambiguo lo digo en lugar de elegir en silencio.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Dónde</th><th>Qué pone</th><th>Qué debería poner / matiz</th></tr></thead>
+    <tbody id="errBody"></tbody>
+  </table></div>
+</section>

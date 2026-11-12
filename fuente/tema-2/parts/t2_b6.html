@@ -1,0 +1,78 @@
+<section class="view" id="v-b6" data-sec="b6">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 6 · Apartado 2.1.6 del PDF (continuación)</div>
+    <h1>Casos particulares: LDA, distancia euclídea y variables discretas</h1>
+    <p class="lede">Cuando las covarianzas coinciden, la frontera es un hiperplano. Y no solo las gaussianas dan discriminantes lineales.</p>
+    <div class="meta"><span class="chip">Diap. 44–50</span><span class="chip">PDF p. 51–59</span><span class="chip">incluye manuscritas p. 52, 56</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b6-1">
+    <header><h3>Caso 1: misma covarianza para todas las clases → LDA</h3><span class="ref">Diap. 44 · PDF p. 51–52</span></header>
+    <div class="summary">
+      <p>Con \(\bC_i=\bC\) para todas las clases, \(g_i(\bx)=-\frac12(\bx-\bmu_i)^T\bC^{-1}(\bx-\bmu_i)+\ln\Pr(\omega_i)\) más términos comunes (el primero es la <strong>distancia de Mahalanobis</strong> entre \(\bx\) y \(\bmu_i\)). Al igualar \(g_i=g_j\), el término \(\bx^T\bC^{-1}\bx\) se cancela y la frontera es un <strong>hiperplano</strong>, \(\bw^T\bx+w_0=0\): <strong>LDA</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la frontera bien escrita</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Igualar.</strong> \(-\frac12(\bx-\bmu_i)^T\bC^{-1}(\bx-\bmu_i)+\ln\Pr(\omega_i)=-\frac12(\bx-\bmu_j)^T\bC^{-1}(\bx-\bmu_j)+\ln\Pr(\omega_j)\). Los términos \(-\frac d2\ln2\pi-\frac12\ln|\bC|\) son iguales a los dos lados.</li>
+        <li><strong>Desarrollar.</strong> \(-\frac12\bx^T\bC^{-1}\bx+\bmu_i^T\bC^{-1}\bx-\frac12\bmu_i^T\bC^{-1}\bmu_i+\ln\Pr(\omega_i)=\) lo mismo con \(j\). El término \(-\frac12\bx^T\bC^{-1}\bx\) está a los dos lados y se cancela: no queda nada cuadrático.</li>
+        <li><strong>Resultado.</strong> \((\bmu_i-\bmu_j)^T\bC^{-1}\bx=\frac12\left(\bmu_i^T\bC^{-1}\bmu_i-\bmu_j^T\bC^{-1}\bmu_j\right)+\ln\frac{\Pr(\omega_j)}{\Pr(\omega_i)}\), o multiplicando por \(-2\): \(2(\bmu_j-\bmu_i)^T\bC^{-1}\bx=\left(\bmu_j^T\bC^{-1}\bmu_j-\bmu_i^T\bC^{-1}\bmu_i\right)+2\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}\).</li>
+        <li><strong>Comprobación en 1D.</strong> \(\mu_i=0\), \(\mu_j=2\), \(C=1\), priors iguales: \(2\cdot2\,x=4\Rightarrow x=1\), el punto medio, como debe ser.</li>
+        <li><strong>Forma \(\bw^T\bx+w_0=0\):</strong> \(\bw=\bC^{-1}(\bmu_i-\bmu_j)\). La forma \(\bw^T(\bx-\bx_0)=0\) se deriva en el ejercicio 4.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Errata en la diap. 44</span><p>La diapositiva escribe \((\bmu_j-\bmu_i)^T\bC^{-1}\bx=(\bmu_i^T\bC^{-1}\bmu_i-\bmu_j^T\bC^{-1}\bmu_j)+2\ln\frac{\Pr(\omega_j)}{\Pr(\omega_i)}\). Le falta un factor 2 a la izquierda y tiene el lado derecho con el signo cambiado. Comprobación: con \(\mu_i=0\), \(\mu_j=2\), \(C=1\) y priors iguales daría \(2x=-4\), es decir \(x=-2\), fuera del segmento entre las medias; lo correcto es \(x=1\). La conclusión (frontera lineal) sí es correcta.</p></div>
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 51–52</span><p>«<em>Remember that</em>: \(\bA\cdot\bB\neq\bB\cdot\bA\)» (al manipular los productos). Junto a \(\bw^T\bx+w_0=0\): «<em>Linear, so in 2D → hyper-plane</em>», con un dibujo en la p. 52 del plano frontera y su normal \(\bw\) entre \(\omega_1\) y \(\omega_2\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b6-2">
+    <header><h3>Las priors desplazan el hiperplano</h3><span class="ref">Diap. 45–46 · PDF p. 53–54</span></header>
+    <div class="summary">
+      <p>Con covarianzas iguales y priors iguales, la frontera pasa por el punto medio de las medias. Si una clase es más probable, el hiperplano se desplaza (paralelo a sí mismo) hacia la clase <strong>menos probable</strong>, agrandando la región de la más probable. Las figuras lo muestran en 1D (\(0{,}7/0{,}3\) y \(0{,}9/0{,}1\)), 2D y 3D.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>Por el ejercicio 4, la frontera es \(\bw^T(\bx-\bx_0)=0\) con \(\bx_0=\frac12(\bmu_i+\bmu_j)-\frac{\ln(\Pr(\omega_i)/\Pr(\omega_j))}{(\bmu_i-\bmu_j)^T\bC^{-1}(\bmu_i-\bmu_j)}(\bmu_i-\bmu_j)\). La dirección \(\bw\) no depende de las priors: solo se mueve \(\bx_0\), sobre la recta que une las medias y en el sentido de alejarse de \(\bmu_i\) si \(\omega_i\) es más probable. El desplazamiento es mayor cuanto menor es la distancia de Mahalanobis entre medias: si las clases están muy separadas, las priors apenas importan.</p>
+      <div class="numex"><span class="lab">Ejemplo numérico 1D</span><p>\(\mu_1=0\), \(\mu_2=2\), \(\sigma=1\). Con \(\Pr(\omega_1)=0{,}7\): \(x_0=1+\frac{\ln(0{,}7/0{,}3)}{4}\cdot2=1{,}424\). Con \(0{,}9\): \(x_0=1+\frac{\ln9}{2}=2{,}099\), más allá incluso de \(\mu_2\).</p></div>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b6-3">
+    <header><h3>Casos 2 y 3: covarianza diagonal e isotrópica</h3><span class="ref">Diap. 47 · PDF p. 55–56</span></header>
+    <div class="summary">
+      <p><strong>Caso 2</strong>, \(\bC=\mathrm{diag}(\sigma_1^2,\dots,\sigma_d^2)\) común: \(g_i(\bx)=\ln\Pr(\omega_i)-\frac12\sum_j\frac{(x_j-\mu_{ij})^2}{\sigma_j^2}\). <strong>Caso 3</strong>, \(\bC=\sigma^2\mathbf I\): \(g_i(\bx)=\ln\Pr(\omega_i)-\frac{1}{2\sigma^2}\|\bx-\bmu_i\|^2\). Con priors iguales, \(g_i(\bx)=-\frac{1}{2\sigma^2}\|\bx-\bmu_i\|^2\): se elige la clase con la media más cercana en <strong>distancia euclídea</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Inversa diagonal</strong> (apunte p. 56): \((\bx-\bmu_i)^T\bC^{-1}(\bx-\bmu_i)=(\bx-\bmu_i)^T\mathrm{diag}(1/\sigma_1^2,\dots,1/\sigma_d^2)(\bx-\bmu_i)=\sum_j\frac{(x_j-\mu_{ij})^2}{\sigma_j^2}\). Cada característica pesa según su varianza.</li>
+        <li><strong>Isotrópica.</strong> Con todas las \(\sigma_j\) iguales, la suma es \(\|\bx-\bmu_i\|^2/\sigma^2\).</li>
+        <li><strong>Frontera.</strong> Con priors iguales, \(\|\bx-\bmu_1\|=\|\bx-\bmu_2\|\): la mediatriz del segmento entre medias (el dibujo del profesor). Es el clasificador de «media más cercana».</li>
+      </ol>
+    </div></details>
+    <div class="inner"><div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 55–56</span><p>«<em>'Take the class that is closer to the mean'</em>», con dos círculos alrededor de \(\bmu_1\), \(\bmu_2\) y la frontera «d.b.» entre ellos. En la p. 56, en azul: «<em>FROM DATA: we take a criterion to extract these parameters from data</em>»: \(\hat\bmu\), \(\hat\bC\) a partir de \((\bx_i,y_i)\), \(i=1\dots N\), \(y_i\in\{1,\dots,c\}\); y «<em>Remember from the split of DB</em>».</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b6-4">
+    <header><h3>Variables binarias independientes: también un discriminante lineal</h3><span class="ref">Diap. 48–50 · PDF p. 57–59</span></header>
+    <div class="summary">
+      <p>La diap. 48 propone el ejercicio de escribir la frontera LDA como \(\bw^T(\bx-\bx_0)=0\) (ejercicio 4 de la hoja). Las diap. 49–50 muestran que las gaussianas no son las únicas con discriminantes lineales óptimos: con \(\bx\in\{0,1\}^d\), componentes independientes, \(p_i=\Pr(x_i=1|\omega_1)\) y \(q_i=\Pr(x_i=1|\omega_2)\),</p>
+      \[h(\bx)\equiv\ln\Pr(\omega_1|\bx)-\ln\Pr(\omega_2|\bx)=\sum_{i=1}^d\left(x_i\ln\frac{p_i}{q_i}+(1-x_i)\ln\frac{1-p_i}{1-q_i}\right)+\ln\frac{\Pr(\omega_1)}{\Pr(\omega_2)}\ \underset{\omega_2}{\overset{\omega_1}{\gtrless}}\ 0,\]
+      <p>que es lineal en las \(x_i\) (ejercicio 5 de la hoja).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Modelo.</strong> Por independencia, \(f(\bx|\omega_1)=\prod_i\Pr(x_i|\omega_1)=\prod_ip_i^{x_i}(1-p_i)^{1-x_i}\). El truco del exponente: si \(x_i=1\) queda \(p_i\); si \(x_i=0\), \(1-p_i\).</li>
+        <li><strong>Logaritmo del cociente de posteriores.</strong> Con Bayes, \(\ln\frac{\Pr(\omega_1|\bx)}{\Pr(\omega_2|\bx)}=\ln\frac{f(\bx|\omega_1)}{f(\bx|\omega_2)}+\ln\frac{\Pr(\omega_1)}{\Pr(\omega_2)}\), y el logaritmo convierte el producto en suma.</li>
+        <li><strong>¿Por qué lineal?</strong> Cada sumando \(x_i\ln a+(1-x_i)\ln b\) es de grado 1 en \(x_i\). Con variables binarias no hace falta más: \(x_i^2=x_i\).</li>
+        <li>La forma \(\bw^T\bx+w_0\) explícita y el caso \(p_i=1-q_i\) (voto por mayoría) están desarrollados en el ejercicio 5.</li>
+      </ol>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b6"></div>
+  <div class="pager"></div>
+</section>

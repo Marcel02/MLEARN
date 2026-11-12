@@ -1,0 +1,117 @@
+<section class="view" id="v-b9" data-sec="b9">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 9 · Apartados 2.2 y 2.2.1 del PDF</div>
+    <h1>Indicadores de rendimiento y curva ROC</h1>
+    <p class="lede">Cómo medir lo bien que funciona un clasificador binario: las cuatro probabilidades, la curva ROC, \(D'\) y las métricas TP/FP/TN/FN.</p>
+    <div class="meta"><span class="chip">Diap. 66–75</span><span class="chip">PDF p. 80–90</span><span class="chip">incluye manuscrita p. 82</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b9-1">
+    <header><h3>Las cuatro probabilidades (vocabulario de radar)</h3><span class="ref">Diap. 66–70 · PDF p. 80–85</span></header>
+    <div class="summary">
+      <p>Valores escalares (\(d=1\)) y dos clases: \(f_x(x|\omega_1)\sim N(\mu_1,\sigma^2)\), \(f_x(x|\omega_2)\sim N(\mu_2,\sigma^2)\). El clasificador usa un umbral \(\gamma'\) (decide \(\omega_2\) si \(x\ge\gamma'\)):</p>
+      <div class="tbl"><table><thead><tr><th>Nombre</th><th>Probabilidad</th><th>También llamada</th></tr></thead><tbody>
+        <tr><td>Detección \(P_D\)</td><td>\(\Pr(x\ge\gamma'|\omega_2)\)</td><td>Sensibilidad, recall</td></tr>
+        <tr><td>Falsa alarma \(P_{FA}\)</td><td>\(\Pr(x\ge\gamma'|\omega_1)\)</td><td></td></tr>
+        <tr><td>Pérdida (miss) \(P_P\)</td><td>\(\Pr(x\le\gamma'|\omega_2)\)</td><td></td></tr>
+        <tr><td>Rechazo correcto \(P_R\)</td><td>\(\Pr(x\le\gamma'|\omega_1)\)</td><td>Especificidad («<em>power</em>» en la diapositiva)</td></tr>
+      </tbody></table></div>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Solo hay dos independientes.</strong> Para cada clase, decidir \(\omega_2\) o \(\omega_1\) son sucesos complementarios: \(P_P=1-P_D\) y \(P_R=1-P_{FA}\).</li>
+        <li><strong>Con gaussianas.</strong> \(P_D=Q\!\left(\frac{\gamma'-\mu_2}{\sigma}\right)\) y \(P_{FA}=Q\!\left(\frac{\gamma'-\mu_1}{\sigma}\right)\), con \(Q(t)=\int_t^\infty\frac{1}{\sqrt{2\pi}}e^{-u^2/2}du\).</li>
+        <li><strong>El compromiso.</strong> Mover \(\gamma'\) a la izquierda sube \(P_D\) y también \(P_{FA}\). No se puede mejorar una sin empeorar la otra moviendo solo el umbral.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 82</span><p>Dibuja \(f(x|\omega_1)\) estrecha en \(\mu_1\) y \(f(x|\omega_2)\) ancha en \(\mu_2\) (\(d=1\), \(c=2\)): con varianzas distintas, las colas se cruzan dos veces.</p></div>
+      <div class="note errata"><span class="lab">Terminología</span><p>La diap. 67 llama «<em>power</em>» a la especificidad. En contraste de hipótesis, la potencia de un test es \(\Pr(\text{rechazar }H_0|H_1)\), es decir \(P_D\), la sensibilidad. No las confundas en un examen de otra asignatura. La numeración «2 PERFORMANCE INDICATORS» corresponde al apartado 2.2 del índice.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b9-2">
+    <header><h3>Curva ROC, \(D'\) y AUROC</h3><span class="ref">Diap. 71 · PDF p. 86</span></header>
+    <div class="summary">
+      <p>La <strong>ROC</strong> (<em>receiver operating characteristic</em>) representa la probabilidad de detección frente a la de falsa alarma al variar \(\gamma'\). Depende de la discriminabilidad entre clases; con varianzas iguales se mide con</p>
+      \[D'=\frac{|\mu_2-\mu_1|}{\sigma}.\]
+      <p>El <strong>área bajo la ROC (AUROC)</strong> se usa como medida de discriminabilidad o rendimiento del clasificador.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la ecuación de la curva y el área</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Parametrizar.</strong> Con \(t=\frac{\gamma'-\mu_1}{\sigma}\) (etiqueta mía): \(P_{FA}=Q(t)\) y \(P_D=Q\!\left(\frac{\gamma'-\mu_2}{\sigma}\right)=Q(t-D')\). Eliminando \(t\): \(P_D=Q\!\left(Q^{-1}(P_{FA})-D'\right)\).</li>
+        <li><strong>Casos extremos.</strong> \(D'=0\): \(P_D=P_{FA}\), la diagonal (clasificador inútil, como tirar una moneda). \(D'\to\infty\): la curva se pega a la esquina \((0,1)\), el clasificador ideal.</li>
+        <li><strong>Cada punto de la curva es un umbral.</strong> MAP con priors iguales usa \(\gamma'=\frac{\mu_1+\mu_2}{2}\), que da \(P_{FA}=Q(D'/2)\) y \(P_D=1-Q(D'/2)\). NP elige el punto con \(P_{FA}=\alpha\).</li>
+        <li><strong>AUROC.</strong> Es la probabilidad de que una muestra de \(\omega_2\) dé un valor mayor que una de \(\omega_1\): \(x_2-x_1\sim N(\mu_2-\mu_1,2\sigma^2)\), así que \(\text{AUROC}=\Pr(x_2-x_1&gt;0)=1-Q\!\left(D'/\sqrt2\right)\). Para \(D'=1,2,3\): 0,760; 0,921; 0,983.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 86</span><p>Resalta \(D'\): «<em>measures the separability</em>». Marca la esquina superior izquierda como «IDEAL». Sitúa dos umbrales \(\gamma'\) y \(\gamma''\) sobre la curva: al pasar de uno a otro «↑\(P_D\) & ↑\(P_{FA}\)».</p></div>
+      <div class="note link"><span class="lab">Conexión con el tema 3</span><p>Es la misma \(D'\) del ejemplo 2 del tema 3: con priors iguales y MAP, \(\Pr(e)=\frac12P_{FA}+\frac12(1-P_D)=Q(D'/2)\), la fórmula \(Q(r/2)\) con \(r=D'\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b9-3">
+    <header><h3>Más de dos clases y más de una dimensión</h3><span class="ref">Diap. 72 · PDF p. 87</span></header>
+    <div class="summary">
+      <p>Con \(c&gt;2\), para una \(P_D\) dada hay varias \(P_{FA}\) posibles. Para \(d&gt;1\) la diapositiva propone dos extensiones de la discriminabilidad:</p>
+      \[D(\omega_i,\omega_j)=\sum_{k=1}^d\left|\frac{(\bmu_i)_k}{(\sigma_i)_k}-\frac{(\bmu_j)_k}{(\sigma_j)_k}\right|,\qquad D_M(\bx\in\omega_i,\omega_j)=\sum_{\bx\in\omega_i}(\bx-\bmu_j)^T\bC_j^{-1}(\bx-\bmu_j).\]
+      <p>La segunda, basada en Mahalanobis, no es simétrica en sus argumentos.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li>Con \((\sigma_i)_k=(\sigma_j)_k=\sigma_k\), la primera se reduce a \(\sum_k|(\bmu_i)_k-(\bmu_j)_k|/\sigma_k\): la suma de los \(D'\) de cada característica.</li>
+        <li>\(D_M\) suma las distancias de las muestras de \(\omega_i\) a la clase \(\omega_j\) medidas con la covarianza de \(\omega_j\). Cambiar los papeles cambia las muestras y la covarianza usadas: de ahí la falta de simetría.</li>
+      </ul>
+    </div></details>
+    <div class="inner"><div class="note errata"><span class="lab">Matiz sobre la primera fórmula</span><p>Si las desviaciones de las dos clases son distintas, \(|\mu_i/\sigma_i-\mu_j/\sigma_j|\) cambia al sumar una constante a la característica (no es invariante a traslaciones). Con \(\sigma_i=\sigma_j\) sí lo es. Tómala tal como la da la diapositiva: una extensión «simple».</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b9-4">
+    <header><h3>TP, FP, TN, FN y las métricas habituales</h3><span class="ref">Diap. 73–75 · PDF p. 88–90</span></header>
+    <div class="summary">
+      <p>Con \(\omega_1\): paciente sano y \(\omega_2\): paciente enfermo (positivo). TP = enfermos diagnosticados como enfermos; FP = sanos diagnosticados como enfermos; TN = sanos como sanos; FN = enfermos como sanos.</p>
+      \[R=\Pr(\bx\in R_2|\omega_2)\simeq\tfrac{TP}{TP+FN},\quad S=\Pr(\bx\in R_1|\omega_1)\simeq\tfrac{TN}{TN+FP},\quad P=\Pr(\omega_2|\bx\in R_2)\simeq\tfrac{TP}{TP+FP},\]
+      \[F_{score}=\frac{2P\cdot R}{P+R},\qquad A=\Pr(\omega_1)S+\Pr(\omega_2)R\simeq\frac{TP+TN}{TP+TN+FP+FN}=1-P_e.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Sensibilidad (recall) y especificidad</strong> se condicionan a la <em>clase verdadera</em>: miran solo a los enfermos o solo a los sanos.</li>
+        <li><strong>Precisión</strong> se condiciona a la <em>decisión</em>: de los que el clasificador marca como positivos, cuántos lo son de verdad. Con Bayes: \(P=\frac{\Pr(\omega_2)R}{\Pr(\omega_2)R+\Pr(\omega_1)(1-S)}\). Depende de la prevalencia \(\Pr(\omega_2)\); recall y especificidad no.</li>
+        <li><strong>Exactitud (accuracy).</strong> Por probabilidad total, \(A=\Pr(\omega_1)S+\Pr(\omega_2)R\). Con clases desbalanceadas engaña: si el 99 % está sano, decir siempre «sano» da \(A=0{,}99\) con \(R=0\) («<em>Beware of unbalanced</em>» en la diapositiva).</li>
+        <li><strong>F-score.</strong> Media armónica de \(P\) y \(R\): es baja si cualquiera de las dos lo es.</li>
+        <li>La figura de la diap. 75 lo resume: precisión = cuántos de los seleccionados son relevantes; recall = cuántos de los relevantes se seleccionan.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 88</span><p>Asocia los nombres de radar con colores: <em>Detection</em> (verde) = TP, <em>False alarm</em> (rojo) = FP, <em>Miss</em> (rosa), <em>Correct reject</em> (azul). Dibuja «\(\omega_1\): NOT enemy, \(\omega_2\): enemy» con el umbral \(\gamma'\), y sombrea en verde los TP y en azul la zona de \(\omega_1\) a la izquierda.</p></div>
+      <div class="note errata"><span class="lab">Errata en la anotación</span><p>En ese dibujo, la zona rosa (cola de \(\omega_2\) a la izquierda del umbral) está rotulada «TN». Según su propia leyenda de colores (rosa = miss) son FN: enfermos que el clasificador da por sanos.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="roc">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Umbral, ROC, Neyman-Pearson y matriz de confusión</h3></div><span class="ref small">Diap. 24–25, 67–83</span></div>
+    <p class="small">\(\omega_1\sim N(0,1)\), \(\omega_2\sim N(D',1)\). Mueve el umbral \(\gamma'\) o fija una falsa alarma \(\alpha\) (Neyman-Pearson). Abajo, la matriz de confusión esperada para \(N\) casos con la prevalencia elegida.</p>
+    <div class="controls">
+      <div class="ctl"><label for="r-dp"><span>Discriminabilidad \(D'\)</span><output id="r-dp-o"></output></label><input type="range" id="r-dp" min="0" max="4" step="0.05" value="2"></div>
+      <div class="ctl"><label for="r-g"><span>Umbral \(\gamma'\)</span><output id="r-g-o"></output></label><input type="range" id="r-g" min="-3" max="6" step="0.01" value="1"></div>
+      <div class="ctl"><label for="r-a"><span>Neyman-Pearson: \(\alpha\)</span><output id="r-a-o"></output></label><input type="range" id="r-a" min="0.001" max="0.5" step="0.001" value="0.05"></div>
+      <div class="ctl" style="justify-content:flex-end"><button class="btn pri" id="r-np">Aplicar NP (\(P_{FA}=\alpha\))</button></div>
+      <div class="ctl"><label for="r-pr"><span>Prevalencia \(\Pr(\omega_2)\)</span><output id="r-pr-o"></output></label><input type="range" id="r-pr" min="0.01" max="0.9" step="0.01" value="0.23"></div>
+      <div class="ctl"><label for="r-n"><span>Casos \(N\)</span><output id="r-n-o"></output></label><input type="range" id="r-n" min="50" max="2000" step="10" value="200"></div>
+    </div>
+    <div class="plots">
+      <div class="plot"><canvas id="r-c1" height="230" aria-label="Densidades y umbral"></canvas><div class="cap">Área azul rayada: \(P_{FA}\). Área naranja: \(P_D\).</div></div>
+      <div class="plot"><canvas id="r-c2" height="230" aria-label="Curva ROC"></canvas><div class="cap">ROC para el \(D'\) actual (curvas de referencia \(D'=1,2,3\) en gris) y el punto de trabajo.</div></div>
+    </div>
+    <div class="tbl" id="r-cm"></div>
+    <div class="readout" id="r-out"></div>
+  </div>
+
+  <div class="quiz" data-quiz="b9"></div>
+  <div class="pager"></div>
+</section>

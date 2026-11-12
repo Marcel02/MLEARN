@@ -1,0 +1,139 @@
+<section class="view" id="v-b5" data-sec="b5">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 5 · Apartados 2.1.5 y 2.1.6 del PDF</div>
+    <h1>Discriminantes y clases gaussianas (QDA)</h1>
+    <p class="lede">Del criterio de decisión al clasificador: funciones discriminantes, la gaussiana multivariante, el blanqueado y las fronteras cuadráticas.</p>
+    <div class="meta"><span class="chip">Diap. 29–43</span><span class="chip">PDF p. 32–50</span><span class="chip">incluye manuscritas p. 33, 38, 45, 46</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b5-1">
+    <header><h3>De los criterios al clasificador: generativos y discriminativos</h3><span class="ref">Diap. 29–30 · PDF p. 32–34</span></header>
+    <div class="summary">
+      <p>En la práctica no conocemos \(f(\bx|\omega)\): hay que estimarla con un conjunto finito, lo que añade error. Dos formas de aprender: <strong>discriminativa</strong>, aprendiendo la frontera directamente de los datos (desde el capítulo 4), y <strong>generativa</strong>, suponiendo un modelo para \(f(\bx|\omega)\) y aplicando Bayes (este capítulo). Si el modelo supuesto está lejos de la realidad, son preferibles los discriminativos.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>La diap. 29 vuelve al mapa del curso y recuadra en rojo «gaussiana paramétrica → discriminante lineal y cuadrático (lecture 2)»: es lo que queda de tema. La idea del profesor (p. 33) es el puente: de los tres criterios (MAP, MBR, NP) se pasa a una regla \(h_{\boldsymbol\theta}(\bx)\) usando la base de datos para fijar \(f_{\bx|\omega}(\bx|\omega)\), por ejemplo gaussiana o Bernoulli. Un clasificador generativo podría incluso generar datos nuevos muestreando su modelo; uno discriminativo solo sabe separar.</p>
+    </div></details>
+    <div class="inner"><div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 33</span><p>«<em>From criteria</em> (1)(2)(3) <em>to</em> → \(h_{\boldsymbol\theta}(\bx)\) <em>through the use of the DB</em>, \(f_{\bx|\omega}(\bx|\omega)\)» → «<em>if Gaussian / if Bernoulli</em>».</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b5-2">
+    <header><h3>Funciones discriminantes \(g_i(\bx)\)</h3><span class="ref">Diap. 31 · PDF p. 35</span></header>
+    <div class="summary">
+      <p>Suponiendo clases gaussianas, \(p(\bx|\omega_i)=\mathcal N(\bmu_i,\bC_i)\), cada criterio define un discriminante:</p>
+      \[\text{MBR: }g_i(\bx)=-C(\omega_i|\bx)\qquad\text{MAP: }g_i(\bx)=\Pr(\omega_i|\bx)\qquad\text{NP: }g_i(\bx)=f(\bx|\omega_i).\]
+      <p>En todos los casos se decide \(\omega_i\) si \(g_i(\bx)&gt;g_j(\bx)\) para todo \(j\neq i\). El resto del tema se centra en los <strong>discriminantes MAP</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li>El signo menos de MBR convierte «minimizar el riesgo» en «maximizar \(g_i\)».</li>
+        <li>Cualquier función creciente de \(g_i\) da las mismas decisiones: se puede quitar la evidencia, multiplicar por constantes positivas o tomar logaritmos. Lo usa la diap. 39.</li>
+        <li>Las fronteras entre \(\omega_i\) y \(\omega_j\) son los puntos con \(g_i(\bx)=g_j(\bx)\).</li>
+      </ul>
+    </div></details>
+    <div class="inner"><div class="note errata"><span class="lab">Matiz sobre NP</span><p>Tomar \(g_i(\bx)=f(\bx|\omega_i)\) y elegir el mayor equivale al test NP con \(\gamma=1\) (o a máxima verosimilitud). El NP general compara el cociente \(f_2/f_1\) con un \(\gamma\) ajustado para cumplir \(P_{FA}=\alpha\) (diap. 25).</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b5-3">
+    <header><h3>La gaussiana univariante y multivariante</h3><span class="ref">Diap. 32–33 · PDF p. 36–38</span></header>
+    <div class="summary">
+      \[f_x(x)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac12\frac{(x-\mu)^2}{\sigma^2}},\qquad f_{\bx}(\bx)=\frac{1}{(2\pi)^{d/2}|\bC|^{1/2}}\exp\!\left(-\tfrac12(\bx-\bmu)^T\bC^{-1}(\bx-\bmu)\right),\]
+      <p>con \(\bmu=E\{\bx\}\in\mathbb{R}^d\) y \(\bC=E\{(\bx-\bmu)(\bx-\bmu)^T\}\in\mathbb{R}^{d\times d}\). La covarianza es semidefinida positiva (autovalores reales no negativos).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Entradas de \(\bC\).</strong> \([\bC]_{ij}=E\{(x_i-\mu_i)(x_j-\mu_j)\}\): la diagonal son las varianzas de cada componente; fuera de ella, las covarianzas entre componentes. \(\bC\) es simétrica.</li>
+        <li><strong>Semidefinida positiva.</strong> Para cualquier \(\bv\): \(\bv^T\bC\bv=E\{(\bv^T(\bx-\bmu))^2\}\ge0\), porque es la varianza de la variable escalar \(\bv^T\bx\). De ahí que los autovalores sean \(\ge0\). Para que exista \(\bC^{-1}\) hacen falta todos \(&gt;0\).</li>
+        <li><strong>La forma cuadrática.</strong> \((\bx-\bmu)^T\bC^{-1}(\bx-\bmu)\) generaliza \((x-\mu)^2/\sigma^2\): es la distancia de Mahalanobis al cuadrado. Sus curvas de nivel son elipsoides (tarjeta 5.4).</li>
+        <li><strong>La constante.</strong> \((2\pi)^{d/2}|\bC|^{1/2}\) hace que la densidad integre 1. Con \(d=1\), \(|\bC|=\sigma^2\) y se recupera la univariante.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 37–38</span><p>«<em>usually column vectors</em>»; \([\bC]_{ij}=E\{(x_i-\mu_i)(x_j-\mu_j)\}\) «<em>= covariance between components</em>»; marca las dimensiones \(1\times d\), \(d\times d\), \(d\times1\) de la forma cuadrática y «<em>determinant of</em> \(\bC\)»; «\(\bu_1,\bu_2\) <em>are eigenvectors</em>, \(\lambda_1,\lambda_2\) <em>are eigenvalues of</em> \(\bC\)». En la p. 38 dibuja la campana en \(d=2\) cortada por un plano horizontal: el corte es una elipse ligada a \(\bC_k\), «<em>samples concentrated around the mean</em>», y anota «REVISAR ESTO».</p></div>
+      <div class="note errata"><span class="lab">Detalle de la diap. 32</span><p>La figura marca un 2,5 % en cada cola más allá de \(\mu\pm2\sigma\). El valor exacto es \(Q(2)=2{,}28\,\%\); el 2,5 % corresponde a \(\pm1{,}96\sigma\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b5-4">
+    <header><h3>Transformaciones lineales, blanqueado y elipsoides</h3><span class="ref">Diap. 34–37 · PDF p. 39–42</span></header>
+    <div class="summary">
+      <p>Una transformación lineal de una gaussiana es gaussiana. Con \(\bA\in\mathbb{R}^{d\times k}\) y \(\bz=\bA^T\bx\): \(\bmu_{\bz}=\bA^T\bmu_{\bx}\) y \(\bC_{\bz}=\bA^T\bC_{\bx}\bA\). Con la descomposición espectral \(\bC=\bU\bLambda\bU^T\), la transformación \(\bA=\bU\bLambda^{-1/2}\) <strong>blanquea</strong> \(\bx\) (deja \(\bC_{\bz}=\mathbf I\)).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Media.</strong> \(\bmu_{\bz}=E\{\bA^T\bx\}=\bA^TE\{\bx\}=\bA^T\bmu_{\bx}\) (la esperanza es lineal).</li>
+        <li><strong>Covarianza.</strong> \(\bz-\bmu_{\bz}=\bA^T(\bx-\bmu_{\bx})\), así que \(\bC_{\bz}=E\{\bA^T(\bx-\bmu_{\bx})(\bx-\bmu_{\bx})^T\bA\}=\bA^T\bC_{\bx}\bA\).</li>
+        <li><strong>Descomposición espectral.</strong> \(\bC\bu_i=\lambda_i\bu_i\), \(\bU=[\bu_1\cdots\bu_d]\) con \(\bU\bU^T=\mathbf I\), \(\bLambda=\mathrm{diag}(\lambda_1,\dots,\lambda_d)\), y \(\bC=\bU\bLambda\bU^T\).</li>
+        <li><strong>Blanqueado.</strong> Con \(\bA=\bU\bLambda^{-1/2}\): \(\bA^T\bC\bA=\bLambda^{-1/2}\bU^T\bU\bLambda\bU^T\bU\bLambda^{-1/2}=\bLambda^{-1/2}\bLambda\bLambda^{-1/2}=\mathbf I\). También vale \(\bA=\bU\bLambda^{-1/2}\bU^T\): añadir una rotación final no cambia la identidad.</li>
+        <li><strong>Elipsoides</strong> (diap. 36–37). Las secciones de una gaussiana son hiperelipsoides centrados en \(\bmu\); sus ejes siguen los autovectores de \(\bC\) y miden \(\propto\sqrt{\lambda_i}\). Al blanquear, se convierten en hiperesferas.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico 2D (comprobado en código)</span><p>\(\bC=\begin{pmatrix}2&1\\1&2\end{pmatrix}\): \(\lambda_1=3\), \(\lambda_2=1\), \(\bu_1=\frac{1}{\sqrt2}(1,1)^T\), \(\bu_2=\frac{1}{\sqrt2}(-1,1)^T\). \(\bA=\bU\bLambda^{-1/2}=\begin{pmatrix}1/\sqrt6&-1/\sqrt2\\1/\sqrt6&1/\sqrt2\end{pmatrix}\), y \(\bA^T\bC\bA=\mathbf I\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Errata en la diap. 35</span><p>Escribe \(\bLambda^{-1/2}=\mathrm{diag}(\sqrt{\lambda_1},\sqrt{\lambda_2},\dots,\sqrt{\lambda_d})\). Debe ser \(\mathrm{diag}(1/\sqrt{\lambda_1},\dots,1/\sqrt{\lambda_d})\); con \(\sqrt{\lambda_i}\) se obtendría \(\bC_{\bz}=\bLambda^2\), no la identidad.</p></div>
+      <div class="note link"><span class="lab">Conexión con el tema 3</span><p>\(\bz=\bW^T(\bx-\bm)\) con los autovectores de \(\bS\) es PCA: la covarianza de \(\bz\) es diagonal (\(\bW^T\bS\bW=\mathrm{diag}(\lambda_j)\)). El blanqueado da un paso más y escala cada componente por \(1/\sqrt{\lambda_j}\). La elipse de semiejes \(\sqrt{K\lambda_i}\) es la de la diap. 23 del tema 3.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b5-5">
+    <header><h3>Discriminante MAP para clases gaussianas</h3><span class="ref">Diap. 38–39 · PDF p. 43–46</span></header>
+    <div class="summary">
+      <p>Tomando logaritmos (función creciente) para librarse de la exponencial:</p>
+      \[g_i(\bx)=\ln f(\bx|\omega_i)+\ln\Pr(\omega_i)=-\tfrac12(\bx-\bmu_i)^T\bC_i^{-1}(\bx-\bmu_i)-\tfrac d2\ln(2\pi)-\tfrac12\ln|\bC_i|+\ln\Pr(\omega_i).\]
+      <p>Es una función cuadrática de \(\bx\). Las fronteras \(g_i(\bx)=g_j(\bx)\) son hipercuádricas: <strong>QDA</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Punto de partida.</strong> MAP: \(g_i(\bx)=\Pr(\omega_i|\bx)=f(\bx|\omega_i)\Pr(\omega_i)/f(\bx)\). Se tacha \(f(\bx)\), común a todas las clases (apunte p. 45).</li>
+        <li><strong>Logaritmo.</strong> \(\ln(f\cdot\Pr)=\ln f+\ln\Pr\), y el logaritmo de la gaussiana es \(\ln\frac{1}{(2\pi)^{d/2}|\bC_i|^{1/2}}-\frac12(\bx-\bmu_i)^T\bC_i^{-1}(\bx-\bmu_i)=-\frac d2\ln2\pi-\frac12\ln|\bC_i|-\frac12(\cdots)\).</li>
+        <li><strong>Interpretación de cada término.</strong> Distancia de Mahalanobis a \(\bmu_i\) (penaliza estar lejos de la clase), \(\ln|\bC_i|\) (penaliza clases muy dispersas, que reparten su densidad), \(\ln\Pr(\omega_i)\) (favorece clases frecuentes). \(\frac d2\ln2\pi\) es común y se puede quitar.</li>
+        <li><strong>Efecto de las priors</strong> (diap. 38): con \(P(\omega_1)=0{,}8\) y \(P(\omega_2)=0{,}2\), el plano de decisión entre dos esferas se desplaza hacia la clase menos probable.</li>
+      </ol>
+    </div></details>
+    <div class="inner"><div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 45–46</span><p>«MAP: \(g_i(\bx)=\Pr(\omega_i|\bx)=\frac{f_{\bx|\omega_i}(\bx|\omega_i)\Pr(\omega_i)}{f(\bx)}\)» tachando \(f(\bx)\); «\(\ln(g_i(\bx))\gtrless\ln(g_j(\bx))\) → <em>here you will get dec. bound. after computing</em>». En el «Recap 1st class» (2/10/2026): criterios MAP, MBR, NP; \(\Pr(\omega_i|\bx)\propto f_{\bx|\omega_i}(\bx|\omega_i)\Pr(\omega_i)\); para hallar las fronteras \(g_i'(\bx)=g_j'(\bx)\Rightarrow\bx^T\bA\bx+\bv^T\bx+e=0\), «<em>a degree-2 polynomial in the components of</em> \(\bx\)»; «\(c\): <em>classes</em> → nº de campanas gaussianas; \(d\): <em>dimensions of</em> \(\bx\)».</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b5-6">
+    <header><h3>La frontera \(\bx^T\bA\bx+\bv^T\bx+e=0\) y sus formas</h3><span class="ref">Diap. 40–43 · PDF p. 47–50</span></header>
+    <div class="summary">
+      <p>Igualando \(g_i(\bx)=g_j(\bx)\):</p>
+      \[\bx^T\!\left(\tfrac12\bC_j^{-1}-\tfrac12\bC_i^{-1}\right)\!\bx+\left(\bmu_i^T\bC_i^{-1}-\bmu_j^T\bC_j^{-1}\right)\bx-\tfrac12\bmu_i^T\bC_i^{-1}\bmu_i+\tfrac12\bmu_j^T\bC_j^{-1}\bmu_j-\tfrac12\ln\frac{|\bC_i|}{|\bC_j|}+\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}=0.\]
+      <p>La forma depende de los autovalores de \(\bA\): hiperplanos, hiperesferas, hiperelipsoides, hiperparaboloides o hiperhiperboloides.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Desarrollar la forma cuadrática.</strong> \((\bx-\bmu_i)^T\bC_i^{-1}(\bx-\bmu_i)=\bx^T\bC_i^{-1}\bx-2\bmu_i^T\bC_i^{-1}\bx+\bmu_i^T\bC_i^{-1}\bmu_i\), usando que \(\bC_i^{-1}\) es simétrica.</li>
+        <li><strong>Restar \(g_i-g_j\)</strong> y agrupar por grados: término cuadrático con \(\bA=\frac12(\bC_j^{-1}-\bC_i^{-1})\), lineal con \(\bv^T=\bmu_i^T\bC_i^{-1}-\bmu_j^T\bC_j^{-1}\) y el resto en \(e\). El \(\frac d2\ln2\pi\) se cancela.</li>
+        <li><strong>Tipos de frontera</strong> (en 2D): \(\bA=\mathbf 0\) (covarianzas iguales) → recta; autovalores del mismo signo → elipse (circunferencia si son iguales); de signo opuesto → hipérbola (o par de rectas); uno nulo → parábola. En más dimensiones, sus análogos.</li>
+        <li><strong>Más de dos clases</strong> (diap. 43): cada par tiene su cuádrica, y la región final de cada clase es la parte del espacio donde gana a todas. Una misma clase puede salir en trozos separados (\(\omega_4\) en la figura).</li>
+      </ol>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="qda2d">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Fronteras gaussianas en 2D: de LDA a QDA</h3></div><span class="ref small">Diap. 39–47</span></div>
+    <p class="small">Dos clases gaussianas con medias fijas. Cambia las covarianzas y las priors: la región coloreada es la decisión MAP, y las elipses marcan 1σ y 2σ de cada clase. El tipo de frontera se deduce de los autovalores de \(\bA\).</p>
+    <div class="controls">
+      <div class="ctl"><label for="q-s1x"><span>Clase 1: \(\sigma_x\)</span><output id="q-s1x-o"></output></label><input type="range" id="q-s1x" min="0.3" max="2.5" step="0.05" value="1"></div>
+      <div class="ctl"><label for="q-s1y"><span>Clase 1: \(\sigma_y\)</span><output id="q-s1y-o"></output></label><input type="range" id="q-s1y" min="0.3" max="2.5" step="0.05" value="1"></div>
+      <div class="ctl"><label for="q-r1"><span>Clase 1: \(\rho\)</span><output id="q-r1-o"></output></label><input type="range" id="q-r1" min="-0.9" max="0.9" step="0.05" value="0"></div>
+      <div class="ctl"><label for="q-s2x"><span>Clase 2: \(\sigma_x\)</span><output id="q-s2x-o"></output></label><input type="range" id="q-s2x" min="0.3" max="2.5" step="0.05" value="1.6"></div>
+      <div class="ctl"><label for="q-s2y"><span>Clase 2: \(\sigma_y\)</span><output id="q-s2y-o"></output></label><input type="range" id="q-s2y" min="0.3" max="2.5" step="0.05" value="0.6"></div>
+      <div class="ctl"><label for="q-r2"><span>Clase 2: \(\rho\)</span><output id="q-r2-o"></output></label><input type="range" id="q-r2" min="-0.9" max="0.9" step="0.05" value="0.5"></div>
+      <div class="ctl"><label for="q-p1"><span>\(\Pr(\omega_1)\)</span><output id="q-p1-o"></output></label><input type="range" id="q-p1" min="0.05" max="0.95" step="0.01" value="0.5"></div>
+      <div class="ctl" style="justify-content:flex-end"><button class="btn" id="q-lda">Igualar covarianzas (caso LDA)</button></div>
+    </div>
+    <div class="plots"><div class="plot wide"><canvas id="q-c1" height="360" aria-label="Regiones de decisión en 2D"></canvas>
+      <div class="legend"><span><i class="dot" style="background:var(--c1)"></i>región y elipses de \(\omega_1\)</span><span><i class="dot" style="background:var(--c2)"></i>región y elipses de \(\omega_2\)</span><span><i style="background:var(--ink)"></i>frontera \(g_1=g_2\)</span></div></div></div>
+    <div class="readout" id="q-out"></div>
+  </div>
+
+  <div class="quiz" data-quiz="b5"></div>
+  <div class="pager"></div>
+</section>

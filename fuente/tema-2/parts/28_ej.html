@@ -1,0 +1,329 @@
+<section class="view" id="v-ejercicios" data-sec="ejercicios">
+  <div class="sec-head">
+    <div class="eyebrow">Hoja de ejercicios · Chapter 2 · febrero 2026</div>
+    <h1>Ejercicios del tema 2</h1>
+    <p class="lede">Solo los que mandó el profesor: 1, 2, 4, 5, 7.1, 7.2, 7.3, 9, 10 y 11. Intenta cada uno, pide las pistas de una en una y despliega la solución al final. Todas las cuentas y ejemplos están comprobados numéricamente.</p>
+    <div class="meta"><span class="chip">ExercisesChapter2MLEARN.pdf</span><span class="chip">10 ejercicios asignados</span></div>
+  </div>
+  <div class="note trap"><span class="lab">Notación de la hoja frente a la de las diapositivas</span>
+    <p>La hoja escribe \(\hat\omega_i=\max\Pr(\omega_i|\bx)\) en el ejercicio 1: se entiende \(\arg\max\). El ejercicio 9 viene de Bishop y usa \(\boldsymbol\phi\) para el vector de características, \(\mathcal C_k\) para las clases y \(\pi_k\) para las <strong>priors</strong>. No confundas esas \(\pi_k\) con los costes \(\pi_{ij}\) del riesgo de Bayes. En el ejercicio 5, \(p_i\) y \(q_i\) son las probabilidades de un 1 en cada clase, igual que en la diap. 49.</p>
+  </div>
+
+  <!-- EJ 1 -->
+  <article class="ex concept-like" data-eid="ex1">
+    <header><h3><span class="cnum">E1</span> MAP minimiza la probabilidad de error</h3><span class="ref">Herramientas: diap. 13, 17, 19</span></header>
+    <div class="ex-body">
+      <p>Demuestra que el criterio MAP, \(\hat\omega=\arg\max_i\Pr(\omega_i|\bx)\), minimiza la probabilidad de error.</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> Escribe \(\Pr(e)=1-\Pr(\text{acierto})\) y expresa el acierto como suma sobre las regiones \(\mathcal R_i\).</div>
+      <div class="hint" hidden><b>Pista 2.</b> \(\Pr(\text{acierto})=\sum_i\Pr(\bx\in\mathcal R_i,\omega_i)=\sum_i\int_{\mathcal R_i}f(\bx|\omega_i)\Pr(\omega_i)\,d\bx\). Aplica Bayes dentro de la integral.</div>
+      <div class="hint" hidden><b>Pista 3.</b> Queda \(\int\Pr(\hat\omega(\bx)|\bx)\,f(\bx)\,d\bx\), con \(f(\bx)\ge0\). ¿Qué elección de \(\hat\omega(\bx)\) hace máximo el integrando en cada punto?</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Una regla es una partición.</strong> Cualquier regla de decisión reparte \(\mathbb R^d\) en regiones disjuntas \(\mathcal R_1,\dots,\mathcal R_c\) (diap. 18). Se acierta cuando \(\bx\in\mathcal R_i\) y la clase es \(\omega_i\).</li>
+        <li><strong>Probabilidad de acierto.</strong> \(\Pr(\text{acierto})=\sum_{i=1}^c\Pr(\bx\in\mathcal R_i|\omega_i)\Pr(\omega_i)=\sum_i\int_{\mathcal R_i}f(\bx|\omega_i)\Pr(\omega_i)\,d\bx.\)</li>
+        <li><strong>Bayes.</strong> \(f(\bx|\omega_i)\Pr(\omega_i)=\Pr(\omega_i|\bx)f(\bx)\), luego \(\Pr(\text{acierto})=\sum_i\int_{\mathcal R_i}\Pr(\omega_i|\bx)f(\bx)\,d\bx=\int_{\mathbb R^d}\Pr(\hat\omega(\bx)|\bx)f(\bx)\,d\bx\). La última igualdad usa que cada \(\bx\) está en una sola región, la de la clase decidida \(\hat\omega(\bx)\).</li>
+        <li><strong>Maximizar punto a punto.</strong> Como \(f(\bx)\ge0\), la integral es máxima si en cada \(\bx\) se elige la clase con mayor \(\Pr(\omega_i|\bx)\). Ninguna otra regla puede tener un integrando mayor en ningún punto. Eso es MAP.</li>
+        <li><strong>Conclusión.</strong> \(\Pr(e)=1-\Pr(\text{acierto})\) es mínima con MAP, y \(\Pr(e|\bx)=1-\max_i\Pr(\omega_i|\bx)\).</li>
+      </ol>
+      <p><strong>Otra forma (dos clases, la de la diap. 17).</strong> \(\Pr(e)=\Pr(\omega_1)\int_{\mathcal R_2}f_1\,d\bx+\Pr(\omega_2)\int_{\mathcal R_1}f_2\,d\bx\). Usando \(\int_{\mathcal R_2}f_1=1-\int_{\mathcal R_1}f_1\):</p>
+      \[\Pr(e)=\Pr(\omega_1)+\int_{\mathcal R_1}\big[\Pr(\omega_2)f_2(\bx)-\Pr(\omega_1)f_1(\bx)\big]\,d\bx.\]
+      <p>Para minimizarla, \(\mathcal R_1\) debe contener exactamente los \(\bx\) en los que el corchete es negativo: \(\Pr(\omega_1)f_1>\Pr(\omega_2)f_2\). Es la regla MAP.</p>
+      <p class="small">También es el caso particular de la demostración MBR (diap. 19) con costes 0-1: \(\mathcal C(\omega_i|\bx)=1-\Pr(\omega_i|\bx)\). La solución oficial remite a ese corolario.</p>
+    </div></details>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 2 -->
+  <article class="ex concept-like" data-eid="ex2">
+    <header><h3><span class="cnum">E2</span> Elegir los costes \(\pi_{ij}\)</h3><span class="ref">Herramientas: diap. 16–17, 20</span></header>
+    <div class="ex-body">
+      <p>Propón valores de \(\pi_{ij}\) para clasificadores de riesgo mínimo en estas tareas:</p>
+      <ul>
+        <li>Bases de datos biomédicas: ¿debo penalizar igual el error sano/enfermo que el enfermo/sano?</li>
+        <li>SPAM: ¿debo penalizar igual los errores al clasificar un correo?</li>
+        <li>OCR: ¿debo penalizar igual los errores en una vocal y en una consonante?</li>
+      </ul>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> \(\pi_{ij}\) es el coste de decidir \(\omega_i\) cuando la clase real es \(\omega_j\). Fija primero qué es \(\omega_1\) y qué es \(\omega_2\) en cada problema.</div>
+      <div class="hint" hidden><b>Pista 2.</b> Con \(\pi_{11}=\pi_{22}=0\), solo importa el cociente \(\gamma=\pi_{12}/\pi_{21}\): se decide \(\omega_1\) si \(\Pr(\omega_1|\bx)>\gamma/(1+\gamma)\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> Pregúntate qué error tiene peores consecuencias: no tratar a un enfermo, perder un correo bueno, leer mal una letra.</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución razonada</summary><div class="deep-body">
+      <p>No hay una única respuesta correcta (la solución oficial pide decidir si \(\pi_{12}\) debe ser mayor que \(\pi_{21}\)). Lo que se evalúa es el razonamiento. En todos los casos tomo \(\pi_{11}=\pi_{22}=0\): acertar no cuesta nada.</p>
+      <ol class="steps">
+        <li><strong>Diagnóstico.</strong> \(\omega_1\) = sano y \(\omega_2\) = enfermo. Decir «sano» a un enfermo (\(\pi_{12}\)) puede costar una vida; decir «enfermo» a un sano (\(\pi_{21}\)) cuesta una prueba de confirmación y un susto. Propuesta: \(\pi_{12}=10\) (o más), \(\pi_{21}=1\). Entonces \(\gamma=10\) y solo se dice «sano» si \(\Pr(\text{sano}|\bx)>10/11\approx0{,}91\): \(\mathcal R_1\) se encoge, sube el recall y baja la precisión.</li>
+        <li><strong>SPAM.</strong> \(\omega_1\) = correo legítimo y \(\omega_2\) = spam. Mandar a spam un correo importante (\(\pi_{21}\)) es mucho peor que dejar pasar un spam (\(\pi_{12}\)). Propuesta: \(\pi_{21}=10\), \(\pi_{12}=1\). \(\gamma=0{,}1\): se acepta el correo como legítimo en cuanto \(\Pr(\text{legítimo}|\bx)>0{,}1/1{,}1\approx0{,}09\). Prima la precisión del detector de spam (diap. 84).</li>
+        <li><strong>OCR.</strong> Confundir una vocal con una consonante o al revés tiene, en principio, consecuencias parecidas: \(\pi_{12}=\pi_{21}=1\) (\(\gamma=1\), MAP). Que las vocales sean más frecuentes se recoge en las <em>priors</em>, no en los costes. Matiz razonable: si después hay un corrector ortográfico que arregla mejor un tipo de error, se puede abaratar ese error.</li>
+      </ol>
+      <div class="numex"><span class="lab">Comprueba el efecto</span><p>En el laboratorio del bloque 3, sube \(\pi_{12}\) frente a \(\pi_{21}\) y observa cómo \(\mathcal R_1\) se encoge, cómo sube \(\Pr(e)\) y cómo baja el riesgo respecto a MAP.</p></div>
+    </div></details>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 4 -->
+  <article class="ex concept-like" data-eid="ex4">
+    <header><h3><span class="cnum">E4</span> Frontera con covarianza común: MAP, MBR y tres clases</h3><span class="ref">Herramientas: diap. 39, 44, 48, 20</span></header>
+    <div class="ex-body">
+      <p>Dos clases gaussianas con la misma covarianza: \(\bx\sim\mathcal N(\bmu_i,\bC)\), \(i=1,2\).</p>
+      <ol>
+        <li>Demuestra que el hiperplano \(\bw^T(\bx-\bx_0)=0\) con \[\bw=\bC^{-1}(\bmu_i-\bmu_j),\qquad \bx_0=\tfrac12(\bmu_i+\bmu_j)-\frac{\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}}{(\bmu_i-\bmu_j)^T\bC^{-1}(\bmu_i-\bmu_j)}(\bmu_i-\bmu_j)\] es la frontera entre las regiones de \(\omega_i\) y \(\omega_j\) con el criterio MAP.</li>
+        <li>Obtén \(\bw\) y \(\bx_0\) para el criterio de riesgo bayesiano mínimo.</li>
+        <li>Comprueba que con más de dos clases la frontera ya no es un hiperplano.</li>
+      </ol>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> Iguala \(g_i(\bx)=g_j(\bx)\) con \(g_k(\bx)=-\frac12(\bx-\bmu_k)^T\bC^{-1}(\bx-\bmu_k)+\ln\Pr(\omega_k)\). El término \(\bx^T\bC^{-1}\bx\) se cancela.</div>
+      <div class="hint" hidden><b>Pista 2.</b> Usa la identidad \(\bmu_i^T\bC^{-1}\bmu_i-\bmu_j^T\bC^{-1}\bmu_j=(\bmu_i-\bmu_j)^T\bC^{-1}(\bmu_i+\bmu_j)\) (vale porque \(\bC^{-1}\) es simétrica). Después busca el escalar \(t\) que hace \(\bx_0=\frac12(\bmu_i+\bmu_j)-t(\bmu_i-\bmu_j)\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> En MBR, la regla binaria es \(\Pr(\omega_i|\bx)/\Pr(\omega_j|\bx)\gtrless\gamma\). Tomando logaritmos, \(\ln\gamma\) se suma a las priors. Con tres clases, \(\mathcal C(\omega_1|\bx)=\mathcal C(\omega_2|\bx)\) deja una suma de tres exponenciales.</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <p><strong>Apartado 1.</strong></p>
+      <ol class="steps">
+        <li><strong>Discriminantes.</strong> \(g_k(\bx)=\ln f(\bx|\omega_k)+\ln\Pr(\omega_k)=-\frac12(\bx-\bmu_k)^T\bC^{-1}(\bx-\bmu_k)-\frac d2\ln2\pi-\frac12\ln|\bC|+\ln\Pr(\omega_k)\). Los dos términos centrales son iguales en ambas clases y se van al restar.</li>
+        <li><strong>Desarrollar la forma cuadrática.</strong> \((\bx-\bmu_k)^T\bC^{-1}(\bx-\bmu_k)=\bx^T\bC^{-1}\bx-2\bmu_k^T\bC^{-1}\bx+\bmu_k^T\bC^{-1}\bmu_k\). El \(-2\) sale de que \(\bx^T\bC^{-1}\bmu_k=\bmu_k^T\bC^{-1}\bx\) por simetría (es un escalar).</li>
+        <li><strong>Restar.</strong> \(g_i-g_j=(\bmu_i-\bmu_j)^T\bC^{-1}\bx-\frac12\big(\bmu_i^T\bC^{-1}\bmu_i-\bmu_j^T\bC^{-1}\bmu_j\big)+\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}\). El término \(\bx^T\bC^{-1}\bx\) desaparece: por eso la frontera es lineal.</li>
+        <li><strong>Identidad.</strong> \((\bmu_i-\bmu_j)^T\bC^{-1}(\bmu_i+\bmu_j)=\bmu_i^T\bC^{-1}\bmu_i+\bmu_i^T\bC^{-1}\bmu_j-\bmu_j^T\bC^{-1}\bmu_i-\bmu_j^T\bC^{-1}\bmu_j\). Los términos cruzados son iguales y se cancelan. Con \(\bw=\bC^{-1}(\bmu_i-\bmu_j)\) (y \(\bw^T=(\bmu_i-\bmu_j)^T\bC^{-1}\)): \[g_i-g_j=\bw^T\bx-\tfrac12\bw^T(\bmu_i+\bmu_j)+\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}.\]</li>
+        <li><strong>Buscar \(\bx_0\).</strong> Pruebo \(\bx_0=\frac12(\bmu_i+\bmu_j)-t(\bmu_i-\bmu_j)\): \(\bw^T(\bx-\bx_0)=\bw^T\bx-\frac12\bw^T(\bmu_i+\bmu_j)+t\,\bw^T(\bmu_i-\bmu_j)\), y \(\bw^T(\bmu_i-\bmu_j)=(\bmu_i-\bmu_j)^T\bC^{-1}(\bmu_i-\bmu_j)\equiv\Delta^2\) (Mahalanobis al cuadrado, etiqueta mía). Coincide con \(g_i-g_j\) si \(t\Delta^2=\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}\), es decir, con la \(t\) del enunciado.</li>
+        <li><strong>Conclusión.</strong> \(g_i(\bx)-g_j(\bx)=\bw^T(\bx-\bx_0)\): la frontera es el hiperplano que pasa por \(\bx_0\) con normal \(\bw\), y se decide \(\omega_i\) en el lado positivo. Si \(\Pr(\omega_i)>\Pr(\omega_j)\), \(t>0\) y \(\bx_0\) se aleja de \(\bmu_i\): la clase más probable gana terreno.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(\bC=\begin{pmatrix}2&1\\1&2\end{pmatrix}\), \(\bmu_i=(1,0)^T\), \(\bmu_j=(-1,0)^T\), \(\Pr(\omega_i)=0{,}75\). \(\bC^{-1}=\frac13\begin{pmatrix}2&-1\\-1&2\end{pmatrix}\), \(\bw=\bC^{-1}(2,0)^T=(4/3,\,-2/3)^T\), \(\Delta^2=8/3\), \(t=\ln3/(8/3)=0{,}412\), \(\bx_0=(-0{,}824,\,0)^T\). Frontera: \(\frac43(x_1+0{,}824)-\frac23x_2=0\iff x_2=2x_1+1{,}648\). No es perpendicular a \(\bmu_i-\bmu_j\) (que es horizontal) porque \(\bC\ne\sigma^2\mathbf I\). Comprobado: \(g_i-g_j=0\) a lo largo de esa recta.</p></div>
+      <p><strong>Apartado 2 (MBR).</strong></p>
+      <ol class="steps">
+        <li>Se decide \(\omega_i\) si \(\mathcal C(\omega_i|\bx)\lt\mathcal C(\omega_j|\bx)\): \(\pi_{ii}\Pr(\omega_i|\bx)+\pi_{ij}\Pr(\omega_j|\bx)\lt\pi_{ji}\Pr(\omega_i|\bx)+\pi_{jj}\Pr(\omega_j|\bx)\), es decir, \((\pi_{ji}-\pi_{ii})\Pr(\omega_i|\bx)>(\pi_{ij}-\pi_{jj})\Pr(\omega_j|\bx)\).</li>
+        <li>Con Bayes y logaritmos: \(g_i(\bx)+\ln(\pi_{ji}-\pi_{ii})>g_j(\bx)+\ln(\pi_{ij}-\pi_{jj})\). Los costes entran exactamente como si se cambiaran las priors: \(\Pr(\omega_i)\to(\pi_{ji}-\pi_{ii})\Pr(\omega_i)\).</li>
+        <li><strong>Resultado.</strong> \(\bw=\bC^{-1}(\bmu_i-\bmu_j)\) no cambia, y \[\bx_0=\tfrac12(\bmu_i+\bmu_j)-\frac{\ln\dfrac{(\pi_{ji}-\pi_{ii})\Pr(\omega_i)}{(\pi_{ij}-\pi_{jj})\Pr(\omega_j)}}{(\bmu_i-\bmu_j)^T\bC^{-1}(\bmu_i-\bmu_j)}(\bmu_i-\bmu_j).\] El hiperplano se traslada sin girar. Coincide con la solución oficial: \(g_1=g_2+\ln\frac{\pi_{12}-\pi_{22}}{\pi_{21}-\pi_{11}}\).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>En el ejemplo anterior (\(i=1\), \(j=2\)) con \(\pi_{11}=\pi_{22}=0\), \(\pi_{12}=3\), \(\pi_{21}=1\): \(\ln\frac{1\cdot0{,}75}{3\cdot0{,}25}=\ln1=0\). El coste triple de equivocarse con \(\omega_2\) compensa justo su prior tres veces menor, y la frontera vuelve al punto medio, \(\bx_0=\mathbf 0\).</p></div>
+      <p><strong>Apartado 3 (tres clases).</strong></p>
+      <ol class="steps">
+        <li>Frontera entre 1 y 2: \(\mathcal C(\omega_1|\bx)=\mathcal C(\omega_2|\bx)\iff(\pi_{11}-\pi_{21})\Pr(\omega_1|\bx)+(\pi_{12}-\pi_{22})\Pr(\omega_2|\bx)+(\pi_{13}-\pi_{23})\Pr(\omega_3|\bx)=0\).</li>
+        <li>Multiplicando por \(f(\bx)\), cada término es una exponencial cuadrática distinta. Una suma de <em>tres</em> exponenciales igualada a cero no se puede linealizar con un logaritmo, que solo funciona con dos términos. La frontera es una curva.</li>
+        <li><strong>Matiz importante.</strong> Si \(\pi_{13}=\pi_{23}\), el tercer término desaparece y se vuelve al caso de dos clases. Es lo que pasa con <strong>MAP</strong> (costes 0-1: \(\pi_{13}=\pi_{23}=1\)). Con MAP y covarianza común, las fronteras son trozos de hiperplanos (diap. 43, regiones poligonales). Lo que curva la frontera son los costes generales.</li>
+      </ol>
+      <div class="numex"><span class="lab">Comprobación numérica</span><p>\(\bC=\mathbf I\), \(\bmu_1=(0,0)\), \(\bmu_2=(3,0)\), \(\bmu_3=(1{,}5,\,2{,}5)\), priors iguales, \(\pi_{13}=5\) y el resto de errores con coste 1. La frontera 1–2 pasa por \(x_1=1{,}496;\ 1{,}485;\ 1{,}448;\ 1{,}322;\ 0{,}939\) para \(x_2=-1{,}5;\ -1;\ -0{,}5;\ 0;\ 0{,}5\): se curva al acercarse a \(\omega_3\). Con MAP sería la recta \(x_1=1{,}5\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Ojo con la diap. 44</span><p>La expresión de la diapositiva tiene una errata (falta un factor 2 y los signos están invertidos). La fórmula del ejercicio y la de la diap. 48 son correctas.</p></div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 5 -->
+  <article class="ex concept-like" data-eid="ex5">
+    <header><h3><span class="cnum">E5</span> Vectores binarios: discriminante lineal y voto por mayoría</h3><span class="ref">Herramientas: diap. 49–50, 65</span></header>
+    <div class="ex-body">
+      <p>Vectores binarios \(\bx\in\{0,1\}^{d}\), dos clases, componentes independientes: \(p(\bx|\omega_1)=\prod_ip_i^{x_i}(1-p_i)^{1-x_i}\), \(p(\bx|\omega_2)=\prod_iq_i^{x_i}(1-q_i)^{1-x_i}\), con \(p_i=\Pr(x_i=1|\omega_1)\), \(q_i=\Pr(x_i=1|\omega_2)\).</p>
+      <ol>
+        <li>Demuestra que el discriminante MAP es \(h(\bx)=\ln g(\bx)=\bw^T\bx+w_0\). ¿Cuánto valen \(\bw\) y \(w_0\)?</li>
+      </ol>
+      <p>Supón ahora \(d\) impar, \(p_i=1-q_i=p\) y \(\Pr(\omega_1)=\Pr(\omega_2)=\frac12\).</p>
+      <ol start="2">
+        <li>Demuestra que la decisión de mínimo error es \(\sum_{i=1}^dx_i\ \underset{\omega_2}{\overset{\omega_1}{\gtrless}}\ \frac d2\).</li>
+        <li>Demuestra que la probabilidad mínima de error es \(P_e(d,p)=\sum_{k=0}^{(d-1)/2}\binom dk p^k(1-p)^{d-k}\).</li>
+      </ol>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> \(g(\bx)=\frac{\Pr(\omega_1|\bx)}{\Pr(\omega_2|\bx)}=\frac{p(\bx|\omega_1)\Pr(\omega_1)}{p(\bx|\omega_2)\Pr(\omega_2)}\). El logaritmo convierte los productos en sumas y los exponentes \(x_i\) en coeficientes.</div>
+      <div class="hint" hidden><b>Pista 2.</b> Con \(p_i=p\), \(q_i=1-p\): \(w_i=2\ln\frac p{1-p}\) y \(w_0=-d\ln\frac p{1-p}\). Saca factor común.</div>
+      <div class="hint" hidden><b>Pista 3.</b> En \(\omega_1\), \(\sum x_i\sim\mathrm{Bin}(d,p)\); en \(\omega_2\), \(\mathrm{Bin}(d,1-p)\). Para la segunda suma cambia \(k\to d-k\).</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <p><strong>Apartado 1.</strong></p>
+      <ol class="steps">
+        <li>\(\ln p(\bx|\omega_1)=\sum_i\big[x_i\ln p_i+(1-x_i)\ln(1-p_i)\big]\), y lo mismo con \(q_i\).</li>
+        <li>\(h(\bx)=\sum_ix_i\ln\frac{p_i}{q_i}+\sum_i(1-x_i)\ln\frac{1-p_i}{1-q_i}+\ln\frac{\Pr(\omega_1)}{\Pr(\omega_2)}\).</li>
+        <li>Agrupando los términos en \(x_i\): \(h(\bx)=\sum_ix_i\Big[\ln\frac{p_i}{q_i}-\ln\frac{1-p_i}{1-q_i}\Big]+\sum_i\ln\frac{1-p_i}{1-q_i}+\ln\frac{\Pr(\omega_1)}{\Pr(\omega_2)}\).</li>
+        <li><strong>Resultado.</strong> \[w_i=\ln\frac{p_i(1-q_i)}{q_i(1-p_i)},\qquad w_0=\sum_{i=1}^d\ln\frac{1-p_i}{1-q_i}+\ln\frac{\Pr(\omega_1)}{\Pr(\omega_2)}.\] Se decide \(\omega_1\) si \(h(\bx)>0\). Es lineal en \(\bx\) (diap. 50).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(d=2\), \(\mathbf p=(0{,}8;\ 0{,}6)\), \(\mathbf q=(0{,}3;\ 0{,}5)\), priors iguales: \(w_1=\ln\frac{0{,}8\cdot0{,}7}{0{,}3\cdot0{,}2}=2{,}234\), \(w_2=\ln1{,}5=0{,}405\), \(w_0=\ln\frac{0{,}2}{0{,}7}+\ln\frac{0{,}4}{0{,}5}=-1{,}476\). Para \(\bx=(1,0)\): \(h=0{,}758\). Directamente: \(\ln\frac{0{,}8\cdot0{,}4}{0{,}3\cdot0{,}5}=\ln2{,}133=0{,}758\) ✓. Se decide \(\omega_1\).</p></div>
+      <p><strong>Apartado 2.</strong></p>
+      <ol class="steps">
+        <li>\(w_i=\ln\frac{p\cdot p}{(1-p)(1-p)}=2\ln\frac p{1-p}\) y \(w_0=d\ln\frac{1-p}{p}+\ln1=-d\ln\frac p{1-p}\).</li>
+        <li>\(h(\bx)=\ln\frac p{1-p}\Big(2\sum_ix_i-d\Big)\).</li>
+        <li>Si \(p>\frac12\), \(\ln\frac p{1-p}>0\) y \(h>0\iff\sum_ix_i>\frac d2\). Al ser \(d\) impar, nunca hay empate. Es un <strong>voto por mayoría</strong>, y MAP con priors iguales minimiza \(\Pr(e)\) (ejercicio 1).</li>
+      </ol>
+      <p><strong>Apartado 3.</strong></p>
+      <ol class="steps">
+        <li>\(P_e=\frac12\Pr\big(\sum x_i\lt\frac d2\,\big|\,\omega_1\big)+\frac12\Pr\big(\sum x_i>\frac d2\,\big|\,\omega_2\big)\).</li>
+        <li>En \(\omega_1\), \(\sum x_i\sim\mathrm{Bin}(d,p)\): \(\Pr\big(\sum x_i\le\frac{d-1}2\big)=\sum_{k=0}^{(d-1)/2}\binom dkp^k(1-p)^{d-k}\equiv S\).</li>
+        <li>En \(\omega_2\), \(\sum x_i\sim\mathrm{Bin}(d,1-p)\): \(\Pr\big(\sum x_i\ge\frac{d+1}2\big)=\sum_{k=(d+1)/2}^{d}\binom dk(1-p)^kp^{d-k}\). Con \(k'=d-k\) y \(\binom dk=\binom d{k'}\), queda \(\sum_{k'=0}^{(d-1)/2}\binom d{k'}p^{k'}(1-p)^{d-k'}=S\). Es el «número combinatorio común» de la solución oficial.</li>
+        <li>\(P_e=\frac12S+\frac12S=S\). ∎</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(p=0{,}7\): \(P_e(3)=0{,}3^3+3\cdot0{,}7\cdot0{,}3^2=0{,}216\); \(P_e(5)=0{,}163\); \(P_e(9)=0{,}099\). Con \(p=0{,}9\), \(P_e(3)=0{,}028\). Comprobado por Monte Carlo. Con características independientes y relevantes, el error baja al aumentar \(d\) si los parámetros se conocen (tema 3, bloque 2).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Supuesto implícito</span><p>El apartado 2 da por hecho \(p>\frac12\). Si \(p\lt\frac12\), \(\ln\frac p{1-p}\lt0\) y la regla se invierte (\(\omega_1\) si \(\sum x_i\lt d/2\)). En ese caso, el apartado 3 da la misma expresión cambiando \(p\) por \(1-p\).</p></div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 7 -->
+  <article class="ex concept-like" data-eid="ex7">
+    <header><h3><span class="cnum">E7</span> Fronteras MAP en 2D (apartados 7.1, 7.2 y 7.3)</h3><span class="ref">Herramientas: diap. 40, 44, 47 · laboratorio del bloque 5</span></header>
+    <div class="ex-body">
+      <p>Vectores \(\bz=(x,y)^T\), dos clases gaussianas, priors iguales en todos los casos.</p>
+      <ol>
+        <li>\(\bz|\omega_k\sim\mathcal N\!\left(\begin{pmatrix}x_k\\y_k\end{pmatrix},\ \sigma^2\begin{pmatrix}1&0\\0&1\end{pmatrix}\right)\), \(k=1,2\). Demuestra que la frontera MAP es una recta y calcula sus parámetros en función de \(x_1,y_1,x_2,y_2,\sigma^2\).</li>
+        <li>\(\bz|\omega_k\sim\mathcal N\!\left(\begin{pmatrix}x_k\\y_k\end{pmatrix},\ \sigma^2\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}\right)\). Lo mismo.</li>
+        <li>\(\bz|\omega_k\sim\mathcal N\!\left(\begin{pmatrix}x_k\\y_k\end{pmatrix},\ \sigma^2\begin{pmatrix}1&\rho_k\\\rho_k&1\end{pmatrix}\right)\). Calcula la frontera en función de \(x_1,y_1,x_2,y_2,\sigma^2,\rho_1,\rho_2\).</li>
+      </ol>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> 7.1 y 7.2 son el caso de covarianza común: aplica \(\bw=\bC^{-1}(\bmu_1-\bmu_2)\) y \(\bx_0=\frac12(\bmu_1+\bmu_2)\) (priors iguales) del ejercicio 4.</div>
+      <div class="hint" hidden><b>Pista 2.</b> \(\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}^{-1}=\frac1{1-\rho^2}\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}\). Los factores escalares positivos no cambian una recta \(\bw^T(\bz-\bz_0)=0\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> En 7.3, las dos matrices tienen los mismos autovectores, \((1,1)/\sqrt2\) y \((1,-1)/\sqrt2\), con autovalores \(\sigma^2(1\pm\rho_k)\). Mira los signos de los autovalores de \(\bC_1^{-1}-\bC_2^{-1}\).</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <p><strong>7.1 (\(\bC=\sigma^2\mathbf I\), caso 3).</strong></p>
+      <ol class="steps">
+        <li>\(g_k(\bz)=-\frac{\|\bz-\bmu_k\|^2}{2\sigma^2}+\text{cte}\). Igualar: \(\|\bz-\bmu_1\|^2=\|\bz-\bmu_2\|^2\).</li>
+        <li>Desarrollando, \(\|\bz\|^2\) se cancela: \(-2\bmu_1^T\bz+\|\bmu_1\|^2=-2\bmu_2^T\bz+\|\bmu_2\|^2\).</li>
+        <li><strong>Recta.</strong> \[(x_2-x_1)\,x+(y_2-y_1)\,y=\tfrac12\big(x_2^2+y_2^2-x_1^2-y_1^2\big).\] Es la <strong>mediatriz</strong> del segmento \(\bmu_1\bmu_2\): normal \(\bmu_2-\bmu_1\) y paso por el punto medio. Si \(y_1\ne y_2\): \(y=-\frac{x_2-x_1}{y_2-y_1}x+\frac{x_2^2+y_2^2-x_1^2-y_1^2}{2(y_2-y_1)}\).</li>
+        <li><strong>\(\sigma^2\) no aparece.</strong> Con priors iguales, \(\sigma^2\) multiplica a los dos lados (ver la nota de erratas).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo</span><p>\(\bmu_1=(0,0)\), \(\bmu_2=(2,0)\): \(2x=2\Rightarrow x=1\), la recta vertical a mitad de camino.</p></div>
+      <p><strong>7.2 (covarianza común con correlación, caso 1).</strong></p>
+      <ol class="steps">
+        <li>\(\bC^{-1}=\frac1{\sigma^2(1-\rho^2)}\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}\). Con \(\Delta x=x_1-x_2\), \(\Delta y=y_1-y_2\): \(\bw\propto(\Delta x-\rho\Delta y,\ \Delta y-\rho\Delta x)^T\). El factor \(\frac1{\sigma^2(1-\rho^2)}>0\) no cambia la recta.</li>
+        <li>Priors iguales: \(\bz_0=\big(\frac{x_1+x_2}2,\frac{y_1+y_2}2\big)\).</li>
+        <li><strong>Recta.</strong> \[(\Delta x-\rho\Delta y)\Big(x-\tfrac{x_1+x_2}2\Big)+(\Delta y-\rho\Delta x)\Big(y-\tfrac{y_1+y_2}2\Big)=0.\] Pasa por el punto medio, pero su normal ya no es \(\bmu_1-\bmu_2\): está girada por \(\rho\). Con \(\rho=0\) se recupera 7.1.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo</span><p>\(\bmu_1=(0,0)\), \(\bmu_2=(2,0)\), \(\rho=0{,}5\): \(\Delta=(-2,0)\), \(\bw\propto(-2,\,1)\), y la recta es \(-2(x-1)+y=0\iff y=2x-2\), en lugar de \(x=1\). Comprobado: \(g_1-g_2=0\) sobre ella para \(\sigma^2=1\) y \(\sigma^2=3\). Curiosidad: si \(\bmu_2-\bmu_1\) va en la dirección \((1,1)\), que es autovector de \(\bC\), la recta coincide con la de 7.1.</p></div>
+      <p><strong>7.3 (correlaciones distintas: QDA).</strong></p>
+      <ol class="steps">
+        <li>\(|\bC_k|=\sigma^4(1-\rho_k^2)\) y \(\bC_k^{-1}=\frac1{\sigma^2(1-\rho_k^2)}\begin{pmatrix}1&-\rho_k\\-\rho_k&1\end{pmatrix}\).</li>
+        <li>\(g_1=g_2\iff(\bz-\bmu_1)^T\bC_1^{-1}(\bz-\bmu_1)+\ln|\bC_1|=(\bz-\bmu_2)^T\bC_2^{-1}(\bz-\bmu_2)+\ln|\bC_2|\). Escrito entero, con \(u_k=x-x_k\) y \(v_k=y-y_k\): \[\frac{u_1^2-2\rho_1u_1v_1+v_1^2}{\sigma^2(1-\rho_1^2)}-\frac{u_2^2-2\rho_2u_2v_2+v_2^2}{\sigma^2(1-\rho_2^2)}+\ln\frac{1-\rho_1^2}{1-\rho_2^2}=0.\] Aquí \(\sigma^2\) sí importa: pesa las formas cuadráticas frente al término logarítmico.</li>
+        <li><strong>Forma de la cónica.</strong> El término cuadrático es \(\bz^T(\bC_1^{-1}-\bC_2^{-1})\bz\). En los ejes \(s=\frac{x+y}{\sqrt2}\), \(t=\frac{x-y}{\sqrt2}\), los autovalores son \(\frac1{\sigma^2}\big(\frac1{1+\rho_1}-\frac1{1+\rho_2}\big)=\frac{\rho_2-\rho_1}{\sigma^2(1+\rho_1)(1+\rho_2)}\) y \(\frac1{\sigma^2}\big(\frac1{1-\rho_1}-\frac1{1-\rho_2}\big)=\frac{\rho_1-\rho_2}{\sigma^2(1-\rho_1)(1-\rho_2)}\).</li>
+        <li>Si \(\rho_1\ne\rho_2\), tienen <strong>signo opuesto</strong> (los denominadores son positivos porque \(|\rho_k|\lt1\)): la frontera es siempre una <strong>hipérbola</strong>, o un par de rectas en el caso degenerado. Si \(\rho_1=\rho_2\), se anulan y se vuelve a la recta de 7.2. Comprobado numéricamente para varios pares \((\rho_1,\rho_2)\).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo (hipérbola degenerada)</span><p>\(\bmu_1=\bmu_2=\mathbf 0\), \(\sigma^2=1\), \(\rho_1=0{,}5\), \(\rho_2=-0{,}5\). El logaritmo vale 0 y \(g_1-g_2=\frac43xy\): la frontera son los dos ejes, \(xy=0\). Se decide \(\omega_1\) en los cuadrantes 1.º y 3.º (donde la clase con correlación positiva acumula masa) y \(\omega_2\) en el 2.º y el 4.º. Comprobado: \(g_1-g_2=2{,}67\) en \((1,2)\) y \(-2{,}67\) en \((-1,2)\). Puedes reproducirlo en el laboratorio del bloque 5.</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Matiz del enunciado</span><p>En 7.1 y 7.2 se piden los parámetros «en función de \(\sigma^2\)», pero con priors iguales la frontera no depende de \(\sigma^2\): solo de las medias (y de \(\rho\) en 7.2). Dependería de \(\sigma^2\) si las priors fueran distintas, porque \(\bx_0\) se desplaza en proporción a \(\sigma^2\).</p></div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 9 -->
+  <article class="ex concept-like" data-eid="ex9">
+    <header><h3><span class="cnum">E9</span> Estimación ML de las priors</h3><span class="ref">Herramientas: diap. 54, 60</span></header>
+    <div class="ex-body">
+      <p>Modelo de \(K\) clases con priors \(\Pr(\mathcal C_k)=\pi_k\) y densidades \(p(\boldsymbol\phi|\mathcal C_k)\). Datos \(\{\boldsymbol\phi_n,\mathbf t_n\}\), \(n=1,\dots,N\), con \(\mathbf t_n\) en codificación 1-de-\(K\) (\(t_{nj}=1\) si el patrón \(n\) es de la clase \(j\), y 0 si no). Si los datos son independientes, demuestra que la solución ML para las priors es \(\pi_k=N_k/N\), con \(N_k\) el número de patrones de la clase \(k\).</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> La verosimilitud de un dato es \(\prod_k\big[\pi_kp(\boldsymbol\phi_n|\mathcal C_k)\big]^{t_{nk}}\): el exponente selecciona su clase.</div>
+      <div class="hint" hidden><b>Pista 2.</b> En la log-verosimilitud, los términos con \(p(\boldsymbol\phi|\mathcal C_k)\) no dependen de \(\pi_k\). Queda \(\sum_k N_k\ln\pi_k\), porque \(\sum_nt_{nk}=N_k\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> No se puede derivar sin más: las \(\pi_k\) deben sumar 1. Añade un multiplicador de Lagrange \(\lambda\big(\sum_k\pi_k-1\big)\).</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Verosimilitud.</strong> Por independencia, \(L=\prod_{n=1}^N\prod_{k=1}^K\big[\pi_k\,p(\boldsymbol\phi_n|\mathcal C_k)\big]^{t_{nk}}\).</li>
+        <li><strong>Log-verosimilitud.</strong> \(\ln L=\sum_n\sum_kt_{nk}\ln\pi_k+\sum_n\sum_kt_{nk}\ln p(\boldsymbol\phi_n|\mathcal C_k)\). El segundo sumando no depende de las \(\pi\), y \(\sum_nt_{nk}=N_k\). Queda maximizar \(\sum_kN_k\ln\pi_k\).</li>
+        <li><strong>Restricción.</strong> \(\sum_k\pi_k=1\). Lagrangiano: \(\mathcal L=\sum_kN_k\ln\pi_k+\lambda\big(\sum_k\pi_k-1\big)\).</li>
+        <li><strong>Derivar.</strong> \(\frac{\partial\mathcal L}{\partial\pi_k}=\frac{N_k}{\pi_k}+\lambda=0\Rightarrow\pi_k=-\frac{N_k}\lambda\).</li>
+        <li><strong>Imponer la restricción.</strong> \(\sum_k\pi_k=-\frac{\sum_kN_k}\lambda=-\frac N\lambda=1\Rightarrow\lambda=-N\). Por tanto, \(\pi_k=\dfrac{N_k}N\).</li>
+        <li><strong>Es un máximo.</strong> \(\sum_kN_k\ln\pi_k\) es cóncava (suma de logaritmos) y el conjunto \(\{\sum\pi_k=1\}\) es convexo: el punto crítico es el máximo global.</li>
+      </ol>
+      <div class="numex"><span class="lab">Comprobación numérica</span><p>50 etiquetas al azar con \(N_k=(19,14,17)\): una búsqueda en rejilla de \(\sum_kN_k\ln\pi_k\) da el máximo en \((0{,}38;\ 0{,}28;\ 0{,}34)=N_k/N\). Es la frecuencia relativa, como el \(\hat p_k\) de Bernoulli de la diap. 60.</p></div>
+      <p class="small">La hoja no da solución oficial de este ejercicio.</p>
+    </div></details>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 10 -->
+  <article class="ex concept-like" data-eid="ex10">
+    <header><h3><span class="cnum">E10</span> El test del VIH con prevalencias españolas</h3><span class="ref">Herramientas: diap. 77–80 · laboratorio del bloque 10</span></header>
+    <div class="ex-body">
+      <p>Determina la sensibilidad y la especificidad del test del VIH. Con esos valores:</p>
+      <ol>
+        <li>Evalúa \(\Pr(\text{sick}|+)\) con tres priors: la fracción de la población española con la infección, la de la población penitenciaria y la de las personas que ejercen la prostitución.</li>
+        <li>Calcula \(\Pr(\text{healthy}|-)\) en los mismos casos.</li>
+        <li>Comenta los resultados y explica las diferencias.</li>
+        <li>Evalúa \(\Pr(\text{sick}|+,+)\) tras un segundo test independiente también positivo.</li>
+      </ol>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> Usa los valores de la diap. 79: sensibilidad \(\Pr(+|\text{sick})=0{,}997\) y especificidad \(\Pr(-|\text{healthy})=0{,}985\).</div>
+      <div class="hint" hidden><b>Pista 2.</b> \(\Pr(\text{s}|+)=\frac{\text{se}\,p}{\text{se}\,p+(1-\text{sp})(1-p)}\) y \(\Pr(\text{h}|-)=\frac{\text{sp}(1-p)}{\text{sp}(1-p)+(1-\text{se})p}\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> Para el segundo test, usa \(\Pr(\text{s}|+)\) como nueva prior en la misma fórmula (diap. 80), suponiendo que los dos resultados son independientes dada la condición.</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <p><strong>Datos.</strong> Sensibilidad 0,997 y especificidad 0,985, los valores de la diap. 79, que coinciden con los que la Wikipedia ha citado para el ELISA. Lo que importa para la prior es la prevalencia de la <em>infección por VIH</em>, que es lo que detecta el test, no la de casos de SIDA.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Población</th><th>Prior \(p\)</th><th>Fuente</th></tr></thead>
+        <tbody>
+          <tr><td>Diapositiva 79</td><td class="num">0,1 %</td><td>Valor del ejemplo de clase</td></tr>
+          <tr><td>Población general (España)</td><td class="num">0,31 %</td><td>Ministerio de Sanidad, estimación a 31/12/2021 (<a href="https://www.sanidad.gob.es/gl/gabinete/notasPrensa.do?id=6125" target="_blank" rel="noopener">nota de prensa</a>; <a href="https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/sanidad14/Paginas/2023/260523-reduccion-infecciones-vih.aspx" target="_blank" rel="noopener">La Moncloa, 2023</a>)</td></tr>
+          <tr><td>Prisiones</td><td class="num">8,1 %</td><td>Instituciones Penitenciarias, 2009. El estudio PREVALHEP (2008) daba 10,8 % (<a href="https://www.redalyc.org/pdf/170/17079607.pdf" target="_blank" rel="noopener">Redalyc</a>; <a href="https://www.elsevier.es/es-revista-enfermedades-infecciosas-microbiologia-clinica-28-pdf-download-S0213005X05749077" target="_blank" rel="noopener">EIMC</a>)</td></tr>
+          <tr><td>Mujeres que ejercen la prostitución</td><td class="num">0,7 % (\(\lt\)2 %)</td><td>Serovigilancia 2003 y Sanidad, «menos del 2 %» (<a href="https://www.sanidad.gob.es/ciudadanos/enfLesiones/enfTransmisibles/sida/prevencion/prostitucion/docs/situacionActual.pdf" target="_blank" rel="noopener">informe</a>)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">Son datos históricos de fuentes oficiales y estudios publicados, no cifras actuales. Si el profesor espera otras, el método es el mismo: cambia \(p\) en el laboratorio.</p>
+      <ol class="steps">
+        <li><strong>Fórmula (apartado 1).</strong> Con \(p=0{,}0031\): \(\Pr(\text{s}|+)=\frac{0{,}997\cdot0{,}0031}{0{,}997\cdot0{,}0031+0{,}015\cdot0{,}9969}=\frac{0{,}003091}{0{,}003091+0{,}014954}=0{,}171\).</li>
+        <li><strong>Apartado 2.</strong> \(\Pr(\text{h}|-)=\frac{0{,}985\cdot0{,}9969}{0{,}985\cdot0{,}9969+0{,}003\cdot0{,}0031}=0{,}999991\).</li>
+        <li><strong>Apartado 4.</strong> \(\Pr(\text{s}|+,+)=\frac{0{,}997\cdot0{,}1713}{0{,}997\cdot0{,}1713+0{,}015\cdot0{,}8287}=0{,}932\).</li>
+      </ol>
+      <div class="tbl"><table>
+        <thead><tr><th>Prior \(p\)</th><th>\(\Pr(\text{s}|+)\)</th><th>\(\Pr(\text{h}|-)\)</th><th>\(\Pr(\text{s}|+,+)\)</th><th>Por cada 100 000: TP / FP</th></tr></thead>
+        <tbody>
+          <tr><td class="num">0,1 % (diap.)</td><td class="num">0,062</td><td class="num">0,999997</td><td class="num">0,816</td><td class="num">100 / 1499</td></tr>
+          <tr><td class="num">0,31 % (general)</td><td class="num">0,171</td><td class="num">0,999991</td><td class="num">0,932</td><td class="num">309 / 1495</td></tr>
+          <tr><td class="num">0,7 % (prostitución)</td><td class="num">0,319</td><td class="num">0,999979</td><td class="num">0,969</td><td class="num">698 / 1490</td></tr>
+          <tr><td class="num">2 % (cota)</td><td class="num">0,576</td><td class="num">0,999938</td><td class="num">0,989</td><td class="num">1994 / 1470</td></tr>
+          <tr><td class="num">8,1 % (prisiones)</td><td class="num">0,854</td><td class="num">0,999732</td><td class="num">0,997</td><td class="num">8076 / 1379</td></tr>
+          <tr><td class="num">10,8 % (PREVALHEP)</td><td class="num">0,890</td><td class="num">0,999631</td><td class="num">0,998</td><td class="num">10 768 / 1338</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Apartado 3: comentario.</strong></p>
+      <ol class="steps">
+        <li><strong>El test es el mismo; cambia la prior.</strong> Sensibilidad y especificidad son propiedades del test, condicionadas a la clase real. \(\Pr(\text{s}|+)\) es una posterior (la precisión, diap. 76) y depende de la prevalencia.</li>
+        <li><strong>Frecuencias naturales.</strong> El 1,5 % de falsos positivos se aplica a casi toda la población sana: unos 1500 por cada 100 000. Con prevalencia 0,31 % solo hay 309 positivos verdaderos, así que la mayoría de los positivos son falsos (5 de cada 6). En prisiones hay 8076 verdaderos frente a 1379 falsos.</li>
+        <li><strong>Un negativo es muy fiable en todos los casos.</strong> \(1-\text{se}=0{,}003\) multiplica a una prior pequeña. Solo empeora un poco al subir la prevalencia (de \(3\cdot10^{-6}\) a \(4\cdot10^{-4}\) de probabilidad de estar enfermo tras un negativo).</li>
+        <li><strong>Consecuencia práctica.</strong> Un positivo en cribado de población general nunca se comunica sin una prueba de confirmación. Ese segundo test eleva la posterior por encima del 93 %, y por encima del 99 % en los grupos de alta prevalencia.</li>
+        <li><strong>Supuesto del segundo test.</strong> Que los resultados sean independientes dada la condición. Si el segundo test fuera del mismo tipo, sus errores estarían correlados y la mejora sería menor. Por eso en la práctica la confirmación usa otra técnica.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Sobre el enunciado</span><p>Pide la prevalencia de «SIDA», pero el test detecta la infección por VIH: la prior adecuada es la prevalencia de la infección. El enlace de la hoja apunta a una página de Wikipedia que cambia con el tiempo; aquí se usan los valores de la diapositiva.</p></div>
+    </div>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <!-- EJ 11 -->
+  <article class="ex concept-like" data-eid="ex11">
+    <header><h3><span class="cnum">E11</span> Las dos urnas</h3><span class="ref">Herramientas: diap. 7</span></header>
+    <div class="ex-body">
+      <p>La urna 1 tiene tres bolas con las etiquetas 1, 2 y 3. La urna 2 tiene cuatro bolas: 2, 3, 4 y 5. La probabilidad de elegir la urna 1 es \(1/5\), y la de la urna 2, \(4/5\). No ves la urna, solo la bola: sale un 3. ¿Cuál es la probabilidad de que venga de la urna 2?</p>
+    </div>
+    <div class="hints" data-n="3">
+      <div class="hint" hidden><b>Pista 1.</b> Identifica prior y verosimilitud: la urna es la «clase» y la bola es la «observación».</div>
+      <div class="hint" hidden><b>Pista 2.</b> \(\Pr(3|\text{urna 1})=1/3\) y \(\Pr(3|\text{urna 2})=1/4\).</div>
+      <div class="hint" hidden><b>Pista 3.</b> La evidencia es \(\Pr(3)=\frac13\cdot\frac15+\frac14\cdot\frac45\).</div>
+      <button class="btn hint-btn">Ver pista 1</button>
+    </div>
+    <details class="deep"><summary>Solución paso a paso</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Prior.</strong> \(\Pr(U_1)=\frac15\), \(\Pr(U_2)=\frac45\).</li>
+        <li><strong>Verosimilitud.</strong> \(\Pr(3|U_1)=\frac13\) (una de tres) y \(\Pr(3|U_2)=\frac14\) (una de cuatro).</li>
+        <li><strong>Evidencia.</strong> \(\Pr(3)=\frac13\cdot\frac15+\frac14\cdot\frac45=\frac1{15}+\frac15=\frac4{15}\).</li>
+        <li><strong>Posterior.</strong> \(\Pr(U_2|3)=\dfrac{\frac14\cdot\frac45}{\frac4{15}}=\dfrac{\frac15}{\frac4{15}}=\dfrac34\).</li>
+        <li><strong>Lectura.</strong> El 3 es algo más probable desde la urna 1 (\(1/3>1/4\)), pero la prior de la urna 2 es cuatro veces mayor: gana la urna 2. La decisión MAP sería «urna 2», con \(\Pr(e|3)=1/4\).</li>
+      </ol>
+    </div></details>
+    <footer><button class="mark ex-done" aria-pressed="false">Marcar como resuelto</button></footer>
+  </article>
+
+  <div class="pager"></div>
+</section>

@@ -1,0 +1,213 @@
+<script>
+/* ================= tema 2: utilidades ================= */
+function Qinv(p){ let lo = -10, hi = 10; for (let i = 0; i < 80; i++){ const m = (lo + hi)/2; if (Qf(m) > p) lo = m; else hi = m; } return (lo + hi)/2; }
+function pct(x, n=1){ return fmt(100*x, n) + ' %'; }
+function bandRect(ctx, x0, x1, y, h, col){ ctx.fillStyle = col; ctx.fillRect(Math.min(x0,x1), y, Math.abs(x1-x0) + 0.6, h); }
+
+/* ================= laboratorio: MAP / MBR en 1D ================= */
+VIZ.map1d = function(el){
+  const p1 = $('#m1-p1', el), mu2 = $('#m1-mu2', el), s2 = $('#m1-s2', el), c12 = $('#m1-c12', el), c21 = $('#m1-c21', el);
+  const cv1 = $('#m1-c1', el), cv2 = $('#m1-c2', el), out = $('#m1-out', el);
+  function draw(){
+    const P1 = +p1.value, P2 = 1 - P1, m2 = +mu2.value, sg2 = +s2.value, k12 = +c12.value, k21 = +c21.value;
+    $('#m1-p1-o', el).textContent = fmt(P1, 2); $('#m1-mu2-o', el).textContent = fmt(m2, 1); $('#m1-s2-o', el).textContent = fmt(sg2, 2);
+    $('#m1-c12-o', el).textContent = fmt(k12, 1); $('#m1-c21-o', el).textContent = fmt(k21, 1);
+    const lo = Math.min(-4, m2 - 4*sg2), hi = Math.max(4, m2 + 4*sg2), M = 700, dx = (hi - lo)/M;
+    const xs_ = [], a = [], b = [], dec = [], decMap = [];
+    let pe = 0, peMap = 0, risk = 0, riskMap = 0; const th = [];
+    for (let i = 0; i <= M; i++){ const x = lo + i*dx; const A = P1*npdf(x, 0, 1), B = P2*npdf(x, m2, sg2);
+      xs_.push(x); a.push(A); b.push(B); const d1 = k21*A > k12*B, dm = A > B; dec.push(d1); decMap.push(dm);
+      if (d1){ pe += B*dx; risk += k12*B*dx; } else { pe += A*dx; risk += k21*A*dx; }
+      if (dm){ peMap += B*dx; riskMap += k12*B*dx; } else { peMap += A*dx; riskMap += k21*A*dx; }
+      if (i > 0 && dec[i] !== dec[i-1]) th.push(x - dx/2); }
+    /* valores exactos: fronteras refinadas por bisección e integrales con Φ */
+    const Phi = z => 1 - Qf(z);
+    const exact = (fd) => { const ts = []; for (let i = 1; i <= M; i++){ let x0 = xs_[i-1], x1 = xs_[i]; if ((fd(x0) > 0) !== (fd(x1) > 0)){ for (let k = 0; k < 50; k++){ const xm = (x0 + x1)/2; if ((fd(xm) > 0) === (fd(x0) > 0)) x0 = xm; else x1 = xm; } ts.push((x0 + x1)/2); } }
+      const ed = [-Infinity, ...ts, Infinity]; let e = 0, r = 0;
+      for (let k = 0; k < ed.length - 1; k++){ const a0 = ed[k], a1 = ed[k+1]; const xm = isFinite(a0) && isFinite(a1) ? (a0 + a1)/2 : (isFinite(a0) ? a0 + 1 : a1 - 1);
+        if (fd(xm) > 0){ const m = P2*(Phi((a1 - m2)/sg2) - Phi((a0 - m2)/sg2)); e += m; r += k12*m; } else { const m = P1*(Phi(a1) - Phi(a0)); e += m; r += k21*m; } }
+      return {ts, e, r}; };
+    const exR = exact(x => k21*P1*npdf(x, 0, 1) - k12*P2*npdf(x, m2, sg2)), exM = exact(x => P1*npdf(x, 0, 1) - P2*npdf(x, m2, sg2));
+    pe = exR.e; risk = exR.r; peMap = exM.e; riskMap = exM.r; th.length = 0; exR.ts.forEach(t => th.push(t));
+    const gam = k12/k21; const C1 = cssv('--c1'), C2 = cssv('--c2'), ink2 = cssv('--ink-2'), muted = cssv('--muted');
+    { const {ctx, w, h} = setupCanvas(cv1); const mg = {l:46, r:12, t:12, b:44};
+      const ymax = Math.max(...a, ...b)*1.12; const X = lin(lo, hi, mg.l, w - mg.r), Y = lin(0, ymax, h - mg.b - 10, mg.t);
+      const tick = []; for (let t = Math.ceil(lo); t <= hi; t += (hi - lo > 10 ? 2 : 1)) tick.push(t);
+      drawAxes(ctx, w, h - 10, mg, X, Y, {yt:[0, ymax/2.24, ymax/1.12].map(v => +v.toFixed(2)), yf:t => fmt(t,2), xt:tick, xl:'x'});
+      for (let i = 0; i < M; i++){ const x0 = X(xs_[i]), x1 = X(xs_[i+1]);
+        if (dec[i]){ ctx.fillStyle = withAlpha(C2, .28); ctx.fillRect(x0, Y(b[i]), x1 - x0 + .6, Y(0) - Y(b[i])); }
+        else { ctx.fillStyle = withAlpha(C1, .28); ctx.fillRect(x0, Y(a[i]), x1 - x0 + .6, Y(0) - Y(a[i])); }
+        bandRect(ctx, x0, x1, h - 16, 8, dec[i] ? withAlpha(C1, .85) : withAlpha(C2, .85)); }
+      const curve = (arr, col) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); arr.forEach((v, i) => { const px = X(xs_[i]), py = Y(v); if (!i) ctx.moveTo(px, py); else ctx.lineTo(px, py); }); ctx.stroke(); ctx.restore(); };
+      curve(a, C1); curve(b, C2);
+      th.forEach(t => { ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle = ink2; ctx.beginPath(); ctx.moveTo(X(t)+.5, mg.t); ctx.lineTo(X(t)+.5, h - 18); ctx.stroke(); ctx.restore(); });
+      label(ctx, 'R₁', mg.l + 4, h - 26, ink2); label(ctx, 'sombreado = contribución al error', w - mg.r, mg.t + 6, muted, 'right');
+    }
+    { const {ctx, w, h} = setupCanvas(cv2); const mg = {l:46, r:12, t:10, b:30};
+      const X = lin(lo, hi, mg.l, w - mg.r), Y = lin(0, 1, h - mg.b, mg.t);
+      const tick = []; for (let t = Math.ceil(lo); t <= hi; t += (hi - lo > 10 ? 2 : 1)) tick.push(t);
+      drawAxes(ctx, w, h, mg, X, Y, {yt:[0,.5,1], yf:t => fmt(t,1), xt:tick, xl:'x'});
+      const post = (i) => a[i]/(a[i] + b[i] || 1e-300);
+      ctx.save(); ctx.strokeStyle = C1; ctx.lineWidth = 2; ctx.beginPath(); xs_.forEach((x, i) => { const py = Y(post(i)); if (!i) ctx.moveTo(X(x), py); else ctx.lineTo(X(x), py); }); ctx.stroke();
+      ctx.strokeStyle = C2; ctx.beginPath(); xs_.forEach((x, i) => { const py = Y(1 - post(i)); if (!i) ctx.moveTo(X(x), py); else ctx.lineTo(X(x), py); }); ctx.stroke(); ctx.restore();
+      const lev = gam/(1 + gam); ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle = ink2; ctx.beginPath(); ctx.moveTo(mg.l, Y(lev)); ctx.lineTo(w - mg.r, Y(lev)); ctx.stroke(); ctx.restore();
+      tagLabel(ctx, `γ/(1+γ) = ${fmt(lev,2)}`, w - mg.r - 110, Y(lev) - 10, ink2);
+    }
+    const thTxt = th.length ? th.map(t => fmt(t, 2)).join(' y ') : 'ninguna en el rango';
+    out.innerHTML = `<span class="kv">γ = π₁₂/π₂₁ = <b>${fmt(gam,2)}</b></span><span class="kv">fronteras en x = <b>${thTxt}</b></span><span class="kv">Pr(e) con esta regla = <b>${fmt(pe,4)}</b></span><span class="kv">Pr(e) con MAP = <b>${fmt(peMap,4)}</b></span><span class="kv">riesgo 𝓡 con esta regla = <b>${fmt(risk,4)}</b></span><span class="kv">𝓡 si se usara MAP = <b>${fmt(riskMap,4)}</b></span>`;
+  }
+  [p1, mu2, s2, c12, c21].forEach(i => i.addEventListener('input', draw));
+  return {el, draw};
+};
+
+/* ================= laboratorio: ROC, NP y matriz de confusión ================= */
+VIZ.roc = function(el){
+  const dp = $('#r-dp', el), g = $('#r-g', el), al = $('#r-a', el), pr = $('#r-pr', el), nn = $('#r-n', el), np = $('#r-np', el);
+  const cv1 = $('#r-c1', el), cv2 = $('#r-c2', el), cm = $('#r-cm', el), out = $('#r-out', el);
+  function draw(){
+    const D = +dp.value, t = +g.value, A = +al.value, PR = +pr.value, N = +nn.value;
+    $('#r-dp-o', el).textContent = fmt(D, 2); $('#r-g-o', el).textContent = fmt(t, 2); $('#r-a-o', el).textContent = fmt(A, 3); $('#r-pr-o', el).textContent = fmt(PR, 2); $('#r-n-o', el).textContent = N;
+    const PD = Qf(t - D), PFA = Qf(t); const C1 = cssv('--c1'), C2 = cssv('--c2'), acc = cssv('--accent'), ink2 = cssv('--ink-2'), surf = cssv('--surface'), muted = cssv('--muted');
+    { const {ctx, w, h} = setupCanvas(cv1); const mg = {l:14, r:12, t:12, b:30}; const lo = -3.8, hi = Math.max(4, D + 3.8);
+      const X = lin(lo, hi, mg.l, w - mg.r), Y = lin(0, 0.45, h - mg.b, mg.t);
+      drawAxes(ctx, w, h, mg, X, Y, {xt:[0, D].filter((v,i,arr) => i === 0 || Math.abs(v - arr[0]) > 0.5), xf:v => v === 0 ? 'μ₁=0' : 'μ₂', xl:'x'});
+      const M = 300;
+      const fill = (mu, col, hatch) => { ctx.save(); ctx.beginPath(); ctx.moveTo(X(t), Y(0)); for (let i = 0; i <= M; i++){ const x = t + (hi - t)*i/M; ctx.lineTo(X(x), Y(npdf(x, mu))); } ctx.lineTo(X(hi), Y(0)); ctx.closePath();
+        if (hatch){ ctx.clip(); ctx.strokeStyle = withAlpha(col, .8); ctx.lineWidth = 1; for (let k = -h; k < w; k += 5){ ctx.beginPath(); ctx.moveTo(k, h); ctx.lineTo(k + h, 0); ctx.stroke(); } }
+        else { ctx.fillStyle = withAlpha(col, .35); ctx.fill(); } ctx.restore(); };
+      fill(D, C2, false); fill(0, C1, true);
+      const curve = (mu, col) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= M; i++){ const x = lo + (hi - lo)*i/M; if (!i) ctx.moveTo(X(x), Y(npdf(x, mu))); else ctx.lineTo(X(x), Y(npdf(x, mu))); } ctx.stroke(); ctx.restore(); };
+      curve(0, C1); curve(D, C2);
+      ctx.save(); ctx.strokeStyle = cssv('--ink'); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(t)+.5, mg.t); ctx.lineTo(X(t)+.5, h - mg.b); ctx.stroke(); ctx.restore();
+      tagLabel(ctx, 'γ′', X(t) + 5, mg.t + 26, cssv('--ink')); label(ctx, '← decide ω₁', X(t) - 6, mg.t + 6, muted, 'right'); label(ctx, 'decide ω₂ →', X(t) + 6, mg.t + 6, muted, 'left');
+    }
+    { const {ctx, w, h} = setupCanvas(cv2); const mg = {l:58, r:14, t:12, b:36}; const S = Math.min(w - mg.l - mg.r, h - mg.t - mg.b);
+      const X = lin(0, 1, mg.l, mg.l + S), Y = lin(0, 1, mg.t + S, mg.t); const hh = mg.t + S + mg.b;
+      drawAxes(ctx, mg.l + S + mg.r, hh, mg, X, Y, {yt:[0,.25,.5,.75,1], yf:v => fmt(v,2), xt:[0,.5,1], xf:v => fmt(v,1), xl:'P_FA', yl:'P_D', xgrid:true});
+      ctx.save(); ctx.setLineDash([3,3]); ctx.strokeStyle = muted; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(1), Y(1)); ctx.stroke(); ctx.restore();
+      const rocCurve = (d, col, lw) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); for (let i = 0; i <= 200; i++){ const tt = -6 + 12*i/200; const fx = Qf(tt), fy = Qf(tt - d); if (!i) ctx.moveTo(X(fx), Y(fy)); else ctx.lineTo(X(fx), Y(fy)); } ctx.stroke(); ctx.restore(); };
+      [1,2,3].forEach(d => rocCurve(d, withAlpha(muted, .55), 1)); rocCurve(D, acc, 2.2);
+      dot(ctx, X(PFA), Y(PD), 5, acc, surf);
+      tagLabel(ctx, `AUROC = ${fmt(1 - Qf(D/Math.SQRT2), 3)}`, X(0.42), Y(0.12), ink2);
+    }
+    const TP = N*PR*PD, FN = N*PR*(1 - PD), FP = N*(1 - PR)*PFA, TN = N*(1 - PR)*(1 - PFA);
+    const R = PD, S_ = 1 - PFA, P = TP/(TP + FP || 1e-12), F1 = 2*P*R/(P + R || 1e-12), Acc = (TP + TN)/N, NPV = TN/(TN + FN || 1e-12);
+    cm.innerHTML = `<table><thead><tr><th>Real \\ Predicción</th><th>ω₂ (positivo)</th><th>ω₁ (negativo)</th><th>Por fila</th></tr></thead><tbody>
+      <tr><td>ω₂ (enfermo)</td><td class="num">TP = ${fmt(TP,1)}</td><td class="num">FN = ${fmt(FN,1)}</td><td class="num">Recall = ${fmt(R,3)}</td></tr>
+      <tr><td>ω₁ (sano)</td><td class="num">FP = ${fmt(FP,1)}</td><td class="num">TN = ${fmt(TN,1)}</td><td class="num">Especificidad = ${fmt(S_,3)}</td></tr>
+      <tr><td>Por columna</td><td class="num">Precisión = ${fmt(P,3)}</td><td class="num">VPN = ${fmt(NPV,3)}</td><td class="num">Exactitud = ${fmt(Acc,3)}</td></tr></tbody></table>`;
+    out.innerHTML = `<span class="kv">P_D = <b>${fmt(PD,4)}</b></span><span class="kv">P_FA = <b>${fmt(PFA,4)}</b></span><span class="kv">miss = <b>${fmt(1-PD,4)}</b></span><span class="kv">rechazo correcto = <b>${fmt(1-PFA,4)}</b></span><span class="kv">F1 = <b>${fmt(F1,3)}</b></span><span class="kv">γ′ de NP para α = ${fmt(A,3)}: <b>${fmt(Qinv(A),3)}</b> → P_D = <b>${fmt(Qf(Qinv(A) - D),4)}</b></span>`;
+  }
+  [dp, g, al, pr, nn].forEach(i => i.addEventListener('input', draw));
+  np.addEventListener('click', () => { g.value = Qinv(+al.value).toFixed(2); draw(); });
+  return {el, draw};
+};
+
+/* ================= laboratorio: QDA / LDA en 2D ================= */
+VIZ.qda2d = function(el){
+  const ids = ['s1x','s1y','r1','s2x','s2y','r2','p1']; const inp = {}; ids.forEach(k => inp[k] = $('#q-' + k, el));
+  const cv = $('#q-c1', el), out = $('#q-out', el), btn = $('#q-lda', el);
+  const MU1 = [-1.3, -0.3], MU2 = [1.3, 0.5];
+  function cov(sx, sy, r){ return [sx*sx, r*sx*sy, sy*sy]; }
+  function inv2(c){ const d = c[0]*c[2] - c[1]*c[1]; return {i:[c[2]/d, -c[1]/d, c[0]/d], det:d}; }
+  function q(ci, x, y, m){ const dx = x - m[0], dy = y - m[1]; return ci[0]*dx*dx + 2*ci[1]*dx*dy + ci[2]*dy*dy; }
+  function draw(){
+    ids.forEach(k => { const o = $('#q-' + k + '-o', el); if (o) o.textContent = fmt(+inp[k].value, 2); });
+    const C1m = cov(+inp.s1x.value, +inp.s1y.value, +inp.r1.value), C2m = cov(+inp.s2x.value, +inp.s2y.value, +inp.r2.value);
+    const P1 = +inp.p1.value, P2 = 1 - P1; const I1 = inv2(C1m), I2 = inv2(C2m);
+    const k1 = -0.5*Math.log(I1.det) + Math.log(P1), k2 = -0.5*Math.log(I2.det) + Math.log(P2);
+    const g = (x, y) => (-0.5*q(I1.i, x, y, MU1) + k1) - (-0.5*q(I2.i, x, y, MU2) + k2);
+    const {ctx, w, h} = setupCanvas(cv); const R = 4.4; const sc = Math.min(w/(2*R*1.25), h/(2*R*0.8)); const ox = w/2, oy = h/2;
+    const X2 = x => ox + x*sc, Y2 = y => oy - y*sc, iX = px => (px - ox)/sc, iY = py => (oy - py)/sc;
+    const C1 = cssv('--c1'), C2 = cssv('--c2'), ink = cssv('--ink'), surf = cssv('--surface');
+    const st = 3; const cols = Math.ceil(w/st), rows = Math.ceil(h/st); const sg = new Int8Array((cols + 1)*(rows + 1));
+    for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) sg[j*(cols + 1) + i] = g(iX(i*st), iY(j*st)) > 0 ? 1 : -1;
+    const f1 = withAlpha(C1, .17), f2 = withAlpha(C2, .17);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++){ ctx.fillStyle = sg[j*(cols + 1) + i] > 0 ? f1 : f2; ctx.fillRect(i*st, j*st, st, st); }
+    ctx.fillStyle = ink;
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++){ const s0 = sg[j*(cols + 1) + i]; if (s0 !== sg[j*(cols + 1) + i + 1] || s0 !== sg[(j + 1)*(cols + 1) + i]) ctx.fillRect(i*st + 0.5, j*st + 0.5, 2, 2); }
+    ctx.save(); ctx.strokeStyle = cssv('--axis'); ctx.globalAlpha = .6; ctx.beginPath(); ctx.moveTo(0, Y2(0)+.5); ctx.lineTo(w, Y2(0)+.5); ctx.moveTo(X2(0)+.5, 0); ctx.lineTo(X2(0)+.5, h); ctx.stroke(); ctx.restore();
+    const ell = (C, m, col) => { const E = eig2(C); const u = [Math.cos(E.ang), Math.sin(E.ang)], v = [-u[1], u[0]];
+      [1, 2].forEach(k => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = k === 1 ? 2 : 1.2; if (k === 2) ctx.setLineDash([5,4]); ctx.beginPath();
+        for (let s = 0; s <= 100; s++){ const t = 2*Math.PI*s/100; const a = k*Math.sqrt(E.l1)*Math.cos(t), b = k*Math.sqrt(Math.max(E.l2, 1e-9))*Math.sin(t); const x = m[0] + a*u[0] + b*v[0], y = m[1] + a*u[1] + b*v[1]; if (!s) ctx.moveTo(X2(x), Y2(y)); else ctx.lineTo(X2(x), Y2(y)); }
+        ctx.stroke(); ctx.restore(); });
+      dot(ctx, X2(m[0]), Y2(m[1]), 4, col, surf); };
+    ell(C1m, MU1, C1); ell(C2m, MU2, C2);
+    label(ctx, 'μ₁', X2(MU1[0]) - 8, Y2(MU1[1]) - 10, ink, 'right'); label(ctx, 'μ₂', X2(MU2[0]) + 8, Y2(MU2[1]) - 10, ink, 'left');
+    const A = [0.5*(I2.i[0] - I1.i[0]), 0.5*(I2.i[1] - I1.i[1]), 0.5*(I2.i[2] - I1.i[2])];
+    const tr = (A[0] + A[2])/2, dd = Math.sqrt(((A[0] - A[2])/2)**2 + A[1]*A[1]); const e1 = tr + dd, e2 = tr - dd; const sz = Math.max(Math.abs(e1), Math.abs(e2));
+    let tipo;
+    if (sz < 1e-6) tipo = 'recta (A = 0: covarianzas iguales → LDA)';
+    else if (Math.min(Math.abs(e1), Math.abs(e2)) < 1e-3*sz) tipo = 'parábola (un autovalor de A nulo)';
+    else if (e1*e2 > 0) tipo = (Math.abs(e1 - e2) < 1e-3*sz ? 'circunferencia' : 'elipse') + ' (autovalores de A del mismo signo)';
+    else tipo = 'hipérbola (autovalores de A de signo opuesto)';
+    out.innerHTML = `<span class="kv">frontera: <b>${tipo}</b></span><span class="kv">autovalores de A = ½(C₂⁻¹ − C₁⁻¹): <b>${fmt(e1,3)}</b>, <b>${fmt(e2,3)}</b></span><span class="kv">ln Pr(ω₁)/Pr(ω₂) = <b>${fmt(Math.log(P1/P2),3)}</b></span>`;
+  }
+  ids.forEach(k => inp[k].addEventListener('input', draw));
+  btn.addEventListener('click', () => { inp.s2x.value = inp.s1x.value; inp.s2y.value = inp.s1y.value; inp.r2.value = inp.r1.value; draw(); });
+  return {el, draw};
+};
+
+/* ================= laboratorio: sesgo y varianza del ML ================= */
+VIZ.mlest = function(el){
+  const nn = $('#ml-n', el), re = $('#ml-re', el), cv1 = $('#ml-c1', el), cv2 = $('#ml-c2', el), out = $('#ml-out', el);
+  let seed = 101, cacheKey = '', mus = [], vars = [];
+  function simulate(N){ const r = mulberry32(seed*1000 + N); const L = 2000; mus = new Float64Array(L); vars = new Float64Array(L);
+    for (let l = 0; l < L; l++){ let s = 0, s2 = 0; const xs = new Float64Array(N);
+      for (let k = 0; k < N; k++){ const u1 = Math.max(r(), 1e-12), u2 = r(); const z = Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2); xs[k] = z; s += z; }
+      const m = s/N; for (let k = 0; k < N; k++) s2 += (xs[k] - m)**2; mus[l] = m; vars[l] = s2/N; } }
+  function hist(cv, data, lo, hi, marks, title){
+    const {ctx, w, h} = setupCanvas(cv); const mg = {l:12, r:12, t:22, b:30}; const nb = 40, bw = (hi - lo)/nb; const H = new Array(nb).fill(0);
+    data.forEach(v => { const k = Math.floor((v - lo)/bw); if (k >= 0 && k < nb) H[k]++; });
+    const X = lin(lo, hi, mg.l, w - mg.r), Y = lin(0, Math.max(...H)*1.1, h - mg.b, mg.t);
+    const step = (hi - lo) > 4 ? 1 : (hi - lo) > 1.5 ? 0.5 : 0.25; const xt = []; for (let t = Math.ceil(lo/step)*step; t <= hi + 1e-9; t += step) xt.push(+t.toFixed(2));
+    drawAxes(ctx, w, h, mg, X, Y, {xt, xf:v => fmt(v, step < 1 ? 2 : 0)});
+    const col = cssv('--accent'); H.forEach((c, k) => { if (!c) return; const x0 = X(lo + k*bw) + 1, x1 = X(lo + (k + 1)*bw) - 1; ctx.fillStyle = withAlpha(col, .55); ctx.fillRect(x0, Y(c), Math.max(1, x1 - x0), Y(0) - Y(c)); });
+    marks.forEach(m => { ctx.save(); ctx.strokeStyle = m.col; ctx.lineWidth = 2; if (m.dash) ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(X(m.v)+.5, mg.t); ctx.lineTo(X(m.v)+.5, h - mg.b); ctx.stroke(); ctx.restore(); });
+    label(ctx, title, mg.l, 10, cssv('--ink-2'));
+  }
+  function draw(){
+    const N = +nn.value; $('#ml-n-o', el).textContent = N;
+    const key = seed + ':' + N; if (key !== cacheKey){ simulate(N); cacheKey = key; }
+    const L = mus.length; let mm = 0, mv = 0; for (let l = 0; l < L; l++){ mm += mus[l]; mv += vars[l]; } mm /= L; mv /= L;
+    let vm = 0; for (let l = 0; l < L; l++) vm += (mus[l] - mm)**2; vm /= L;
+    const ink = cssv('--ink'), C2 = cssv('--c2'), muted = cssv('--muted');
+    const sp = 4/Math.sqrt(N); hist(cv1, mus, -sp, sp, [{v:0, col:ink}, {v:mm, col:C2, dash:true}], 'μ estimada (ML)');
+    hist(cv2, vars, 0, N < 6 ? 4 : 2.5, [{v:1, col:ink}, {v:mv, col:C2, dash:true}, {v:(N - 1)/N, col:muted, dash:true}], 'σ² estimada (ML)');
+    out.innerHTML = `<span class="kv">media de μ estimada = <b>${fmt(mm,3)}</b> (verdadero 0)</span><span class="kv">varianza de μ estimada = <b>${fmt(vm,4)}</b> (teórica 1/N = ${fmt(1/N,4)})</span><span class="kv">media de σ² estimada (ML) = <b>${fmt(mv,3)}</b> (teórica (N−1)/N = ${fmt((N-1)/N,3)})</span><span class="kv">sesgo ≈ <b>${fmt(1 - mv,3)}</b></span><span class="kv">con 1/(N−1): media = <b>${fmt(mv*N/(N-1),3)}</b></span>`;
+  }
+  nn.addEventListener('input', draw); re.addEventListener('click', () => { seed++; draw(); });
+  return {el, draw};
+};
+
+/* ================= laboratorio: test diagnóstico ================= */
+VIZ.bayes = function(el){
+  const se = $('#b-se', el), sp = $('#b-sp', el), pr = $('#b-pr', el), cv1 = $('#b-c1', el), cv2 = $('#b-c2', el), out = $('#b-out', el);
+  const post = (S, E, p) => S*p/(S*p + (1 - E)*(1 - p));
+  function draw(){
+    const S = +se.value, E = +sp.value, lp = +pr.value, p = Math.pow(10, lp);
+    $('#b-se-o', el).textContent = fmt(S, 4); $('#b-sp-o', el).textContent = fmt(E, 4); $('#b-pr-o', el).textContent = (p < 0.01 ? fmt(100*p, 3) : fmt(100*p, 2)) + ' %';
+    const p1 = post(S, E, p), p2 = post(S, E, p1), neg = E*(1 - p)/(E*(1 - p) + (1 - S)*p);
+    const C1 = cssv('--c1'), C2 = cssv('--c2'), acc = cssv('--accent'), surf = cssv('--surface'), ink2 = cssv('--ink-2');
+    { const {ctx, w, h} = setupCanvas(cv1); const mg = {l:44, r:12, t:12, b:36}; const X = lin(-4, -0.3, mg.l, w - mg.r), Y = lin(0, 1, h - mg.b, mg.t);
+      drawAxes(ctx, w, h, mg, X, Y, {yt:[0,.25,.5,.75,1], yf:v => fmt(v,2), xt:[-4,-3,-2,-1], xf:v => ({'-4':'0,01%','-3':'0,1%','-2':'1%','-1':'10%'})[String(v)], xl:'prevalencia (log)'});
+      const curve = (fn, col, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 2; if (dash) ctx.setLineDash([6,4]); ctx.beginPath(); for (let i = 0; i <= 200; i++){ const l = -4 + 3.7*i/200; const v = fn(Math.pow(10, l)); if (!i) ctx.moveTo(X(l), Y(v)); else ctx.lineTo(X(l), Y(v)); } ctx.stroke(); ctx.restore(); };
+      curve(q => post(S, E, q), acc, false); curve(q => post(S, E, post(S, E, q)), C2, true);
+      dot(ctx, X(lp), Y(p1), 5, acc, surf); dot(ctx, X(lp), Y(p2), 4, C2, surf);
+      tagLabel(ctx, 'Pr(sick|+)', X(-3.9), Y(0.08), acc); tagLabel(ctx, 'Pr(sick|+,+)', X(-3.9), Y(0.92), C2);
+    }
+    { const {ctx, w, h} = setupCanvas(cv2); const mg = {l:12, r:12, t:16, b:40}; const TP = 1e5*p*S, FP = 1e5*(1 - p)*(1 - E);
+      const mx = Math.max(TP, FP)*1.15; const Y = lin(0, mx, h - mg.b, mg.t); const bw = Math.min(90, (w - mg.l - mg.r)/4);
+      const xs1 = mg.l + (w - mg.l - mg.r)/2 - bw - 16, xs2 = mg.l + (w - mg.l - mg.r)/2 + 16;
+      ctx.fillStyle = C2; ctx.fillRect(xs1, Y(TP), bw, Y(0) - Y(TP)); ctx.fillStyle = C1; ctx.fillRect(xs2, Y(FP), bw, Y(0) - Y(FP));
+      ctx.save(); ctx.strokeStyle = cssv('--axis'); ctx.beginPath(); ctx.moveTo(mg.l, Y(0)+.5); ctx.lineTo(w - mg.r, Y(0)+.5); ctx.stroke(); ctx.restore();
+      label(ctx, fmt(TP, 1), xs1 + bw/2, Y(TP) - 9, ink2, 'center'); label(ctx, fmt(FP, 1), xs2 + bw/2, Y(FP) - 9, ink2, 'center');
+      const nar = w < 520; label(ctx, nar ? 'verdaderos' : 'positivos verdaderos', xs1 + bw/2, h - mg.b + 14, ink2, 'center'); label(ctx, nar ? 'falsos' : 'falsos positivos', xs2 + bw/2, h - mg.b + 14, ink2, 'center');
+    }
+    out.innerHTML = `<span class="kv">Pr(sick|+) = <b>${fmt(p1,4)}</b></span><span class="kv">Pr(healthy|−) = <b>${fmt(neg,6)}</b></span><span class="kv">Pr(sick|+,+) = <b>${fmt(p2,4)}</b></span><span class="kv">de cada 100 000: <b>${fmt(1e5*p*S,1)}</b> positivos verdaderos y <b>${fmt(1e5*(1-p)*(1-E),1)}</b> falsos</span>`;
+  }
+  [se, sp, pr].forEach(i => i.addEventListener('input', draw));
+  $$('.seg button[data-p]', el).forEach(b => b.addEventListener('click', () => { pr.value = Math.log10(+b.dataset.p).toFixed(3); draw(); }));
+  return {el, draw};
+};
+</script>

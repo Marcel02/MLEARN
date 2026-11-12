@@ -1,0 +1,78 @@
+<section class="view" id="v-b2" data-sec="b2">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 2 · Apartado 2.1.2 del PDF</div>
+    <h1>La regla MAP</h1>
+    <p class="lede">Decidir la clase con mayor probabilidad a posteriori. Es la regla que minimiza la probabilidad de error.</p>
+    <div class="meta"><span class="chip">Diap. 13–16</span><span class="chip">PDF p. 13–16</span><span class="chip">incluye ejemplo manuscrito p. 14</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b2-1">
+    <header><h3>La regla MAP y la probabilidad de error</h3><span class="ref">Diap. 13 · PDF p. 13</span></header>
+    <div class="summary">
+      \[\omega_{MAP}=\arg\max_{\omega_i}\Pr(\omega_i|\bx).\]
+      <p>Con dos clases, la probabilidad de error condicionada a \(\bx\) es \(\Pr(e|\bx)=\Pr(\omega_1|\bx)\) si se decide \(\omega_2\), y \(\Pr(\omega_2|\bx)\) si se decide \(\omega_1\). La probabilidad de error total es su promedio sobre todos los \(\bx\):</p>
+      \[\Pr(e)=\Pr(\omega_2|\omega_1)\Pr(\omega_1)+\Pr(\omega_1|\omega_2)\Pr(\omega_2).\]
+      <p><strong>MAP minimiza la tasa de error de clasificación.</strong></p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: por qué MAP es la regla de mínimo error</summary><div class="deep-body">
+      <p>La diapositiva lo afirma; esta es la demostración (es el ejercicio 1).</p>
+      <ol class="steps">
+        <li><strong>Error condicionado.</strong> Si en el punto \(\bx\) decidimos \(\omega_k\), nos equivocamos cuando la clase verdadera es cualquier otra: \(\Pr(e|\bx)=\sum_{j\neq k}\Pr(\omega_j|\bx)=1-\Pr(\omega_k|\bx)\). Con dos clases es lo que dice la diapositiva.</li>
+        <li><strong>Error total.</strong> Promediando sobre \(\bx\): \(\Pr(e)=\int\Pr(e|\bx)\,f_{\bx}(\bx)\,d\bx=\int\left[1-\Pr(\omega_{k(\bx)}|\bx)\right]f_{\bx}(\bx)\,d\bx\), donde \(k(\bx)\) es la clase que decide la regla en cada punto.</li>
+        <li><strong>Minimizar punto a punto.</strong> \(f_{\bx}(\bx)\ge0\), y la decisión en un punto no afecta a los demás. La integral es mínima si en <em>cada</em> \(\bx\) el corchete es mínimo, es decir, si \(\Pr(\omega_{k(\bx)}|\bx)\) es máxima: eso es exactamente MAP.</li>
+        <li><strong>Lectura de la fórmula de \(\Pr(e)\).</strong> \(\Pr(\omega_2|\omega_1)\) es la probabilidad de <em>decidir</em> \(\omega_2\) siendo \(\omega_1\), \(\int_{R_2}f(\bx|\omega_1)d\bx\). Pesada por \(\Pr(\omega_1)\), da el error cometido con muestras de \(\omega_1\). La diapositiva aclara que \(\Pr(e|\bx)\) y \(\Pr(e)\) son distintas: la segunda es la media de la primera.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 13</span><p>«<em>One way decision rule is the Maximum A Posteriori</em>»; bajo \(\omega_i\): «<em>interested in the value that maximizes</em> Pr»; y al margen, «<em>Minimize probability</em> [of error]».</p></div>
+      <div class="note trap"><span class="lab">Error habitual</span><p>Leer \(\Pr(\omega_2|\omega_1)\) como una probabilidad condicionada entre clases. Aquí significa «decidir \(\omega_2\) cuando la verdad es \(\omega_1\)»: es una integral de \(f(\bx|\omega_1)\) sobre la región \(R_2\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b2-2">
+    <header><h3>Ejemplo en 1D: regiones que no tienen por qué ser intervalos</h3><span class="ref">Diap. 14 (manuscrita) · PDF p. 14</span></header>
+    <div class="summary">
+      <p>Con \(x\in\mathbb{R}\) (\(d=1\)) y \(c=2\), la regla \(\Pr(\omega_1|x)\gtrless\Pr(\omega_2|x)\) parte la recta allí donde las posteriores se cruzan. En la figura se cruzan tres veces y salen las regiones \(R_2,R_1,R_2,R_1\): una misma clase puede tener regiones separadas.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li>El profesor reescribe MAP con Bayes: \(\omega_{MAP}=\arg\max_{\omega_i}\Pr(\omega|\bx)=\arg\max_{\omega_i}\frac{f(\bx|\omega_i)\Pr(\omega_i)}{f_{\bx}(\bx)}=\arg\max_{\omega_i}f(\bx|\omega_i)\Pr(\omega_i)\).</li>
+        <li>La evidencia se puede quitar porque es positiva y común a todas las clases: dividir todos los candidatos por el mismo número positivo no cambia cuál es el mayor.</li>
+        <li>Las fronteras son los puntos con \(\Pr(\omega_1|x)=\Pr(\omega_2|x)\). Si las densidades tienen formas distintas (varianzas distintas, varios picos), puede haber varios cruces.</li>
+        <li>En un punto de empate la regla no decide (nota del profesor). Da igual qué se elija ahí: con densidades continuas esos puntos tienen probabilidad cero y no cambian \(\Pr(e)\).</li>
+      </ol>
+    </div></details>
+    <div class="inner"><div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 14</span><p>«<em>If they are equal, you cannot decide using this rule</em>» (en rosa, junto a \(\Pr(\omega_1|\bx)\gtrless\Pr(\omega_2|\bx)\)).</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b2-3">
+    <header><h3>Casos particulares: priors iguales o verosimilitudes iguales</h3><span class="ref">Diap. 15 · PDF p. 15</span></header>
+    <div class="summary">
+      \[\omega=\arg\max_{\omega_i}\Pr(\omega_i|\bx)=\arg\max_{\omega_i}\Pr(\omega_i)\,f_{\bx}(\bx|\omega_i).\]
+      <ul>
+        <li>Si \(f(\bx_0|\omega_1)=f(\bx_0|\omega_2)\), la observación \(\bx_0\) no aporta información: \(\omega=\arg\max\Pr(\omega_i)\).</li>
+        <li>Si \(\Pr(\omega_1)=\Pr(\omega_2)\), la decisión se basa solo en la verosimilitud: \(\omega=\arg\max f(\bx|\omega_i)\).</li>
+      </ul>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>Los dos casos salen de anular uno de los dos factores del producto \(\Pr(\omega_i)f(\bx|\omega_i)\). Con verosimilitudes iguales, el factor común se cancela y solo queda el prior. Con priors iguales, se cancela el prior y queda el criterio de <strong>máxima verosimilitud</strong> (ML). Por eso MAP con priors uniformes y ML coinciden. Con priors desiguales, MAP desplaza la frontera hacia la clase menos probable, agrandando la región de la más probable (lo verás en el laboratorio del bloque 3 y en la diap. 45).</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b2-4">
+    <header><h3>¿Es el error mínimo un criterio válido?</h3><span class="ref">Diap. 16 · PDF p. 16</span></header>
+    <div class="summary">
+      <p>No siempre. En el <strong>diagnóstico biomédico</strong>, ¿pesa igual decir «sano» a un enfermo que «enfermo» a un sano? En el <strong>spam</strong>, ¿es igual de grave perder un correo bueno que dejar pasar uno malo? En <strong>OCR</strong>, ¿vale lo mismo fallar una vocal que una consonante? En <strong>radar</strong>, las priors son muy distintas (casi nunca hay blanco) o directamente desconocidas.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>MAP trata todos los errores por igual y necesita las priors. Las dos limitaciones motivan los dos criterios siguientes: <strong>riesgo mínimo</strong> (bloque 3), cuando los errores tienen costes distintos, y <strong>Neyman-Pearson</strong> (bloque 4), cuando no se conocen las priors. El ejercicio 2 pide justo proponer costes para estos casos.</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b2"></div>
+  <div class="pager"></div>
+</section>

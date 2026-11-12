@@ -2,6 +2,6 @@
 fuente/vendor/
 fuente/vendor-fonts/
 # salida de build.py (versión online)
-fuente/*/mlearn-tema3.html
+fuente/*/mlearn-tema*.html
 .DS_Store
 Thumbs.db

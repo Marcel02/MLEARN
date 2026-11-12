@@ -1,0 +1,432 @@
+<script>
+const R = String.raw;
+const SECTIONS = [
+  {id:'inicio', n:'·', t:'Inicio y notación', grp:'Tema'},
+  {id:'b1', n:'1', t:'Introducción y Bayes', grp:'Teoría'},
+  {id:'b2', n:'2', t:'Regla MAP', grp:'Teoría'},
+  {id:'b3', n:'3', t:'Riesgo mínimo', grp:'Teoría'},
+  {id:'b4', n:'4', t:'Neyman-Pearson y minimax', grp:'Teoría'},
+  {id:'b5', n:'5', t:'Discriminantes gaussianos', grp:'Teoría'},
+  {id:'b6', n:'6', t:'LDA y casos particulares', grp:'Teoría'},
+  {id:'b7', n:'7', t:'Estimación ML', grp:'Teoría'},
+  {id:'b8', n:'8', t:'RDA y Naive Bayes', grp:'Teoría'},
+  {id:'b9', n:'9', t:'ROC y métricas', grp:'Teoría'},
+  {id:'b10', n:'10', t:'Test médico y conclusiones', grp:'Teoría'},
+  {id:'ejercicios', n:'E', t:'Ejercicios', grp:'Práctica'},
+  {id:'flashcards', n:'F', t:'Flashcards', grp:'Práctica'},
+  {id:'repaso', n:'R', t:'Repasar falladas', grp:'Práctica'},
+  {id:'resumen', n:'∑', t:'Hoja resumen', grp:'Práctica'}
+];
+
+const MAP = [
+  ['1','1',R`Portada. Bibliografía: Duda, Hart y Stork, caps. 2 y 3`,'b1'],
+  ['2','2',R`Índice: 2.1 decisión bayesiana (2.1.1–2.1.9) y 2.2 indicadores`,'b1'],
+  ['3','3',R`Objetivo: \(\mathcal D=\{(\bx_i,y_i)\}\), regla \(\hat y=h_{\boldsymbol\theta}(\bx)\); ejemplos binarios y multiclase`,'b1'],
+  ['4','4',R`Regiones y fronteras de decisión; clasificadores lineales`,'b1'],
+  ['5','5',R`«1.1 Introduction»: por qué un enfoque probabilístico`,'b1'],
+  ['6','6',R`Prior, densidades condicionadas y posterior (con anotaciones)`,'b1'],
+  ['7','7',R`Posterior = verosimilitud × prior / evidencia (con anotaciones)`,'b1'],
+  ['8','8',R`Dos interpretaciones: frecuentista y grado de creencia`,'b1'],
+  ['9','9',R`Qué calculamos: de \(\omega_j\) a \(\bx\) y de vuelta a \(\Pr(\omega_j|\bx)\)`,'b1'],
+  ['10','10',R`Thomas Bayes, Laplace y Kant`,'b1'],
+  ['11','11',R`Etapas del diseño de un clasificador supervisado`,'b1'],
+  ['12','12',R`Entrenamiento y evaluación`,'b1'],
+  ['13','13',R`«1.2 MAP decision rule» y \(\Pr(e|\bx)\)`,'b2'],
+  ['14','14',R`Ejemplo manuscrito en 1D con regiones no conexas`,'b2'],
+  ['15','15',R`Casos particulares: verosimilitudes iguales y priors iguales`,'b2'],
+  ['16','16',R`¿Es el error mínimo un criterio válido? Diagnóstico, spam, OCR, radar`,'b2'],
+  ['17','17',R`«1.3 Minimum risk rule»: \(P(e)\), costes \(\pi_{ij}\) y riesgo`,'b3'],
+  ['18','18',R`Teorema MBR: regiones que minimizan el riesgo`,'b3'],
+  ['—','19',R`Manuscrita: \(\Pr(\omega_1|\omega_2)=\int_{\mathcal R_1}f(\bx|\omega_2)\,d\bx\)`,'b3'],
+  ['—','20',R`Manuscrita: MAP y MBR con \(c=2\); umbral \(\gamma\)`,'b3'],
+  ['19','21',R`Demostración del teorema MBR`,'b3'],
+  ['20','22',R`Regla MBR y caso binario: cociente frente a \(\gamma\)`,'b3'],
+  ['21','23',R`Mover el umbral cambia las regiones`,'b3'],
+  ['22','24',R`En resumen: MAP es un caso particular de MBR`,'b3'],
+  ['23','25',R`«1.4 Neyman-Pearson rule»: sin priors; radar pulsado`,'b4'],
+  ['24','26',R`\(P_D\) y \(P_{FA}\); maximizar \(P_D\) con \(P_{FA}\le\alpha\)`,'b4'],
+  ['25','27',R`Teorema de Neyman-Pearson y su demostración (con corrección a mano)`,'b4'],
+  ['—','28',R`Manuscrita: resumen del criterio NP`,'b4'],
+  ['26','29',R`Minimax (avanzado)`,'b4'],
+  ['27','30',R`Riesgo como función de \(\Pr(\omega_1)\)`,'b4'],
+  ['28','31',R`Figura: riesgo mínimo frente a \(\Pr(\omega_1)\) y recta minimax`,'b4'],
+  ['29','32',R`Course overview: discriminante lineal y cuadrático`,'b5'],
+  ['—','33',R`Manuscrita: de los criterios a \(h_{\boldsymbol\theta}(\bx)\) usando la base de datos`,'b5'],
+  ['30','34',R`Clasificadores discriminativos frente a generativos`,'b5'],
+  ['31','35',R`«1.5 Discriminant analysis»: \(g_i(\bx)\) para MBR, MAP y NP`,'b5'],
+  ['32','36',R`Gaussiana univariante`,'b5'],
+  ['33','37',R`Gaussiana multivariante`,'b5'],
+  ['—','38',R`Manuscrita: campana 2D y elipsoide de \(\bC_k\)`,'b5'],
+  ['34','39',R`Transformaciones lineales de gaussianas`,'b5'],
+  ['35','40',R`Blanqueado: \(\bA=\bU\bLambda^{-1/2}\)`,'b5'],
+  ['36','41',R`Hiperelipsoides e hiperesferas`,'b5'],
+  ['37','42',R`Elipsoide con ejes \(\bu_1,\bu_2\)`,'b5'],
+  ['38','43',R`Clústeres gaussianos y efecto de las priors`,'b5'],
+  ['39','44',R`«1.6 Discriminants for Gaussian classes»`,'b5'],
+  ['—','45',R`Manuscrita: del logaritmo del discriminante a la frontera`,'b5'],
+  ['—','46',R`Manuscrita «Recap 1st class»: MAP, MBR, NP`,'b5'],
+  ['40','47',R`Frontera \(\bx^T\bA\bx+\bv^T\bx+e=0\)`,'b5'],
+  ['41','48',R`Fronteras en 2D: rectas, elipses, parábolas, hipérbolas`,'b5'],
+  ['42','49',R`Superficies frontera en 3D`,'b5'],
+  ['43','50',R`Más de dos clases: cuatro gaussianas`,'b5'],
+  ['44','51',R`Caso 1: covarianza común → LDA`,'b6'],
+  ['—','52',R`Manuscrita: hiperplano frontera y su normal`,'b6'],
+  ['45','53',R`Efecto de las priors en 1D y 2D`,'b6'],
+  ['46','54',R`Efecto de las priors en 2D y 3D`,'b6'],
+  ['47','55',R`Caso 2: covarianza diagonal común; caso 3: isotrópica`,'b6'],
+  ['—','56',R`Manuscrita: distancia de Mahalanobis con \(\bC\) diagonal`,'b6'],
+  ['48','57',R`Ejercicio: hiperplano \(\bw^T(\bx-\bx_0)=0\)`,'b6'],
+  ['49','58',R`Variables binarias independientes`,'b6'],
+  ['50','59',R`Ejercicio: el discriminante binario es lineal`,'b6'],
+  ['51','60',R`«1.7 Maximum likelihood estimation»`,'b7'],
+  ['52','61',R`ML frente a estimación bayesiana`,'b7'],
+  ['53','62',R`Base de datos dividida por clases`,'b7'],
+  ['54','63',R`Verosimilitud \(f(\mathcal D_i|\boldsymbol\theta_i)\) y estimador ML`,'b7'],
+  ['55','64',R`Figura: verosimilitud y log-verosimilitud`,'b7'],
+  ['56','65',R`Caracterización de un estimador: sesgo`,'b7'],
+  ['57','66',R`Varianza del estimador`,'b7'],
+  ['—','67',R`Manuscrita: sesgo y varianza como indicadores`,'b7'],
+  ['58','68',R`Propiedades del estimador ML`,'b7'],
+  ['59','69',R`Ejemplos 1 y 2: media y covarianza gaussianas`,'b7'],
+  ['60','70',R`Ejemplo 3: probabilidades de Bernoulli`,'b7'],
+  ['61','71',R`Implementación de QDA y LDA`,'b7'],
+  ['—','72',R`Manuscrita «Recap 25 sept»: train/test, iris`,'b7'],
+  ['62','73',R`LDA frente a QDA en iris (anotada)`,'b7'],
+  ['62','74',R`LDA frente a QDA en iris (limpia)`,'b7'],
+  ['—','75',R`Manuscrita: una covarianza (lineal) o una por clase (cuadrático)`,'b7'],
+  ['63','76',R`«1.8 Regularized discriminant analysis»`,'b8'],
+  ['—','77',R`Manuscrita: cuándo es singular \(\hat\bC\)`,'b8'],
+  ['64','78',R`«1.9 Naïve Bayes classifier»`,'b8'],
+  ['65','79',R`Ejemplos: Bernoulli y gaussiano`,'b8'],
+  ['66','80',R`Índice: 2.2 indicadores de rendimiento`,'b9'],
+  ['67','81',R`«2 Performance indicators»: las cuatro probabilidades`,'b9'],
+  ['—','82',R`Manuscrita: dos gaussianas de varianzas distintas`,'b9'],
+  ['68','83',R`Diagrama del radar pulsado`,'b9'],
+  ['69','84',R`\(P_D\) y \(P_{FA}\)`,'b9'],
+  ['70','85',R`Pérdida y rechazo correcto`,'b9'],
+  ['71','86',R`«2.1 ROC», discriminabilidad \(D'\), AUROC`,'b9'],
+  ['72','87',R`Más de dos clases y \(d>1\)`,'b9'],
+  ['73','88',R`TP, FP, TN, FN (con anotaciones)`,'b9'],
+  ['74','89',R`Recall, especificidad, precisión, exactitud…`,'b9'],
+  ['75','90',R`Diagrama de precisión y recall`,'b9'],
+  ['76','91',R`Sensibilidad frente a precisión`,'b10'],
+  ['77','92',R`Bayes para \(\Pr(\text{sick}|+)\)`,'b10'],
+  ['78','93',R`Ensayos clínicos: especificidad y sensibilidad`,'b10'],
+  ['—','94',R`Manuscrita: relación entre R y P`,'b10'],
+  ['—','95',R`Manuscrita: lista de métricas`,'b10'],
+  ['79','96',R`Ejemplo del SIDA: \(\Pr(\text{sick}|+)=0{,}062\)`,'b10'],
+  ['80','97',R`Segundo test: \(\Pr(\text{sick}|+,+)\)`,'b10'],
+  ['81','98',R`«2.2 Precision vs. recall tradeoff» en iris`,'b10'],
+  ['82','99',R`Precisión y recall frente al umbral`,'b10'],
+  ['83','100',R`«2.3 Confusion matrix»: TP 16, FN 30, FP 10, TN 144`,'b10'],
+  ['84','101',R`Elección de la métrica`,'b10'],
+  ['85','102',R`«2.4 Conclusion»: reglas y modelos`,'b10']
+];
+
+const ERRATA = [
+  ['Diap. 5, 13, 17, 23…', R`Apartados numerados «1.1», «1.2»… y «2», «2.1» en la parte de indicadores`, R`El índice (diap. 2 y 66) usa 2.1.1–2.1.9 y 2.2.1–2.2.4. Aquí se sigue el índice.`, 'b1'],
+  ['Diap. 13 y 17', R`\(\Pr(\omega_i|\omega_j)\) con el significado «decidir \(\omega_i\) cuando la clase real es \(\omega_j\)»`, R`No es una errata, pero choca con la posterior \(\Pr(\omega_i|\bx)\). Es \(\int_{\mathcal R_i}f(\bx|\omega_j)\,d\bx\) (manuscrita p. 19).`, 'b3'],
+  ['PDF p. 20 (manuscrita)', R`«\(\pi_{11}=\pi_{22}=0\), \(\pi_{12}>\pi_{11}\Rightarrow\gamma>1\)»`, R`Para que \(\gamma=\pi_{12}/\pi_{21}>1\) hace falta \(\pi_{12}>\pi_{21}\).`, 'b3'],
+  ['Diap. 19', R`«\(M\) regiones», «\(i=0,\dots,c-1\)», \(\bx\in\mathbb C^{N\times1}\)`, R`Son \(c\) regiones \(\mathcal R_1,\dots,\mathcal R_c\) y \(\bx\in\mathbb R^d\) (restos de otra notación).`, 'b3'],
+  ['Diap. 20', R`«Likelihood ratio» y el acrónimo «MRB»`, R`Lo que se compara con \(\gamma\) es un cociente de <em>posteriores</em>. El de verosimilitudes lleva además \(\Pr(\omega_2)/\Pr(\omega_1)\) en el umbral. El profesor escribe MBR.`, 'b3'],
+  ['Diap. 25', R`«decides \(\omega_1\) if \(f_2/f_1\ge\gamma\)»; Lagrangiano \(L(\mathcal R_1,\gamma)\)`, R`Decide \(\omega_2\) (corregido a mano por el profesor). La demostración trabaja con \(\mathcal R_2\).`, 'b4'],
+  ['Diap. 31', R`NP con \(g_i(\bx)=f(\bx|\omega_i)\)`, R`Equivale a NP con \(\gamma=1\). En general el umbral sale de \(P_{FA}=\alpha\) y no tiene por qué ser 1.`, 'b5'],
+  ['Diap. 32', R`Colas de 2,5 % fuera de \(\mu\pm2\sigma\)`, R`\(Q(2)=2{,}28\,\%\) por cola. El 2,5 % corresponde a \(\mu\pm1{,}96\sigma\).`, 'b5'],
+  ['Diap. 35', R`\(\bLambda^{-1/2}=\mathrm{diag}(\sqrt{\lambda_1},\dots,\sqrt{\lambda_d})\)`, R`\(\mathrm{diag}(1/\sqrt{\lambda_1},\dots,1/\sqrt{\lambda_d})\). Con \(\sqrt{\lambda_i}\) la covarianza resultante sería \(\bLambda^2\), no \(\mathbf I\).`, 'b5'],
+  ['Diap. 44', R`\((\bmu_j-\bmu_i)^T\bC^{-1}\bx=(\bmu_i^T\bC^{-1}\bmu_i-\bmu_j^T\bC^{-1}\bmu_j)+2\ln\frac{\Pr(\omega_j)}{\Pr(\omega_i)}\)`, R`\(2(\bmu_j-\bmu_i)^T\bC^{-1}\bx=(\bmu_j^T\bC^{-1}\bmu_j-\bmu_i^T\bC^{-1}\bmu_i)+2\ln\frac{\Pr(\omega_i)}{\Pr(\omega_j)}\). Comprobación en 1D (\(\mu_i=0\), \(\mu_j=2\), \(\sigma=1\)): la frontera correcta es \(x=1\); la de la diapositiva da \(x=-2\).`, 'b6'],
+  ['PDF p. 75 (manuscrita)', R`\(\hat\bC=\frac1c\sum_j\hat\bC_j\)`, R`La diap. 61 usa la ponderada \(\frac1N\sum_kN_k\hat\bC_k\). Coinciden solo si todas las clases tienen el mismo número de muestras.`, 'b7'],
+  ['Diap. 63', R`«si \(d>N_k\), \(\hat\bC_k\) es singular»`, R`Ya es singular con \(N_k\le d\), porque \(\rank\le N_k-1\).`, 'b8'],
+  ['PDF p. 77 (manuscrita)', R`«at least \(N=d\)»`, R`Hace falta \(N\ge d+1\): los vectores centrados suman \(\mathbf 0\).`, 'b8'],
+  ['Diap. 65', R`«Benoulli»`, R`Bernoulli.`, 'b8'],
+  ['Diap. 67 y 70', R`«Specificity (or power)»`, R`En estadística, la <em>potencia</em> de un test es \(1-\beta=P_D\) (la sensibilidad). Para el examen, sigue la diapositiva, pero conviene conocer el choque.`, 'b9'],
+  ['Diap. 72', R`\(D(\omega_i,\omega_j)=\sum_k\left|\frac{(\mu_i)_k}{(\sigma_i)_k}-\frac{(\mu_j)_k}{(\sigma_j)_k}\right|\)`, R`Si \(\sigma_i\ne\sigma_j\), cambia al trasladar el origen (no es invariante). Con \(\sigma\) comunes se reduce a \(\sum_k|\mu_{ik}-\mu_{jk}|/\sigma_k\).`, 'b9'],
+  ['PDF p. 88 (anotación)', R`Zona rosa rotulada «TN»`, R`Según la propia leyenda (rosa = miss), es FN.`, 'b9'],
+  ['Ejercicio 4.3', R`«para más de dos clases la frontera ya no es un hiperplano»`, R`Es cierto con costes generales (MBR). Con MAP y covarianza común, cada frontera entre dos clases sigue siendo un trozo de hiperplano.`, 'ejercicios'],
+  ['Ejercicio 5.2', R`\(\sum_ix_i\gtrless d/2\) con \(p_i=1-q_i=p\)`, R`Decidir \(\omega_1\) si \(\sum_ix_i>d/2\) presupone \(p>1/2\). Si \(p\lt 1/2\), la desigualdad se invierte.`, 'ejercicios'],
+  ['Ejercicios 7.1 y 7.2', R`«en función de \(x_1,y_1,x_2,y_2,\sigma^2\)»`, R`Con priors iguales, la frontera no depende de \(\sigma^2\). En 7.2 sí depende de \(\rho\).`, 'ejercicios'],
+  ['Ejercicio 10', R`Enlace a Wikipedia para la sensibilidad y la especificidad`, R`Se usan los valores de la diap. 79 (0,997 y 0,985). Las prevalencias españolas son datos históricos con fuente citada.`, 'ejercicios']
+];
+
+const QUIZ = {
+b1: [
+ {id:'b1q1', q:R`En la fórmula de Bayes \(\Pr(\omega_j|\bx)=\dfrac{f(\bx|\omega_j)\Pr(\omega_j)}{f(\bx)}\), ¿qué papel tiene \(f(\bx)\)?`, opts:[
+  {t:R`Es la verosimilitud de la clase \(\omega_j\).`, fb:R`La verosimilitud es \(f(\bx|\omega_j)\). \(f(\bx)\) no depende de \(j\).`},
+  {t:R`Es la evidencia: un factor de normalización, \(\sum_if(\bx|\omega_i)\Pr(\omega_i)\), igual para todas las clases.`, ok:1, fb:R`Por eso no influye al comparar clases. Hace que las posteriores sumen 1.`},
+  {t:R`Es la prior: lo que sabemos antes de observar \(\bx\).`, fb:R`La prior es \(\Pr(\omega_j)\).`},
+  {t:R`Es la probabilidad de error de la regla.`, fb:R`\(f(\bx)\) es una densidad, no una probabilidad de error.`}]},
+ {id:'b1q2', q:R`Dos clases con \(\Pr(\omega_1)=0{,}6\). En un \(x_0\), \(f(x_0|\omega_1)=0{,}1\) y \(f(x_0|\omega_2)=0{,}3\). ¿Cuánto vale \(\Pr(\omega_1|x_0)\)?`, opts:[
+  {t:R`\(0{,}06\)`, fb:R`Ese es el numerador \(f(x_0|\omega_1)\Pr(\omega_1)\). Falta dividir por la evidencia \(0{,}06+0{,}12=0{,}18\).`},
+  {t:R`\(0{,}25\)`, fb:R`Sería el resultado con priors iguales: \(0{,}1/(0{,}1+0{,}3)\).`},
+  {t:R`\(1/3\approx0{,}333\)`, ok:1, fb:R`\(\dfrac{0{,}1\cdot0{,}6}{0{,}1\cdot0{,}6+0{,}3\cdot0{,}4}=\dfrac{0{,}06}{0{,}18}=\dfrac13\).`},
+  {t:R`\(0{,}6\)`, fb:R`Esa es la prior: la observación sí aporta información.`}]},
+ {id:'b1q3', q:R`Un clasificador lineal en \(\mathbb R^d\) tiene fronteras de decisión que son…`, opts:[
+  {t:R`…hiperplanos de dimensión \(d-1\).`, ok:1, fb:R`En 2D, rectas; en 3D, planos (diap. 4).`},
+  {t:R`…puntos aislados.`, fb:R`Solo en \(d=1\) la frontera son puntos.`},
+  {t:R`…hiperesferas centradas en las medias.`, fb:R`Eso no es lineal; las hiperesferas aparecen en QDA con covarianzas isotrópicas distintas.`},
+  {t:R`…regiones conexas de dimensión \(d\).`, fb:R`Esas son las regiones de decisión, no las fronteras.`}]},
+ {id:'b1q4', q:R`¿Cuál de estas razones <strong>no</strong> aparece en la diapositiva 5 para usar un enfoque probabilístico?`, opts:[
+  {t:R`Las representaciones son incompletas: las características no capturan todo.`, fb:R`Sí aparece (ejemplo del ADN de los peces).`},
+  {t:R`Hay aleatoriedad intrínseca en el fenómeno.`, fb:R`Sí aparece.`},
+  {t:R`Sirve para expresar la confianza en la decisión.`, fb:R`Es la interpretación como grado de creencia (diap. 8).`},
+  {t:R`Garantiza error cero si hay suficientes datos.`, ok:1, fb:R`Falso: incluso con las pdf exactas queda el error de Bayes, que no es cero si las clases se solapan.`}]},
+ {id:'b1q5', q:R`En las etapas de diseño de un clasificador supervisado (diap. 11), ¿para qué se reserva la base de datos de test?`, opts:[
+  {t:R`Para ajustar los parámetros del modelo.`, fb:R`Eso se hace con la de entrenamiento.`},
+  {t:R`Para estimar el rendimiento con datos no usados en el entrenamiento.`, ok:1, fb:R`Si se evaluara con los datos de entrenamiento, la estimación del error sería optimista.`},
+  {t:R`Para extraer las características.`, fb:R`La extracción de características se diseña antes y se aplica a ambas bases.`},
+  {t:R`Para calcular las priors.`, fb:R`Las priors se estiman con las frecuencias del entrenamiento (ejercicio 9).`}]}
+],
+b2: [
+ {id:'b2q1', q:R`¿Qué decide la regla MAP en \(\bx\)?`, opts:[
+  {t:R`La clase con mayor verosimilitud \(f(\bx|\omega_i)\).`, fb:R`Eso es ML. Coincide con MAP solo si las priors son iguales.`},
+  {t:R`La clase con mayor prior \(\Pr(\omega_i)\).`, fb:R`Eso solo ocurre si la observación no aporta información (verosimilitudes iguales).`},
+  {t:R`La clase con mayor \(f(\bx|\omega_i)\Pr(\omega_i)\), es decir, con mayor posterior.`, ok:1, fb:R`\(\Pr(\omega_i|\bx)\propto f(\bx|\omega_i)\Pr(\omega_i)\), y la evidencia es común.`},
+  {t:R`La clase de menor coste esperado con costes arbitrarios.`, fb:R`Esa es MBR. MAP es MBR con costes 0-1.`}]},
+ {id:'b2q2', q:R`\(\Pr(\omega_1)=0{,}7\), \(f(x_0|\omega_1)=0{,}2\) y \(f(x_0|\omega_2)=0{,}5\). ¿Qué decide MAP en \(x_0\) y cuánto vale \(\Pr(e|x_0)\)?`, opts:[
+  {t:R`\(\omega_1\), con \(\Pr(e|x_0)\approx0{,}517\).`, fb:R`\(0{,}2\cdot0{,}7=0{,}14\lt 0{,}5\cdot0{,}3=0{,}15\): gana \(\omega_2\), aunque por poco.`},
+  {t:R`\(\omega_2\), con \(\Pr(e|x_0)=\Pr(\omega_1|x_0)\approx0{,}483\).`, ok:1, fb:R`\(0{,}15>0{,}14\). El error condicionado es la posterior de la clase descartada: \(0{,}14/0{,}29=0{,}483\).`},
+  {t:R`\(\omega_2\), con \(\Pr(e|x_0)=0{,}3\).`, fb:R`\(0{,}3\) es la prior de \(\omega_2\). El error condicionado se calcula con posteriores.`},
+  {t:R`Empate: cualquiera de las dos.`, fb:R`\(0{,}14\ne0{,}15\).`}]},
+ {id:'b2q3', q:R`¿Por qué MAP minimiza la probabilidad de error total?`, opts:[
+  {t:R`Porque \(\Pr(e)=\int\Pr(e|\bx)f(\bx)\,d\bx\) con \(f(\bx)\ge0\), y MAP hace mínimo \(\Pr(e|\bx)=1-\max_i\Pr(\omega_i|\bx)\) en cada \(\bx\).`, ok:1, fb:R`Minimizar el integrando punto a punto minimiza la integral. Es el ejercicio 1.`},
+  {t:R`Porque hace iguales las dos probabilidades de error.`, fb:R`Eso lo hace minimax (con costes 0-1), no MAP.`},
+  {t:R`Porque las regiones que produce son siempre intervalos.`, fb:R`No: en el ejemplo de la p. 14, \(\mathcal R_2\) son dos trozos.`},
+  {t:R`Porque fija \(P_{FA}\) en un valor dado.`, fb:R`Eso es Neyman-Pearson.`}]},
+ {id:'b2q4', q:R`Con priors iguales, la regla MAP…`, opts:[
+  {t:R`…decide siempre la clase más frecuente.`, fb:R`Si son iguales, no hay clase más frecuente.`},
+  {t:R`…se reduce a decidir la clase de mayor verosimilitud \(f(\bx|\omega_i)\).`, ok:1, fb:R`El factor \(\Pr(\omega_i)\) es común y desaparece (diap. 15).`},
+  {t:R`…no está definida.`, fb:R`Sí lo está: compara verosimilitudes.`},
+  {t:R`…da siempre una frontera lineal.`, fb:R`La forma de la frontera depende de las pdf, no de las priors.`}]},
+ {id:'b2q5', q:R`¿En cuál de estos problemas la diapositiva 16 sugiere que el error mínimo <strong>no</strong> es un buen criterio?`, opts:[
+  {t:R`Diagnóstico médico: decir «sano» a un enfermo no cuesta lo mismo que lo contrario.`, ok:1, fb:R`Los dos errores tienen consecuencias muy distintas. Hace falta asignar costes (MBR).`},
+  {t:R`Cualquier problema con dos clases equiprobables y errores igual de graves.`, fb:R`Ahí MAP es justo lo adecuado.`},
+  {t:R`Ninguno: el error mínimo siempre es el mejor criterio.`, fb:R`La diapositiva pregunta justamente eso, y la respuesta es que no siempre.`},
+  {t:R`Problemas en los que las pdf son gaussianas.`, fb:R`La forma de las pdf no tiene que ver con lo que cuesta equivocarse.`}]}
+],
+b3: [
+ {id:'b3q1', q:R`En el riesgo de Bayes \(\mathcal R=\sum_i\sum_j\pi_{ij}\Pr(\omega_i|\omega_j)\Pr(\omega_j)\), ¿qué es \(\pi_{12}\)?`, opts:[
+  {t:R`El coste de decidir \(\omega_2\) cuando la clase real es \(\omega_1\).`, fb:R`Al revés: el primer índice es la decisión.`},
+  {t:R`El coste de decidir \(\omega_1\) cuando la clase real es \(\omega_2\).`, ok:1, fb:R`\(\pi_{ij}\) acompaña a \(\Pr(\omega_i|\omega_j)\) = «decidir \(\omega_i\) siendo \(\omega_j\)».`},
+  {t:R`La probabilidad de confundir las clases 1 y 2.`, fb:R`\(\pi_{ij}\) es un coste que elige el diseñador, no una probabilidad.`},
+  {t:R`El coste de acertar la clase 1.`, fb:R`Ese sería \(\pi_{11}\).`}]},
+ {id:'b3q2', q:R`Con \(c=2\), ¿cuál es la regla MBR?`, opts:[
+  {t:R`\(\dfrac{\Pr(\omega_1|\bx)}{\Pr(\omega_2|\bx)}\ \underset{\omega_2}{\overset{\omega_1}{\gtrless}}\ \dfrac{\pi_{12}-\pi_{22}}{\pi_{21}-\pi_{11}}=\gamma\)`, ok:1, fb:R`Sale de \(\mathcal C(\omega_1|\bx)\lt\mathcal C(\omega_2|\bx)\), agrupando términos y dividiendo (suponiendo \(\pi_{21}>\pi_{11}\)).`},
+  {t:R`\(\dfrac{\Pr(\omega_1|\bx)}{\Pr(\omega_2|\bx)}\ \underset{\omega_2}{\overset{\omega_1}{\gtrless}}\ \dfrac{\pi_{21}-\pi_{11}}{\pi_{12}-\pi_{22}}\)`, fb:R`Es el umbral invertido. Si decidir mal \(\omega_1\) es caro (\(\pi_{21}\) grande), \(\gamma\) debe bajar para que \(\mathcal R_1\) crezca.`},
+  {t:R`\(\Pr(\omega_1|\bx)\gtrless\Pr(\omega_2|\bx)\), sin umbral.`, fb:R`Eso es MAP (\(\gamma=1\)).`},
+  {t:R`\(f(\bx|\omega_2)/f(\bx|\omega_1)\ge\gamma\), con \(\gamma\) elegido para fijar \(P_{FA}\).`, fb:R`Eso es Neyman-Pearson.`}]},
+ {id:'b3q3', q:R`\(\pi_{11}=\pi_{22}=0\), \(\pi_{12}=1\), \(\pi_{21}=4\). ¿A partir de qué valor de \(\Pr(\omega_1|\bx)\) decide MBR \(\omega_1\)?`, opts:[
+  {t:R`\(0{,}5\)`, fb:R`Ese es el umbral de MAP (costes iguales).`},
+  {t:R`\(0{,}8\)`, fb:R`Sería con los costes intercambiados (\(\gamma=4\)).`},
+  {t:R`\(0{,}25\)`, fb:R`\(0{,}25\) es \(\gamma\), que es un umbral sobre el <em>cociente</em>, no sobre la posterior.`},
+  {t:R`\(0{,}2\)`, ok:1, fb:R`\(\gamma=1/4\). \(\frac{P}{1-P}>\frac14\iff P>\frac{\gamma}{1+\gamma}=\frac15\). Equivocarse con \(\omega_1\) cuesta 4 veces más, así que se decide \(\omega_1\) con menos evidencia.`}]},
+ {id:'b3q4', q:R`¿Con qué costes MBR se convierte en MAP y, además, su riesgo \(\mathcal R\) pasa a ser exactamente \(\Pr(e)\)?`, opts:[
+  {t:R`\(\pi_{ii}=1\) y \(\pi_{ij}=0\) para \(i\ne j\).`, fb:R`Premiaría los errores.`},
+  {t:R`Costes 0-1: \(\pi_{ii}=0\) y \(\pi_{ij}=1\) para \(i\ne j\).`, ok:1, fb:R`Entonces \(\mathcal C(\omega_i|\bx)=1-\Pr(\omega_i|\bx)\), y minimizarlo es maximizar la posterior. El riesgo pasa a ser \(\Pr(e)\).`},
+  {t:R`Cualquier matriz simétrica.`, fb:R`Con \(\pi_{12}=\pi_{21}=5\) y diagonal nula se decide como MAP (\(\gamma=1\)), pero el riesgo es \(5\Pr(e)\); y con \(\pi_{11}\ne\pi_{22}\), \(\gamma\ne1\) en general.`},
+  {t:R`Nunca: MBR y MAP son reglas distintas.`, fb:R`MAP es un caso particular de MBR (diap. 22).`}]},
+ {id:'b3q5', q:R`Demostración del teorema MBR (diap. 19): ¿por qué basta con asignar cada \(\bx\) a la clase de menor riesgo condicional?`, opts:[
+  {t:R`Porque \(\mathcal R=\sum_i\int_{\mathcal R_i}\mathcal C(\omega_i|\bx)f(\bx)\,d\bx\): cada \(\bx\) aporta el riesgo de la región en la que cae, y \(f(\bx)\ge0\).`, ok:1, fb:R`Poniendo cada \(\bx\) en la región de menor \(\mathcal C\), el integrando es mínimo en todo punto.`},
+  {t:R`Porque el riesgo condicional es siempre menor que 1.`, fb:R`Con costes arbitrarios puede ser mayor que 1, y además eso no prueba nada.`},
+  {t:R`Porque las regiones \(\mathcal R_i\) se solapan.`, fb:R`Son disjuntas por construcción: cada \(\bx\) recibe una sola decisión.`},
+  {t:R`Porque las priors se cancelan.`, fb:R`No se cancelan: están dentro de las posteriores de \(\mathcal C(\omega_i|\bx)\).`}]}
+],
+b4: [
+ {id:'b4q1', q:R`¿Cuándo se usa Neyman-Pearson en lugar de MAP o MBR?`, opts:[
+  {t:R`Cuando no se conocen las priors (o no tiene sentido darlas), como en un radar.`, ok:1, fb:R`¿Cuál es la «probabilidad a priori» de que aparezca un avión enemigo? NP solo usa las verosimilitudes.`},
+  {t:R`Cuando las pdf no son gaussianas.`, fb:R`NP vale para cualquier pdf; lo que no necesita son las priors.`},
+  {t:R`Cuando hay más de dos clases.`, fb:R`NP se plantea para dos hipótesis.`},
+  {t:R`Cuando todos los errores cuestan lo mismo.`, fb:R`Eso apunta a MAP.`}]},
+ {id:'b4q2', q:R`El detector de Neyman-Pearson…`, opts:[
+  {t:R`…minimiza \(P_{FA}\) sin restricciones.`, fb:R`Sin restricción, \(P_{FA}=0\) se consigue decidiendo siempre \(\omega_1\) (con \(P_D=0\)).`},
+  {t:R`…maximiza \(P_D\) sujeto a \(P_{FA}\le\alpha\); decide \(\omega_2\) si \(f(\bx|\omega_2)/f(\bx|\omega_1)\ge\gamma\).`, ok:1, fb:R`El Lagrangiano \(\int_{\mathcal R_2}(f_2-\gamma f_1)\,d\bx+\gamma\alpha\) se maximiza metiendo en \(\mathcal R_2\) los \(\bx\) con \(f_2-\gamma f_1\ge0\).`},
+  {t:R`…decide \(\omega_1\) si \(f(\bx|\omega_2)/f(\bx|\omega_1)\ge\gamma\).`, fb:R`Es la errata de la diap. 25 que el profesor corrige a mano: es \(\omega_2\).`},
+  {t:R`…usa \(\gamma=1\) siempre.`, fb:R`\(\gamma\) se ajusta para cumplir \(P_{FA}=\alpha\).`}]},
+ {id:'b4q3', q:R`\(\omega_1:\ x\sim\mathcal N(0,1)\), \(\omega_2:\ x\sim\mathcal N(2,1)\), \(\alpha=0{,}05\). El detector NP decide \(\omega_2\) si \(x\ge\gamma'\). ¿Cuánto valen \(\gamma'\) y \(P_D\)?`, opts:[
+  {t:R`\(\gamma'=1\), \(P_D=0{,}841\).`, fb:R`Con \(\gamma'=1\), \(P_{FA}=Q(1)=0{,}159>0{,}05\): incumple la restricción.`},
+  {t:R`\(\gamma'=1{,}96\), \(P_D=0{,}516\).`, fb:R`\(1{,}96\) deja 2,5 % en una cola; aquí la restricción es de una cola al 5 %.`},
+  {t:R`\(\gamma'=Q^{-1}(0{,}05)\approx1{,}645\), \(P_D=Q(1{,}645-2)\approx0{,}639\).`, ok:1, fb:R`\(P_{FA}=Q(\gamma')=0{,}05\Rightarrow\gamma'=1{,}645\); \(P_D=\Pr(x\ge\gamma'|\omega_2)=Q(\gamma'-2)=Q(-0{,}355)=0{,}639\).`},
+  {t:R`\(\gamma'=1{,}645\), \(P_D=0{,}95\).`, fb:R`\(0{,}95\) es \(1-P_{FA}\), el rechazo correcto.`}]},
+ {id:'b4q4', q:R`¿Qué busca el criterio minimax?`, opts:[
+  {t:R`Minimizar el peor riesgo posible cuando las priors son desconocidas o cambian: el riesgo resultante no depende de \(\Pr(\omega_1)\).`, ok:1, fb:R`Se elige la frontera que anula el coeficiente de \(\Pr(\omega_1)\) en \(\mathcal R\). Es la recta horizontal tangente al máximo de la curva (diap. 28).`},
+  {t:R`Maximizar \(P_D\) con \(P_{FA}\) fija.`, fb:R`Eso es NP.`},
+  {t:R`Minimizar \(\Pr(e)\) con las priors conocidas.`, fb:R`Eso es MAP.`},
+  {t:R`Igualar los costes \(\pi_{12}\) y \(\pi_{21}\).`, fb:R`Los costes los da el problema; minimax actúa sobre las regiones.`}]},
+ {id:'b4q5', q:R`Con costes 0-1, la condición minimax queda en…`, opts:[
+  {t:R`\(\int_{\mathcal R_2}f(\bx|\omega_1)\,d\bx=\int_{\mathcal R_1}f(\bx|\omega_2)\,d\bx\): las dos probabilidades de error condicionadas iguales.`, ok:1, fb:R`Con \(\pi_{11}=\pi_{22}=0\) y \(\pi_{12}=\pi_{21}=1\), anular el coeficiente de \(\Pr(\omega_1)\) da \(P_{FA}=P_{\text{miss}}\).`},
+  {t:R`\(\Pr(\omega_1)=\Pr(\omega_2)=\tfrac12\).`, fb:R`Minimax no fija las priors; busca una frontera válida para todas.`},
+  {t:R`\(P_D=1\).`, fb:R`No es alcanzable salvo con clases separables.`},
+  {t:R`\(\gamma=0\).`, fb:R`Con \(\gamma=0\) se decidiría siempre la misma clase.`}]}
+],
+b5: [
+ {id:'b5q1', q:R`¿Qué diferencia hay entre un clasificador generativo y uno discriminativo?`, opts:[
+  {t:R`El generativo modela \(f(\bx|\omega_i)\) y \(\Pr(\omega_i)\) y aplica Bayes; el discriminativo aprende directamente la frontera o \(\Pr(\omega_i|\bx)\).`, ok:1, fb:R`QDA, LDA y Naive Bayes son generativos (diap. 30).`},
+  {t:R`El generativo solo vale para dos clases.`, fb:R`Vale para \(c\) clases.`},
+  {t:R`El discriminativo necesita conocer las priors.`, fb:R`Al contrario: no modela las priors por separado.`},
+  {t:R`Son lo mismo con distinto nombre.`, fb:R`Difieren en qué se modela.`}]},
+ {id:'b5q2', q:R`\(x\sim\mathcal N(\mu,\sigma^2)\). ¿Cuánto vale \(\Pr(x>\mu+2\sigma)\)?`, opts:[
+  {t:R`\(2{,}5\,\%\)`, fb:R`Es lo que pone la figura de la diap. 32, pero corresponde a \(1{,}96\sigma\).`},
+  {t:R`\(Q(2)\approx2{,}28\,\%\)`, ok:1, fb:R`Tipificando, \(\Pr(z>2)=Q(2)=0{,}02275\).`},
+  {t:R`\(5\,\%\)`, fb:R`Eso es aproximadamente la suma de las dos colas (\(4{,}55\,\%\)).`},
+  {t:R`\(16\,\%\)`, fb:R`Esa es \(Q(1)\), la cola a \(1\sigma\).`}]},
+ {id:'b5q3', q:R`\(\bC=\begin{pmatrix}2&1\\1&2\end{pmatrix}=\bU\bLambda\bU^T\) con \(\lambda_1=3\), \(\lambda_2=1\). Con \(\bA=\bU\bLambda^{-1/2}\), \(\bz=\bA^T\bx\) tiene covarianza…`, opts:[
+  {t:R`\(\bLambda=\mathrm{diag}(3,1)\)`, fb:R`Eso da \(\bU^T\bx\) (solo rotar). Falta escalar cada eje por \(1/\sqrt{\lambda_i}\).`},
+  {t:R`\(\mathbf I\)`, ok:1, fb:R`\(\bA^T\bC\bA=\bLambda^{-1/2}\bU^T\bU\bLambda\bU^T\bU\bLambda^{-1/2}=\mathbf I\), con \(\bLambda^{-1/2}=\mathrm{diag}(1/\sqrt3,1)\).`},
+  {t:R`\(\bLambda^2=\mathrm{diag}(9,1)\)`, fb:R`Saldría si se usara la errata de la diap. 35 (\(\sqrt{\lambda_i}\) en vez de \(1/\sqrt{\lambda_i}\)).`},
+  {t:R`\(\bC\)`, fb:R`Una transformación lineal \(\bA^T\) cambia la covarianza a \(\bA^T\bC\bA\).`}]},
+ {id:'b5q4', q:R`Clases gaussianas con covarianzas distintas \(\bC_1\ne\bC_2\). La frontera MAP es \(\bx^T\bA\bx+\bv^T\bx+e=0\) con…`, opts:[
+  {t:R`\(\bA=\tfrac12(\bC_2^{-1}-\bC_1^{-1})\): una cuádrica (elipse, parábola, hipérbola… en 2D).`, ok:1, fb:R`El término \(-\frac12\bx^T\bC_i^{-1}\bx\) no se cancela al restar discriminantes. Su forma depende de los signos de los autovalores de \(\bA\).`},
+  {t:R`\(\bA=\mathbf 0\): un hiperplano.`, fb:R`Solo si \(\bC_1=\bC_2\) (LDA).`},
+  {t:R`\(\bA=\bC_1+\bC_2\): siempre una elipse.`, fb:R`Intervienen las inversas, y la forma puede ser también una hipérbola.`},
+  {t:R`\(\bA=\tfrac12(\bmu_2-\bmu_1)(\bmu_2-\bmu_1)^T\).`, fb:R`Las medias entran en \(\bv\) y \(e\), no en \(\bA\).`}]},
+ {id:'b5q5', q:R`En 2D, los autovalores de \(\bA\) son \(0{,}4\) y \(-0{,}3\). La frontera es…`, opts:[
+  {t:R`…una elipse.`, fb:R`Para una elipse, los dos autovalores deben tener el mismo signo.`},
+  {t:R`…una recta.`, fb:R`Requiere \(\bA=\mathbf 0\).`},
+  {t:R`…una hipérbola (o un par de rectas en el caso degenerado).`, ok:1, fb:R`Signos opuestos: en los ejes propios, \(0{,}4u^2-0{,}3v^2+\dots=0\). Es lo que pasa siempre en el ejercicio 7.3.`},
+  {t:R`…una parábola.`, fb:R`Requiere un autovalor nulo.`}]},
+ {id:'b5q6', q:R`¿Por qué se toma el logaritmo para definir \(g_i(\bx)=\ln f(\bx|\omega_i)+\ln\Pr(\omega_i)\)?`, opts:[
+  {t:R`Porque cambia la decisión y la hace más robusta.`, fb:R`No la cambia: el logaritmo es creciente.`},
+  {t:R`Porque es creciente (no altera el argmax) y elimina la exponencial de la gaussiana.`, ok:1, fb:R`Cualquier función estrictamente creciente de la posterior da la misma regla. El logaritmo deja formas cuadráticas.`},
+  {t:R`Porque las densidades pueden ser negativas.`, fb:R`Las densidades son no negativas.`},
+  {t:R`Porque es necesario para que las priors sumen 1.`, fb:R`Las priors suman 1 por definición.`}]}
+],
+b6: [
+ {id:'b6q1', q:R`Si todas las clases comparten la misma covarianza \(\bC\), la frontera MAP entre dos clases es…`, opts:[
+  {t:R`…un hiperplano \(\bw^T(\bx-\bx_0)=0\) con \(\bw=\bC^{-1}(\bmu_i-\bmu_j)\).`, ok:1, fb:R`El término cuadrático \(\bx^T\bC^{-1}\bx\) es igual en ambas clases y se cancela: LDA.`},
+  {t:R`…una elipse centrada en \(\tfrac12(\bmu_i+\bmu_j)\).`, fb:R`Con covarianzas iguales no queda término cuadrático.`},
+  {t:R`…siempre perpendicular a \(\bmu_i-\bmu_j\).`, fb:R`Solo si \(\bC\propto\mathbf I\). En general, la normal es \(\bC^{-1}(\bmu_i-\bmu_j)\).`},
+  {t:R`…independiente de las priors.`, fb:R`Las priors desplazan \(\bx_0\) (diap. 45–46).`}]},
+ {id:'b6q2', q:R`1D, \(\sigma^2=1\), \(\mu_i=0\), \(\mu_j=2\), \(\Pr(\omega_i)=0{,}8\), \(\Pr(\omega_j)=0{,}2\). ¿Dónde está la frontera MAP?`, opts:[
+  {t:R`\(x_0=1\)`, fb:R`Sería con priors iguales.`},
+  {t:R`\(x_0=1-\tfrac{\ln4}{2}\approx0{,}307\)`, fb:R`Sería desplazarla hacia la clase más probable; es al revés.`},
+  {t:R`\(x_0=1+\tfrac{\ln4}{2}\approx1{,}693\)`, ok:1, fb:R`\(x_0=\frac12(\mu_i+\mu_j)-\frac{\ln(0{,}8/0{,}2)}{(\mu_i-\mu_j)^2/\sigma^2}(\mu_i-\mu_j)=1+\frac{2\ln4}{4}\). \(\mathcal R_i\) crece porque \(\omega_i\) es más probable.`},
+  {t:R`\(x_0=-2\)`, fb:R`Es lo que daría la fórmula con la errata de la diap. 44.`}]},
+ {id:'b6q3', q:R`Caso 3 (\(\bC=\sigma^2\mathbf I\), priors iguales). La regla MAP equivale a…`, opts:[
+  {t:R`…asignar \(\bx\) a la media más cercana en distancia euclídea.`, ok:1, fb:R`\(g_i=-\|\bx-\bmu_i\|^2/(2\sigma^2)+\text{cte}\): clasificador de mínima distancia.`},
+  {t:R`…asignar \(\bx\) a la media más lejana.`, fb:R`El signo menos hace que gane la más cercana.`},
+  {t:R`…usar la distancia de Mahalanobis con una covarianza distinta por clase.`, fb:R`Eso sería QDA.`},
+  {t:R`…decidir siempre la clase más probable.`, fb:R`Las priors son iguales; decide la distancia.`}]},
+ {id:'b6q4', q:R`¿Qué es la distancia de Mahalanobis \((\bx-\bmu_i)^T\bC^{-1}(\bx-\bmu_i)\)?`, opts:[
+  {t:R`La distancia euclídea al cuadrado.`, fb:R`Solo coincide si \(\bC=\mathbf I\).`},
+  {t:R`La distancia euclídea en el espacio blanqueado, que pondera cada dirección con su varianza.`, ok:1, fb:R`Con \(\bz=\bLambda^{-1/2}\bU^T\bx\), queda \(\|\bz-\bmu_{z,i}\|^2\). Las direcciones de mucha varianza cuentan menos.`},
+  {t:R`Una medida que solo vale en 1D.`, fb:R`Vale en cualquier dimensión.`},
+  {t:R`El determinante de \(\bC\).`, fb:R`El determinante aparece en la normalización, no en la distancia.`}]},
+ {id:'b6q5', q:R`Variables binarias independientes, \(p_i=\Pr(x_i=1|\omega_1)\), \(q_i=\Pr(x_i=1|\omega_2)\). El discriminante \(h(\bx)=\ln\Pr(\omega_1|\bx)-\ln\Pr(\omega_2|\bx)\) es…`, opts:[
+  {t:R`…cuadrático en \(\bx\).`, fb:R`Como \(x_i\in\{0,1\}\), los exponentes \(x_i\) y \(1-x_i\) dejan términos lineales tras tomar logaritmos.`},
+  {t:R`…lineal: \(\sum_ix_i\ln\frac{p_i(1-q_i)}{q_i(1-p_i)}+\sum_i\ln\frac{1-p_i}{1-q_i}+\ln\frac{\Pr(\omega_1)}{\Pr(\omega_2)}\).`, ok:1, fb:R`Diap. 50 y ejercicio 5.1: las clases gaussianas no son las únicas con discriminante lineal óptimo.`},
+  {t:R`…constante.`, fb:R`Depende de \(\bx\) salvo que \(p_i=q_i\) para todo \(i\).`},
+  {t:R`…no definido porque \(\bx\) es discreto.`, fb:R`Se trabaja con probabilidades en lugar de densidades, y todo sigue igual.`}]}
+],
+b7: [
+ {id:'b7q1', q:R`¿Qué hace el estimador ML?`, opts:[
+  {t:R`Elige los parámetros que maximizan \(f(\mathcal D_i|\boldsymbol\theta_i)=\prod_kf(\bx_{k,i}|\boldsymbol\theta_i)\), tratándolos como deterministas.`, ok:1, fb:R`Con muestras independientes, la verosimilitud es un producto, y se maximiza su logaritmo.`},
+  {t:R`Trata los parámetros como variables aleatorias con una prior.`, fb:R`Esa es la estimación bayesiana (diap. 52).`},
+  {t:R`Maximiza la probabilidad de error.`, fb:R`Maximiza la verosimilitud de los datos.`},
+  {t:R`Usa los datos de test.`, fb:R`Se estima con el entrenamiento, clase por clase.`}]},
+ {id:'b7q2', q:R`Muestras \(x_k\sim\mathcal N(\mu,\sigma^2)\), \(N=5\), \(\sigma^2=2\). ¿Cuánto vale \(E\{\hat\sigma^2_{ML}\}\) con \(\hat\sigma^2_{ML}=\frac1N\sum_k(x_k-\hat\mu)^2\)?`, opts:[
+  {t:R`\(2\)`, fb:R`Sería así si se dividiera por \(N-1\), o si se conociera \(\mu\).`},
+  {t:R`\(1{,}6\)`, ok:1, fb:R`\(E\{\hat\sigma^2_{ML}\}=\frac{N-1}N\sigma^2=\frac45\cdot2=1{,}6\). Está sesgado por haber usado \(\hat\mu\) en vez de \(\mu\).`},
+  {t:R`\(2{,}5\)`, fb:R`El sesgo es hacia abajo, no hacia arriba.`},
+  {t:R`\(0{,}4\)`, fb:R`\(0{,}4\) es el sesgo, \(\sigma^2/N\).`}]},
+ {id:'b7q3', q:R`El estimador ML es asintóticamente eficiente. Eso significa que…`, opts:[
+  {t:R`…es insesgado para cualquier \(N\).`, fb:R`Solo es asintóticamente insesgado (\(\hat\sigma^2_{ML}\) tiene sesgo con \(N\) finito).`},
+  {t:R`…para \(N\) grande, su varianza alcanza la mínima posible (la cota de Cramér-Rao).`, ok:1, fb:R`Es la propiedad 2 de la diap. 58.`},
+  {t:R`…se calcula muy rápido.`, fb:R`«Eficiente» se refiere a la varianza, no al coste de cálculo.`},
+  {t:R`…su varianza no depende de \(N\).`, fb:R`La varianza disminuye con \(N\) (por ejemplo, \(\sigma^2/N\) para la media).`}]},
+ {id:'b7q4', q:R`10 vectores binarios de una clase; la componente \(k\) vale 1 en 3 de ellos. ¿Cuál es la estimación ML de \(p_k\)?`, opts:[
+  {t:R`\(0{,}5\)`, fb:R`No se usan los datos.`},
+  {t:R`\(0{,}3\)`, ok:1, fb:R`\(\hat p_k=\frac1N\sum_jx_{k,j}=3/10\): la frecuencia relativa (diap. 60).`},
+  {t:R`\(3\)`, fb:R`Es el recuento; falta dividir por \(N\).`},
+  {t:R`\(0{,}7\)`, fb:R`Es la frecuencia de ceros.`}]},
+ {id:'b7q5', q:R`En la implementación de LDA (diap. 61), ¿qué covarianza se usa?`, opts:[
+  {t:R`Una por clase, \(\hat\bC_k\).`, fb:R`Eso es QDA.`},
+  {t:R`La ponderada \(\hat\bC=\frac1N\sum_kN_k\hat\bC_k\), común a todas las clases.`, ok:1, fb:R`La manuscrita de la p. 75 escribe la media simple \(\frac1c\sum\hat\bC_j\), que solo coincide si los \(N_k\) son iguales.`},
+  {t:R`La identidad.`, fb:R`Eso es el caso 3 (euclídeo), no LDA general.`},
+  {t:R`La covarianza de todos los datos sin separar por clases.`, fb:R`Esa incluye la dispersión entre medias. LDA usa la intra-clase.`}]}
+],
+b8: [
+ {id:'b8q1', q:R`¿Cuándo no se puede aplicar QDA aunque sí LDA?`, opts:[
+  {t:R`Cuando alguna clase tiene \(N_k\le d\) muestras, pero el total \(N\) es suficiente.`, ok:1, fb:R`\(\hat\bC_k\) tiene rango como mucho \(N_k-1\) y es singular, pero la covarianza común se estima con todos los datos.`},
+  {t:R`Cuando las clases son gaussianas.`, fb:R`QDA supone justamente clases gaussianas.`},
+  {t:R`Cuando hay más muestras que dimensiones.`, fb:R`Ese es el caso fácil.`},
+  {t:R`Nunca: QDA siempre es aplicable.`, fb:R`Necesita invertir \(\hat\bC_k\).`}]},
+ {id:'b8q2', q:R`En RDA, \(\hat\bC_k(\alpha)=\alpha\hat\bC_k+(1-\alpha)\hat\bC\). ¿Qué dan \(\alpha=1\) y \(\alpha=0\)?`, opts:[
+  {t:R`\(\alpha=1\): LDA; \(\alpha=0\): QDA.`, fb:R`Al revés.`},
+  {t:R`\(\alpha=1\): QDA; \(\alpha=0\): LDA.`, ok:1, fb:R`Con \(\alpha=1\) queda la covarianza de cada clase; con \(\alpha=0\), la común.`},
+  {t:R`Ambos dan Naive Bayes.`, fb:R`Naive Bayes es diagonal; RDA no fuerza la diagonal.`},
+  {t:R`Ambos dan la identidad.`, fb:R`Eso lo haría el segundo parámetro, \(\gamma=1\), y aun así con escala \(\hat\sigma^2\).`}]},
+ {id:'b8q3', q:R`¿Por qué \((1-\gamma)\hat\bC_k(\alpha)+\gamma\hat\sigma^2\mathbf I\) es invertible para \(\gamma>0\)?`, opts:[
+  {t:R`Porque sus autovalores son \((1-\gamma)\lambda_i+\gamma\hat\sigma^2>0\).`, ok:1, fb:R`Sumar un múltiplo de \(\mathbf I\) desplaza todos los autovalores sin cambiar los autovectores.`},
+  {t:R`Porque \(\hat\sigma^2\) es siempre 1.`, fb:R`\(\hat\sigma^2=\frac1d\tr\) depende de los datos.`},
+  {t:R`Porque se vuelve diagonal.`, fb:R`No se vuelve diagonal salvo con \(\gamma=1\).`},
+  {t:R`No lo es en general.`, fb:R`Sí lo es: es definida positiva.`}]},
+ {id:'b8q4', q:R`¿Qué supone Naive Bayes?`, opts:[
+  {t:R`Que las clases son equiprobables.`, fb:R`Las priors se estiman como frecuencias.`},
+  {t:R`Que las características son independientes dentro de cada clase: \(f(\bx|\omega)=\prod_jf(x_j|\omega)\).`, ok:1, fb:R`Basta con estimar \(d\) densidades unidimensionales por clase.`},
+  {t:R`Que las características son gaussianas con covarianza completa.`, fb:R`Si fueran gaussianas, la covarianza sería diagonal.`},
+  {t:R`Que hay una sola característica.`, fb:R`Vale para cualquier \(d\).`}]},
+ {id:'b8q5', q:R`Con \(d=100\) y gaussianas, ¿cuántos parámetros de covarianza por clase estima Naive Bayes frente a QDA?`, opts:[
+  {t:R`100 frente a 10 000`, fb:R`QDA estima una matriz simétrica: \(d(d+1)/2\), no \(d^2\).`},
+  {t:R`100 frente a 5050`, ok:1, fb:R`Diagonal: \(d=100\). Completa simétrica: \(\frac{100\cdot101}{2}=5050\).`},
+  {t:R`1 frente a 100`, fb:R`Una sola varianza común sería el caso isotrópico.`},
+  {t:R`Los mismos`, fb:R`La reducción es justamente la ventaja de Naive Bayes.`}]}
+],
+b9: [
+ {id:'b9q1', q:R`Con umbral \(\gamma'\) (decidir \(\omega_2\) si \(x\ge\gamma'\)), ¿qué es la probabilidad de falsa alarma?`, opts:[
+  {t:R`\(\Pr(x\ge\gamma'|\omega_2)\)`, fb:R`Esa es \(P_D\) (sensibilidad, recall).`},
+  {t:R`\(\Pr(x\ge\gamma'|\omega_1)\)`, ok:1, fb:R`Decidir «hay blanco» cuando no lo hay.`},
+  {t:R`\(\Pr(x\le\gamma'|\omega_2)\)`, fb:R`Esa es la pérdida (miss).`},
+  {t:R`\(\Pr(\omega_1|x\ge\gamma')\)`, fb:R`Esa es una posterior: \(1-\) precisión.`}]},
+ {id:'b9q2', q:R`¿Qué relación hay entre las cuatro probabilidades?`, opts:[
+  {t:R`\(P_D+P_{FA}=1\)`, fb:R`Están condicionadas a clases distintas: no tienen por qué sumar 1.`},
+  {t:R`\(P_D+P_{\text{miss}}=1\) y \(P_{FA}+P_{\text{CR}}=1\)`, ok:1, fb:R`Cada par está condicionado a la misma clase y cubre las dos decisiones.`},
+  {t:R`Las cuatro suman 1.`, fb:R`Suman 2: dos pares que suman 1 cada uno.`},
+  {t:R`\(P_D=P_{\text{CR}}\) siempre.`, fb:R`Solo en casos simétricos concretos.`}]},
+ {id:'b9q3', q:R`Dos gaussianas de igual varianza con \(D'=|\mu_2-\mu_1|/\sigma=2\). ¿Cuánto vale el área bajo la ROC?`, opts:[
+  {t:R`\(0{,}5\)`, fb:R`Corresponde a \(D'=0\) (clasificador aleatorio).`},
+  {t:R`\(1-Q(\sqrt2)\approx0{,}921\)`, ok:1, fb:R`\(\text{AUROC}=1-Q(D'/\sqrt2)\): la probabilidad de que una muestra de \(\omega_2\) supere a una de \(\omega_1\), y la diferencia es \(\mathcal N(D',2)\).`},
+  {t:R`\(1-Q(2)\approx0{,}977\)`, fb:R`Falta dividir por \(\sqrt2\).`},
+  {t:R`\(1\)`, fb:R`Solo con clases perfectamente separables (\(D'\to\infty\)).`}]},
+ {id:'b9q4', q:R`¿Qué representa la diagonal de la gráfica ROC (\(P_D=P_{FA}\))?`, opts:[
+  {t:R`El clasificador ideal.`, fb:R`El ideal pasa por la esquina \((0,1)\).`},
+  {t:R`Un clasificador que no discrimina (\(D'=0\)): decidir al azar.`, ok:1, fb:R`Si las dos pdf coinciden, cualquier umbral da la misma probabilidad de cruzarlo en ambas clases.`},
+  {t:R`El punto de Neyman-Pearson.`, fb:R`NP es un punto de la curva con \(P_{FA}=\alpha\).`},
+  {t:R`El mejor umbral.`, fb:R`No es un umbral concreto, sino un tipo de clasificador.`}]},
+ {id:'b9q5', q:R`¿Qué mide la precisión?`, opts:[
+  {t:R`\(\frac{TP}{TP+FN}\): de los enfermos, cuántos detecto.`, fb:R`Eso es el recall (sensibilidad).`},
+  {t:R`\(\frac{TP}{TP+FP}\): de los que diagnostico como positivos, cuántos lo son.`, ok:1, fb:R`Estima \(\Pr(\omega_2|\bx\in\mathcal R_2)\), una posterior, y depende de la prevalencia.`},
+  {t:R`\(\frac{TN}{TN+FP}\)`, fb:R`Esa es la especificidad.`},
+  {t:R`\(\frac{TP+TN}{N}\)`, fb:R`Esa es la exactitud (accuracy).`}]}
+],
+b10: [
+ {id:'b10q1', q:R`Sensibilidad 0,997, especificidad 0,985, prevalencia 0,001. ¿Cuánto vale \(\Pr(\text{sick}|+)\)?`, opts:[
+  {t:R`\(0{,}997\)`, fb:R`Es la sensibilidad, \(\Pr(+|\text{sick})\). Es el error de confundir las dos condicionadas.`},
+  {t:R`\(0{,}985\)`, fb:R`Es la especificidad.`},
+  {t:R`\(\approx0{,}062\)`, ok:1, fb:R`\(\frac{0{,}997\cdot0{,}001}{0{,}015\cdot0{,}999+0{,}997\cdot0{,}001}=\frac{0{,}000997}{0{,}015982}=0{,}062\). Hay unos 15 falsos positivos por cada verdadero.`},
+  {t:R`\(0{,}5\)`, fb:R`No hay razón para la equiprobabilidad: la prior es muy pequeña.`}]},
+ {id:'b10q2', q:R`Tras el primer positivo, \(\Pr(\text{sick}|+)=0{,}062\). Un segundo test independiente, también positivo, da…`, opts:[
+  {t:R`\(\approx0{,}816\)`, ok:1, fb:R`Se usa 0,062 como nueva prior: \(\frac{0{,}997\cdot0{,}0624}{0{,}015\cdot0{,}9376+0{,}997\cdot0{,}0624}=0{,}816\) (diap. 80).`},
+  {t:R`\(0{,}124\)`, fb:R`Las probabilidades no se suman.`},
+  {t:R`\(0{,}062\)`, fb:R`El segundo resultado sí aporta información.`},
+  {t:R`\(0{,}997^2\)`, fb:R`Eso es \(\Pr(+,+|\text{sick})\), no la posterior.`}]},
+ {id:'b10q3', q:R`Matriz de confusión TP = 16, FN = 30, FP = 10, TN = 144. ¿Cuál de estas métricas está bien calculada?`, opts:[
+  {t:R`Recall \(=16/26\approx0{,}615\)`, fb:R`\(16/26\) es la precisión. Recall \(=16/46=0{,}348\).`},
+  {t:R`Exactitud \(=160/200=0{,}80\)`, ok:1, fb:R`\((TP+TN)/N=(16+144)/200\). Engaña: el recall es solo 0,348 porque la clase positiva es minoritaria (23 %).`},
+  {t:R`Especificidad \(=144/174\approx0{,}828\)`, fb:R`\(144/174\) es el VPN (\(TN/(TN+FN)\)). Especificidad \(=144/154=0{,}935\).`},
+  {t:R`F1 \(=(0{,}615+0{,}348)/2\approx0{,}48\)`, fb:R`F1 es la media armónica: \(2PR/(P+R)=0{,}444\).`}]},
+ {id:'b10q4', q:R`Al subir el umbral \(\gamma'\) (más exigente para decir «positivo»), en general…`, opts:[
+  {t:R`…sube el recall y baja la precisión.`, fb:R`Al revés: detectas menos positivos.`},
+  {t:R`…sube la precisión y baja el recall.`, ok:1, fb:R`Hay menos falsos positivos, pero también más falsos negativos (diap. 82).`},
+  {t:R`…suben las dos.`, fb:R`Es un compromiso: no suben a la vez en general.`},
+  {t:R`…no cambia nada.`, fb:R`El umbral define las regiones de decisión.`}]},
+ {id:'b10q5', q:R`Según la diapositiva 84, ¿qué métrica importa más en un filtro de spam?`, opts:[
+  {t:R`El recall: hay que detectar todo el spam.`, fb:R`Eso es lo prioritario en la detección de enfermedades.`},
+  {t:R`La precisión: no se debe marcar como spam un correo importante.`, ok:1, fb:R`Un falso positivo (perder un correo bueno) es peor que dejar pasar algo de spam.`},
+  {t:R`La exactitud siempre.`, fb:R`Con clases desequilibradas, la exactitud puede ser engañosa.`},
+  {t:R`Ninguna: el spam no se evalúa.`, fb:R`Es uno de los ejemplos de la diapositiva.`}]},
+ {id:'b10q6', q:R`Según la conclusión (diap. 85), ¿qué necesita cada regla?`, opts:[
+  {t:R`MAP: pdf y priors; MBR: pdf, priors y costes; NP: solo pdf.`, ok:1, fb:R`Sus discriminantes son, respectivamente, la posterior, menos el riesgo condicional y la pdf.`},
+  {t:R`Las tres necesitan las priors.`, fb:R`NP no las necesita.`},
+  {t:R`MAP necesita costes y MBR no.`, fb:R`Al revés: los costes son lo que añade MBR.`},
+  {t:R`NP necesita priors y costes.`, fb:R`Solo necesita las verosimilitudes y \(\alpha\).`}]}
+]
+};
+</script>

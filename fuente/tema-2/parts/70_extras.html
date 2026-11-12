@@ -1,0 +1,106 @@
+<script>
+/* ================= flashcards: datos ================= */
+/*{{FLASH}}*/
+
+/* ================= ejercicios: pistas y resueltos ================= */
+function initExercises(){
+  $$('.ex').forEach(ex => {
+    const id = ex.dataset.eid, hints = $$('.hint', ex), btn = $('.hint-btn', ex);
+    const paint = () => { const n = (state.hints[id] || {}).n || 0; hints.forEach((h, i) => h.hidden = i >= n);
+      btn.textContent = n >= hints.length ? 'Ocultar pistas' : `Ver pista ${n + 1}`; };
+    btn.addEventListener('click', () => { const n = (state.hints[id] || {}).n || 0; state.hints[id] = {n: n >= hints.length ? 0 : n + 1, t: Date.now()}; paint(); save(); });
+    const done = $('.ex-done', ex);
+    const paintDone = () => { const on = !!(state.ex[id] || {}).solved; done.setAttribute('aria-pressed', String(on)); done.textContent = on ? 'Resuelto' : 'Marcar como resuelto'; };
+    done.addEventListener('click', () => { const on = !(state.ex[id] || {}).solved; state.ex[id] = {solved: on, t: Date.now()}; paintDone(); save(); });
+    ex._paint = () => { paint(); paintDone(); };
+    ex._paint();
+  });
+}
+
+/* ================= flashcards: lógica ================= */
+let fcOrder = FLASH.map((_, i) => i), fcPos = 0, fcFlip = false, fcFilter = 'all', fcCatSel = '';
+function fcStatus(id){ return (state.flash[id] || {}).s || ''; }
+function fcList(){ return fcOrder.filter(i => { const c = FLASH[i]; const s = fcStatus(c.id);
+  if (fcCatSel && c.cat !== fcCatSel) return false;
+  if (fcFilter === 'again') return s === 'again'; if (fcFilter === 'known') return s === 'known'; if (fcFilter === 'new') return !s; return true; }); }
+function fcRender(){
+  const list = fcList(); const card = $('#fcCard');
+  $$('#fcFilter button').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.f === fcFilter));
+    const n = FLASH.filter(c => (!fcCatSel || c.cat === fcCatSel) && (b.dataset.f === 'all' || (b.dataset.f === 'new' ? !fcStatus(c.id) : fcStatus(c.id) === b.dataset.f))).length;
+    b.textContent = ({all:'Todas', again:'Por repasar', new:'Sin marcar', known:'Sabidas'})[b.dataset.f] + ` (${n})`; });
+  if (!list.length){ $('#fcQ').textContent = 'No hay tarjetas con este filtro.'; $('#fcCatF').textContent = ''; $('.fc-front', card).hidden = false; $('.fc-back', card).hidden = true; $('#fcPos').textContent = ''; card.className = 'fc-card'; return; }
+  fcPos = Math.max(0, Math.min(fcPos, list.length - 1));
+  const c = FLASH[list[fcPos]];
+  $('#fcCatF').textContent = c.cat; $('#fcCatB').textContent = c.cat;
+  $('#fcQ').innerHTML = '<span>' + c.q + '</span>'; $('#fcA').innerHTML = c.a; $('#fcUse').innerHTML = c.use;
+  $('.fc-front', card).hidden = fcFlip; $('.fc-back', card).hidden = !fcFlip;
+  const s = fcStatus(c.id); card.className = 'fc-card' + (s ? ' st-' + s : '');
+  $('#fcPos').textContent = `Tarjeta ${fcPos + 1} de ${list.length}` + (s === 'known' ? ' · marcada como sabida' : s === 'again' ? ' · marcada para repasar' : '');
+  renderMath(card);
+}
+function fcMark(s){ const list = fcList(); if (!list.length) return; const c = FLASH[list[fcPos]]; state.flash[c.id] = {s, t: Date.now()}; save();
+  const after = fcList(); if (after.length === list.length) fcPos = (fcPos + 1) % after.length; fcFlip = false; fcRender(); }
+function initFlash(){
+  const sel = $('#fcCat'); [...new Set(FLASH.map(c => c.cat))].forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+  sel.addEventListener('change', () => { fcCatSel = sel.value; fcPos = 0; fcFlip = false; fcRender(); });
+  $$('#fcFilter button').forEach(b => b.addEventListener('click', () => { fcFilter = b.dataset.f; fcPos = 0; fcFlip = false; fcRender(); }));
+  $('#fcCard').addEventListener('click', () => { fcFlip = !fcFlip; fcRender(); });
+  $('#fcPrev').addEventListener('click', () => { const n = fcList().length; if (n){ fcPos = (fcPos - 1 + n) % n; fcFlip = false; fcRender(); } });
+  $('#fcNext').addEventListener('click', () => { const n = fcList().length; if (n){ fcPos = (fcPos + 1) % n; fcFlip = false; fcRender(); } });
+  $('#fcKnown').addEventListener('click', () => fcMark('known'));
+  $('#fcAgain').addEventListener('click', () => fcMark('again'));
+  $('#fcShuffle').addEventListener('click', () => { for (let i = fcOrder.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [fcOrder[i], fcOrder[j]] = [fcOrder[j], fcOrder[i]]; } fcPos = 0; fcFlip = false; fcRender(); });
+  document.addEventListener('keydown', e => {
+    if (currentId() !== 'flashcards' || e.target.closest('input, select, textarea')) return;
+    if (e.key === ' ' && e.target.id !== 'fcCard' && !e.target.closest('button')){ e.preventDefault(); fcFlip = !fcFlip; fcRender(); }
+    else if (e.key === 'ArrowRight'){ $('#fcNext').click(); } else if (e.key === 'ArrowLeft'){ $('#fcPrev').click(); }
+    else if (e.key === '1'){ fcMark('again'); } else if (e.key === '2'){ fcMark('known'); }
+  });
+  fcRender();
+}
+
+/* ================= hoja resumen: descarga ================= */
+const SHEET_CSS = `body{font-family:Georgia,"Times New Roman",serif;color:#111;margin:18mm 14mm;font-size:12.5px;line-height:1.45}
+.sheet-title{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:4px;font-family:Helvetica,Arial,sans-serif}
+.sheet-title b{font-size:15px}.sheet-title span{font-size:11px;color:#555}
+.sh-block{break-inside:avoid;margin-top:10px}
+.sh-block h3{font:700 12px Helvetica,Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#0a4f86;border-bottom:1px solid #bbb;padding-bottom:3px;margin:0 0 2px}
+.sh-block h3 i,.sh-k i{font-style:normal;color:#666;font-weight:400;text-transform:none;letter-spacing:0}
+.sh-row{display:grid;grid-template-columns:44mm 1fr;gap:2px 10px;padding:3px 0;border-bottom:1px dotted #ccc;align-items:baseline}
+.sh-k{font:500 11px Helvetica,Arial,sans-serif;color:#333}
+.katex{font-size:1.02em}.katex-display{margin:.2em 0}
+@page{size:A4;margin:12mm}`;
+async function initSheet(){
+  const btn = $('#sheetDl'), msg = $('#sheetMsg');
+  let dl = null;
+  try { dl = window.claude && typeof window.claude.use === 'function' ? await window.claude.use('downloads') : null; } catch(e){ dl = null; }
+  if (!dl){
+    let framed = true; try { framed = window.self !== window.top; } catch(e){ framed = true; }
+    if (!framed){
+      btn.textContent = 'Imprimir hoja resumen';
+      msg.textContent = 'Se imprime solo la hoja. Elige «Guardar como PDF» si prefieres un archivo.';
+      btn.addEventListener('click', () => { document.body.classList.add('print-sheet'); window.print(); });
+      window.addEventListener('afterprint', () => document.body.classList.remove('print-sheet'));
+    } else { btn.hidden = true; msg.textContent = 'Para imprimirla, usa la opción Imprimir de tu navegador con esta sección abierta.'; }
+    return;
+  }
+  btn.addEventListener('click', async () => {
+    const kcss = $$('style').map(s => s.textContent).find(t => t.includes('KaTeX_Main')) || '';
+    const doc = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Hoja resumen · MLEARN tema 2</title><style>${kcss}</style><style>${SHEET_CSS}</style></head><body>${$('#sheet').innerHTML}</body></html>`;
+    btn.disabled = true;
+    try { await dl.save({filename: 'hoja-resumen-mlearn-tema2.html', data: doc}); msg.textContent = 'Descargada. Ábrela y usa Imprimir (o Guardar como PDF).'; }
+    catch(e){ msg.textContent = e && e.code === 'declined' ? 'Descarga cancelada.' : 'No se ha podido descargar aquí. Usa Imprimir del navegador con esta sección abierta.'; }
+    btn.disabled = false;
+  });
+}
+
+/* ================= integración con el motor ================= */
+function initExtras(){ initExercises(); initFlash(); initSheet(); }
+function extraStats(id){
+  if (id === 'ejercicios'){ const ids = $$('.ex').map(e => e.dataset.eid); return {done: ids.filter(i => (state.ex[i] || {}).solved).length, total: ids.length}; }
+  if (id === 'flashcards'){ return {done: FLASH.filter(c => fcStatus(c.id) === 'known').length, total: FLASH.length}; }
+  return {done: 0, total: 0};
+}
+function extraLabel(id, st){ return id === 'ejercicios' ? `${st.extraDone}/${st.extraTotal} resueltos` : `${st.extraDone}/${st.extraTotal} sabidas`; }
+function refreshExtras(){ $$('.ex').forEach(ex => ex._paint && ex._paint()); fcRender(); }
+</script>

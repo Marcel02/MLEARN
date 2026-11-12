@@ -1,0 +1,80 @@
+<section class="view" id="v-resumen" data-sec="resumen">
+  <div class="sec-head">
+    <div class="eyebrow">Para imprimir</div>
+    <h1>Hoja resumen</h1>
+    <p class="lede">Todas las fórmulas del tema en una página, con la diapositiva de la que sale cada una (y las erratas ya corregidas).</p>
+    <div class="meta">
+      <button class="btn pri" id="sheetDl">Descargar como HTML para imprimir</button>
+      <span class="small" id="sheetMsg">Se guarda un archivo que se abre en cualquier navegador; desde ahí, Imprimir o Guardar como PDF.</span>
+    </div>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet-title"><b>MLEARN · Tema 2 · Decision theory</b><span>Duda, Hart &amp; Stork, caps. 2–3 · diap. 1–85</span></div>
+
+    <div class="sh-block">
+      <h3>1 · Bayes y MAP <i>(d. 6–16)</i></h3>
+      <div class="sh-row"><span class="sh-k">Bayes <i>(d. 7)</i></span><span class="sh-v">\(\Pr(\omega_j|\bx)=\frac{f(\bx|\omega_j)\Pr(\omega_j)}{f(\bx)},\quad f(\bx)=\sum_if(\bx|\omega_i)\Pr(\omega_i)\) · posterior = verosimilitud × prior / evidencia</span></div>
+      <div class="sh-row"><span class="sh-k">MAP <i>(d. 13–15)</i></span><span class="sh-v">\(\hat\omega=\arg\max_i f(\bx|\omega_i)\Pr(\omega_i)\) · minimiza \(\Pr(e)\) · \(\Pr(e|\bx)=1-\max_i\Pr(\omega_i|\bx)\) · priors iguales → ML</span></div>
+      <div class="sh-row"><span class="sh-k">Error, 2 clases <i>(d. 17)</i></span><span class="sh-v">\(\Pr(e)=\Pr(\omega_1)\int_{\mathcal R_2}f_1\,d\bx+\Pr(\omega_2)\int_{\mathcal R_1}f_2\,d\bx\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>2 · Riesgo mínimo (MBR) <i>(d. 17–22)</i></h3>
+      <div class="sh-row"><span class="sh-k">Riesgo</span><span class="sh-v">\(\mathcal R=\sum_{i,j}\pi_{ij}\Pr(\omega_i|\omega_j)\Pr(\omega_j)\) · \(\pi_{ij}\): decidir \(\omega_i\) siendo \(\omega_j\) · \(\Pr(\omega_i|\omega_j)=\int_{\mathcal R_i}f(\bx|\omega_j)\,d\bx\)</span></div>
+      <div class="sh-row"><span class="sh-k">Regla</span><span class="sh-v">\(\mathcal C(\omega_i|\bx)=\sum_j\pi_{ij}\Pr(\omega_j|\bx)\), \(\hat\omega=\arg\min_i\mathcal C(\omega_i|\bx)\) · costes 0-1 → MAP</span></div>
+      <div class="sh-row"><span class="sh-k">Binaria <i>(d. 20)</i></span><span class="sh-v">\(\frac{\Pr(\omega_1|\bx)}{\Pr(\omega_2|\bx)}\underset{\omega_2}{\overset{\omega_1}{\gtrless}}\gamma=\frac{\pi_{12}-\pi_{22}}{\pi_{21}-\pi_{11}}\iff\Pr(\omega_1|\bx)\gtrless\frac{\gamma}{1+\gamma}\) · cociente de <em>posteriores</em></span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>3 · Neyman-Pearson y minimax <i>(d. 23–28)</i></h3>
+      <div class="sh-row"><span class="sh-k">Probabilidades</span><span class="sh-v">\(P_D=\int_{\mathcal R_2}f(\bx|\omega_2)\,d\bx,\quad P_{FA}=\int_{\mathcal R_2}f(\bx|\omega_1)\,d\bx\)</span></div>
+      <div class="sh-row"><span class="sh-k">NP <i>(d. 25)</i></span><span class="sh-v">\(\max P_D\) con \(P_{FA}\le\alpha\): \(\frac{f(\bx|\omega_2)}{f(\bx|\omega_1)}\underset{\omega_1}{\overset{\omega_2}{\gtrless}}\gamma\) · Lagrangiano \(\int_{\mathcal R_2}(f_2-\gamma f_1)\,d\bx+\gamma\alpha\) · sin priors</span></div>
+      <div class="sh-row"><span class="sh-k">1D gaussiano</span><span class="sh-v">\(\mathcal N(0,1)\) frente a \(\mathcal N(D',1)\): \(\gamma'=Q^{-1}(\alpha)\), \(P_D=Q(\gamma'-D')\) · \(\alpha=0{,}05,\ D'=2\Rightarrow P_D=0{,}639\)</span></div>
+      <div class="sh-row"><span class="sh-k">Minimax <i>(d. 27)</i></span><span class="sh-v">\((\pi_{11}-\pi_{22})+(\pi_{21}-\pi_{11})\int_{\mathcal R_2}f_1-(\pi_{12}-\pi_{22})\int_{\mathcal R_1}f_2=0\) · costes 0-1: \(P_{FA}=P_{\text{miss}}\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>4 · Gaussianas y discriminantes <i>(d. 31–43)</i></h3>
+      <div class="sh-row"><span class="sh-k">Discriminantes</span><span class="sh-v">MBR: \(-\mathcal C(\omega_i|\bx)\) · MAP: \(\Pr(\omega_i|\bx)\) · NP: \(f(\bx|\omega_i)\) · decidir el mayor; vale cualquier función creciente</span></div>
+      <div class="sh-row"><span class="sh-k">Gaussiana <i>(d. 33)</i></span><span class="sh-v">\(f(\bx)=\frac{1}{(2\pi)^{d/2}|\bC|^{1/2}}e^{-\frac12(\bx-\bmu)^T\bC^{-1}(\bx-\bmu)}\) · \(\Pr(x>\mu+2\sigma)=Q(2)=2{,}28\,\%\)</span></div>
+      <div class="sh-row"><span class="sh-k">Lineal <i>(d. 34–35)</i></span><span class="sh-v">\(\bz=\bA^T\bx\): \(\bmu_z=\bA^T\bmu\), \(\bC_z=\bA^T\bC\bA\) · blanqueado \(\bA=\bU\bLambda^{-1/2}\), \(\bLambda^{-1/2}=\mathrm{diag}(1/\sqrt{\lambda_i})\)</span></div>
+      <div class="sh-row"><span class="sh-k">QDA <i>(d. 39)</i></span><span class="sh-v">\(g_i=-\frac12(\bx-\bmu_i)^T\bC_i^{-1}(\bx-\bmu_i)-\frac12\ln|\bC_i|+\ln\Pr(\omega_i)\)</span></div>
+      <div class="sh-row"><span class="sh-k">Frontera <i>(d. 40–41)</i></span><span class="sh-v">\(\bx^T\bA\bx+\bv^T\bx+e=0\), \(\bA=\frac12(\bC_j^{-1}-\bC_i^{-1})\) · autovalores de \(\bA\): mismo signo → elipse; opuesto → hipérbola; uno nulo → parábola; \(\bA=\mathbf 0\) → recta</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>5 · Casos particulares <i>(d. 44–50)</i></h3>
+      <div class="sh-row"><span class="sh-k">LDA (\(\bC\) común) <i>(d. 48)</i></span><span class="sh-v">\(\bw^T(\bx-\bx_0)=0,\ \bw=\bC^{-1}(\bmu_i-\bmu_j),\ \bx_0=\frac12(\bmu_i+\bmu_j)-\frac{\ln[\Pr(\omega_i)/\Pr(\omega_j)]}{(\bmu_i-\bmu_j)^T\bC^{-1}(\bmu_i-\bmu_j)}(\bmu_i-\bmu_j)\)</span></div>
+      <div class="sh-row"><span class="sh-k">MBR con \(\bC\) común</span><span class="sh-v">igual \(\bw\); en \(\bx_0\), \(\Pr(\omega_i)\to(\pi_{ji}-\pi_{ii})\Pr(\omega_i)\) y \(\Pr(\omega_j)\to(\pi_{ij}-\pi_{jj})\Pr(\omega_j)\) · 3 clases con costes generales: frontera curva</span></div>
+      <div class="sh-row"><span class="sh-k">Diagonal / isotrópica <i>(d. 47)</i></span><span class="sh-v">\(g_i=\ln\Pr(\omega_i)-\frac12\sum_j\frac{(x_j-\mu_{ij})^2}{\sigma_j^2}\) · \(\bC=\sigma^2\mathbf I\) y priors iguales: media euclídea más cercana (mediatriz)</span></div>
+      <div class="sh-row"><span class="sh-k">Binarias <i>(d. 50)</i></span><span class="sh-v">\(h(\bx)=\sum_ix_i\ln\frac{p_i(1-q_i)}{q_i(1-p_i)}+\sum_i\ln\frac{1-p_i}{1-q_i}+\ln\frac{\Pr(\omega_1)}{\Pr(\omega_2)}\) (lineal) · \(p_i=1-q_i=p\): mayoría, \(P_e=\sum_{k\le(d-1)/2}\binom dkp^k(1-p)^{d-k}\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>6 · Estimación ML y pocos datos <i>(d. 51–65)</i></h3>
+      <div class="sh-row"><span class="sh-k">ML <i>(d. 54)</i></span><span class="sh-v">\(\hat{\boldsymbol\theta}_i=\arg\max\sum_k\ln f(\bx_{k,i}|\boldsymbol\theta_i)\) · asintóticamente insesgado y eficiente</span></div>
+      <div class="sh-row"><span class="sh-k">Estimadores <i>(d. 59–60)</i></span><span class="sh-v">\(\hat\bmu=\frac1N\sum\bx_k\), \(\hat\bC=\frac1N\sum(\bx_k-\hat\bmu)(\bx_k-\hat\bmu)^T\) (\(E\{\hat\sigma^2\}=\frac{N-1}N\sigma^2\)) · \(\hat p_k=\frac1N\sum_jx_{k,j}\) · priors \(N_k/N\)</span></div>
+      <div class="sh-row"><span class="sh-k">LDA / QDA <i>(d. 61)</i></span><span class="sh-v">LDA: \(\hat\bC=\frac1N\sum_kN_k\hat\bC_k\) · QDA: un \(\hat\bC_k\) por clase · singular si \(N_k\le d\)</span></div>
+      <div class="sh-row"><span class="sh-k">RDA <i>(d. 63)</i></span><span class="sh-v">\(\hat\bC_k(\alpha)=\alpha\hat\bC_k+(1-\alpha)\hat\bC\) (1 = QDA, 0 = LDA) · \((1-\gamma)\hat\bC_k(\alpha)+\gamma\hat\sigma^2\mathbf I\), \(\hat\sigma^2=\frac1d\tr\)</span></div>
+      <div class="sh-row"><span class="sh-k">Naive Bayes <i>(d. 64–65)</i></span><span class="sh-v">\(f(\bx|\omega)=\prod_jf(x_j|\omega)\) · Bernoulli → lineal · gaussiano → QDA diagonal (\(d\) parámetros frente a \(\frac{d(d+1)}2\))</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>7 · Indicadores <i>(d. 67–84)</i></h3>
+      <div class="sh-row"><span class="sh-k">Cuatro probabilidades</span><span class="sh-v">\(P_D\) (sensibilidad, recall) · \(P_{FA}\) · \(P_{\text{miss}}=1-P_D\) · \(P_{CR}=1-P_{FA}\) (especificidad)</span></div>
+      <div class="sh-row"><span class="sh-k">ROC <i>(d. 71)</i></span><span class="sh-v">\(D'=|\mu_2-\mu_1|/\sigma\) · curva \((Q(\gamma'),\,Q(\gamma'-D'))\) · AUROC \(=1-Q(D'/\sqrt2)\): 0,760 / 0,921 / 0,983 para \(D'=1,2,3\)</span></div>
+      <div class="sh-row"><span class="sh-k">Métricas <i>(d. 74)</i></span><span class="sh-v">\(R=\frac{TP}{TP+FN}\), \(S=\frac{TN}{TN+FP}\), \(P=\frac{TP}{TP+FP}\), \(A=\frac{TP+TN}N\), \(F_1=\frac{2PR}{P+R}\)</span></div>
+      <div class="sh-row"><span class="sh-k">Test médico <i>(d. 79–80)</i></span><span class="sh-v">\(\Pr(\text{s}|+)=\frac{\text{se}\,p}{\text{se}\,p+(1-\text{sp})(1-p)}\) · 0,997 / 0,985 / 0,001 → 0,062 → (2.º +) 0,816</span></div>
+      <div class="sh-row"><span class="sh-k">Confusión <i>(d. 83)</i></span><span class="sh-v">TP 16, FN 30, FP 10, TN 144 → R 0,348 · S 0,935 · P 0,615 · A 0,80 · F1 0,444</span></div>
+      <div class="sh-row"><span class="sh-k">Qué métrica <i>(d. 84)</i></span><span class="sh-v">spam → precisión · enfermedad → recall · subir \(\gamma'\): ↑P, ↓R</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>8 · Conclusión <i>(d. 85)</i></h3>
+      <div class="sh-row"><span class="sh-k">Reglas</span><span class="sh-v">MBR: pdf + priors + costes · MAP: pdf + priors · NP: solo pdf (y \(\alpha\))</span></div>
+      <div class="sh-row"><span class="sh-k">Modelos</span><span class="sh-v">LDA (lineal) · QDA (cuadrático) · Naive Bayes · no paramétricos (Parzen, KNN) · cualquiera se combina con cualquier regla</span></div>
+    </div>
+  </div>
+  <div class="pager"></div>
+</section>

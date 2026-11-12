@@ -1,0 +1,46 @@
+<style>
+/* ejercicios */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:22px 0;overflow:hidden}
+.ex>header{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:16px 18px 6px;flex-wrap:wrap}
+.ex>header .ref{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:2px 8px;border-radius:6px;white-space:nowrap}
+.ex .ex-body{padding:2px 18px 8px}
+.ex .ex-body ol{padding-left:1.3em}
+.ex .ex-body p,.ex .ex-body li{max-width:72ch}
+.ex .inner{padding:0 18px}
+.hints{padding:4px 18px 14px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.hint{font-family:var(--f-text);font-size:15.5px;line-height:1.55;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:8px;padding:8px 12px;width:100%}
+.hint b{font-family:var(--f-ui);font-size:13px;color:var(--accent)}
+.ex>footer{display:flex;justify-content:flex-end;gap:10px;padding:10px 18px;border-top:1px solid var(--line);background:var(--surface-2)}
+.ex .mark[aria-pressed="true"]::before{content:"✓ "}
+/* flashcards */
+.fc-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.fc-stage{margin:10px 0}
+.fc-card{display:block;width:100%;min-height:260px;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;padding:22px 22px 18px;text-align:left;box-shadow:0 1px 0 var(--line)}
+.fc-card:hover{border-color:var(--accent)}
+.fc-face{display:flex;flex-direction:column;gap:12px;min-height:216px}
+.fc-cat{font:600 11px var(--f-ui);letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.fc-q{font-family:var(--f-display);font-size:21px;font-weight:600;line-height:1.35;flex:1;display:flex;align-items:center}
+.fc-a{font-family:var(--f-text);font-size:17px;line-height:1.6;flex:1}
+.fc-a .katex-display{margin:.4em 0}
+.fc-use{font-family:var(--f-text);font-size:14.5px;color:var(--ink-2);border-top:1px dotted var(--line);padding-top:8px}
+.fc-hint{font-size:12px;color:var(--muted)}
+.fc-card.st-known{border-color:var(--ok)} .fc-card.st-again{border-color:var(--trap)}
+.fc-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.fc-known{border-color:var(--ok);color:var(--ok)} .fc-again{border-color:var(--trap);color:var(--trap)}
+/* hoja resumen */
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-top:16px}
+.sheet-title{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:6px}
+.sheet-title b{font-family:var(--f-display);font-size:16px}
+.sheet-title span{font-size:12px;color:var(--muted)}
+.sh-block{break-inside:avoid;margin-top:14px}
+.sh-block h3{font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:4px}
+.sh-block h3 i,.sh-k i{font-style:normal;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:12px}
+.sh-row{display:grid;grid-template-columns:minmax(150px,210px) minmax(0,1fr);gap:4px 14px;padding:5px 0;border-bottom:1px dotted var(--line);align-items:baseline}
+.sh-row:last-child{border-bottom:0}
+.sh-k{font-size:13px;color:var(--ink-2);font-weight:500}
+.sh-v{font-family:var(--f-text);font-size:15px;min-width:0;overflow-x:auto}
+@media (max-width:600px){ .sh-row{grid-template-columns:minmax(0,1fr)} .fc-q{font-size:18px} .fc-card{padding:16px} }
+@media print{ body.print-sheet .view{display:none!important} body.print-sheet #v-resumen{display:block!important} body.print-sheet #v-resumen .sec-head{display:none} .sheet{border:0;padding:0} }
+.tbl,.katex-display{position:relative}
+.concept>header .ref,.ex>header .ref{white-space:normal;max-width:100%}
+</style>

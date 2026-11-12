@@ -1,0 +1,140 @@
+<section class="view" id="v-b10" data-sec="b10">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 10 · Apartados 2.2.2–2.2.4 del PDF</div>
+    <h1>Test médico, precisión frente a recall y conclusiones</h1>
+    <p class="lede">Por qué un test con 99,7 % de sensibilidad puede acertar solo un 6 % de sus positivos, cómo leer una matriz de confusión y qué métrica elegir.</p>
+    <div class="meta"><span class="chip">Diap. 76–85</span><span class="chip">PDF p. 91–102</span><span class="chip">incluye manuscritas p. 94–95</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b10-1">
+    <header><h3>Sensibilidad no es precisión: el test médico</h3><span class="ref">Diap. 76–78 · PDF p. 91–95</span></header>
+    <div class="summary">
+      <p>Es crucial distinguir \(\Pr(\bx\in R_2|\omega_2)\) (<strong>sensibilidad</strong>) de \(\Pr(\omega_2|\bx\in R_2)\) (<strong>precisión</strong>), y \(\Pr(\bx\in R_1|\omega_1)\) (<strong>especificidad</strong>) de \(\Pr(\omega_1|\bx\in R_1)\). Con el estado del paciente \(\omega\in\{\text{healthy},\text{sick}\}\), el resultado \(y\in\{-,+\}\) y la <strong>prevalencia</strong> \(\Pr(\text{sick})\):</p>
+      \[\Pr(\text{sick}|+)=\frac{\Pr(+|\text{sick})\Pr(\text{sick})}{\Pr(+|\text{healthy})\Pr(\text{healthy})+\Pr(+|\text{sick})\Pr(\text{sick})}.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Lo que mide el laboratorio</strong> (diap. 78): en ensayos clínicos se aplica el test a sanos y se cuentan los negativos: \(\Pr(-|\text{healthy})\), especificidad. Se aplica a enfermos y se cuentan los positivos: \(\Pr(+|\text{sick})\), sensibilidad.</li>
+        <li><strong>Lo que quiere saber el paciente</strong> («<em>Me at the doctor's</em>»): dado que salió \(+\), ¿qué probabilidad hay de estar enfermo? Eso es \(\Pr(\text{sick}|+)\), la precisión: hay que «darle la vuelta» con Bayes.</li>
+        <li><strong>La fórmula</strong> es Bayes con dos clases: numerador = positivos verdaderos; denominador = todos los positivos (falsos, \(\Pr(+|\text{healthy})=1-\text{especificidad}\), más verdaderos).</li>
+        <li><strong>Moraleja.</strong> Si la enfermedad es rara, los sanos son muchísimos, y aunque se equivoque poco con cada uno, sus falsos positivos pueden superar en número a los positivos verdaderos.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 94–95</span><p>«\(\omega_1\): <em>healthy patient</em>, \(\omega_2\): <em>sick patient</em>». \(R=\Pr(\bx\in R_2|\omega_2)\) <em>sensitivity</em> y \(P=\Pr(\omega_2|\bx\in R_2)\) <em>precision</em>: «<em>Today we'll see their relation</em>». En \(R=\frac{TP}{TP+FN}\) rodea el denominador («<em>whole set of \(\omega_2\) cases</em>»; FN, «<em>prob of a miss</em>»); en \(P=\frac{TP}{TP+FP}\), «<em>whole set of cases that give a positive</em>» (FP, «<em>prob of false alarm</em>»). Concluye: «<em>They are related</em>». En la p. 95 repasa la lista: recall/sensitivity \(P_D\), specificity \(P_{CR}\), precision, F-score, accuracy.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b10-2">
+    <header><h3>El ejemplo del SIDA y un segundo test</h3><span class="ref">Diap. 79–80 · PDF p. 96–97</span></header>
+    <div class="summary">
+      <p>Con sensibilidad 0,997, especificidad 0,985 y prevalencia 0,001:</p>
+      \[\Pr(\text{sick}|+)=\frac{0{,}997\times0{,}001}{(1-0{,}985)\times0{,}999+0{,}997\times0{,}001}=0{,}062.\]
+      <p>«<em>Chances are very low!</em>» Tras un segundo test independiente también positivo, usando 0,062 como nueva prior, \(\Pr(\text{sick}|+_1,+_2)=0{,}82\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Numerador:</strong> \(0{,}997\times0{,}001=0{,}000997\).</li>
+        <li><strong>Falsos positivos:</strong> \((1-0{,}985)\times0{,}999=0{,}014985\). ¡Quince veces más que los verdaderos!</li>
+        <li><strong>Cociente:</strong> \(\frac{0{,}000997}{0{,}014985+0{,}000997}=\frac{0{,}000997}{0{,}015982}=0{,}0624\).</li>
+        <li><strong>Con frecuencias naturales:</strong> de 100 000 personas, 100 están enfermas y dan unos 99,7 positivos; de las 99 900 sanas, el 1,5 % da positivo: 1498,5 falsos positivos. De 1598 positivos, solo 99,7 están enfermos: 6,2 %.</li>
+        <li><strong>Segundo test</strong> (diap. 80): \(\Pr(\text{sick}|+_1,+_2)=\frac{\Pr(+_2|\text{sick},+_1)\Pr(\text{sick}|+_1)}{\Pr(+_2|\text{healthy},+_1)\Pr(\text{healthy}|+_1)+\Pr(+_2|\text{sick},+_1)\Pr(\text{sick}|+_1)}\). Si los tests son <strong>independientes dada la condición</strong>, \(\Pr(+_2|\text{sick},+_1)=\Pr(+_2|\text{sick})\), y es la misma fórmula con prior \(0{,}0624\): \(\frac{0{,}997\cdot0{,}0624}{0{,}015\cdot0{,}9376+0{,}997\cdot0{,}0624}=0{,}816\).</li>
+        <li><strong>Población de riesgo.</strong> La diapositiva pregunta qué pasa con una prevalencia mayor: la posterior sube mucho (ejercicio 10 y laboratorio).</li>
+      </ol>
+    </div></details>
+    <div class="inner"><div class="note trap"><span class="lab">Errores habituales</span><p>(1) Leer 0,997 como «el 99,7 % de los positivos están enfermos»: confundir sensibilidad con precisión (falacia de la tasa base). (2) Aplicar el segundo test con la prevalencia original en lugar de la posterior del primero. (3) Olvidar que la regla del segundo test exige independencia condicional: dos tests idénticos pueden equivocarse a la vez con la misma persona.</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="bayes">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Bayes y el test diagnóstico</h3></div><span class="ref small">Diap. 77–80 · ejercicio 10</span></div>
+    <p class="small">Sensibilidad y especificidad del ELISA de la diapositiva 79. Los botones cargan las prevalencias del ejercicio 10, con las fuentes indicadas en su solución.</p>
+    <div class="controls">
+      <div class="ctl"><label for="b-se"><span>Sensibilidad \(\Pr(+|\text{sick})\)</span><output id="b-se-o"></output></label><input type="range" id="b-se" min="0.5" max="0.9999" step="0.0001" value="0.997"></div>
+      <div class="ctl"><label for="b-sp"><span>Especificidad \(\Pr(-|\text{healthy})\)</span><output id="b-sp-o"></output></label><input type="range" id="b-sp" min="0.5" max="0.9999" step="0.0001" value="0.985"></div>
+      <div class="ctl"><label for="b-pr"><span>Prevalencia \(\Pr(\text{sick})\) (escala logarítmica)</span><output id="b-pr-o"></output></label><input type="range" id="b-pr" min="-4" max="-0.3" step="0.01" value="-3"></div>
+      <div class="ctl"><span class="small">Prevalencias del ejercicio 10</span><div class="seg" role="group" aria-label="Prevalencias de ejemplo"><button data-p="0.001">Diap. 79: 0,1 %</button><button data-p="0.0031">Población: 0,31 %</button><button data-p="0.007">Prostitución: 0,7 %</button><button data-p="0.081">Prisiones: 8,1 %</button></div></div>
+    </div>
+    <div class="plots">
+      <div class="plot"><canvas id="b-c1" height="230" aria-label="Probabilidad de estar enfermo tras uno y dos positivos según la prevalencia"></canvas><div class="cap">\(\Pr(\text{sick}|+)\) y \(\Pr(\text{sick}|+,+)\) frente a la prevalencia (eje logarítmico).</div></div>
+      <div class="plot"><canvas id="b-c2" height="230" aria-label="Frecuencias naturales"></canvas><div class="cap">De cada 100 000 personas: barras de positivos verdaderos y falsos.</div></div>
+    </div>
+    <div class="readout" id="b-out"></div>
+  </div>
+
+  <article class="concept" data-cid="t2b10-3">
+    <header><h3>Precisión frente a recall: un compromiso</h3><span class="ref">Diap. 81–82 · PDF p. 98–99</span></header>
+    <div class="summary">
+      <p>Con el iris y una sola característica: <strong>cambiando el umbral \(\gamma'\) no se pueden mejorar a la vez la precisión y el recall</strong>. Subirlo reduce los FP (sube \(P=\frac{TP}{TP+FP}\)) pero aumenta los FN (baja \(R=\frac{TP}{TP+FN}\)), y al revés.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>La diap. 82 dibuja las dos curvas frente al umbral y distingue zonas:</p>
+      <ul>
+        <li><strong>R alto y P bajo:</strong> \(\omega_2\) se detecta bien, pero el modelo también confunde puntos de \(\omega_1\).</li>
+        <li><strong>R alto y P alto:</strong> \(\omega_2\) está perfectamente resuelta (zona central estrecha, si existe).</li>
+        <li><strong>R bajo y P alto:</strong> el modelo no detecta bien \(\omega_2\), pero cuando lo hace es muy fiable.</li>
+        <li><strong>R bajo y P bajo:</strong> el modelo maneja mal \(\omega_2\), con muchos FP y FN: el problema es el modelo, no el umbral.</li>
+      </ul>
+      <p>Es la misma idea que \(P_D\) frente a \(P_{FA}\) en la ROC, con la diferencia de que la precisión depende además de la prevalencia.</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b10-4">
+    <header><h3>La matriz de confusión</h3><span class="ref">Diap. 83 · PDF p. 100</span></header>
+    <div class="summary">
+      <p>Filas: valor real; columnas: predicción. En el ejemplo: \(TP=16\), \(FN=30\), \(FP=10\), \(TN=144\). En los márgenes se leen recall, especificidad, exactitud, prevalencia, precisión y valor predictivo negativo.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: todas las métricas del ejemplo (comprobadas en código)</summary><div class="deep-body">
+      <div class="tbl"><table><thead><tr><th>Métrica</th><th>Cálculo</th><th>Valor</th></tr></thead><tbody>
+        <tr><td>Total</td><td>\(16+30+10+144\)</td><td class="num">200</td></tr>
+        <tr><td>Prevalencia</td><td>\((TP+FN)/N=46/200\)</td><td class="num">0,230</td></tr>
+        <tr><td>Recall (sensibilidad)</td><td>\(16/46\)</td><td class="num">0,348</td></tr>
+        <tr><td>Especificidad</td><td>\(144/154\)</td><td class="num">0,935</td></tr>
+        <tr><td>Precisión</td><td>\(16/26\)</td><td class="num">0,615</td></tr>
+        <tr><td>Valor predictivo negativo</td><td>\(TN/(TN+FN)=144/174\)</td><td class="num">0,828</td></tr>
+        <tr><td>Exactitud</td><td>\(160/200\)</td><td class="num">0,800</td></tr>
+        <tr><td>F1</td><td>\(2\cdot0{,}615\cdot0{,}348/(0{,}615+0{,}348)\)</td><td class="num">0,444</td></tr>
+      </tbody></table></div>
+      <p>Una exactitud del 80 % parece aceptable, pero el clasificador solo encuentra uno de cada tres enfermos (recall 0,35). Comprobación de la diap. 74: \(A=0{,}23\cdot0{,}348+0{,}77\cdot0{,}935=0{,}80\).</p>
+    </div></details>
+    <div class="inner"><div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 100</span><p>«<em>This for 2 classes</em>»; «\(\omega_1\): <em>healthy</em>, \(\omega_2\): <em>sick</em>», y empieza a escribir «TP = …», «FN (…» (cortado).</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b10-5">
+    <header><h3>Elegir la métrica</h3><span class="ref">Diap. 84 · PDF p. 101</span></header>
+    <div class="summary">
+      <p><strong>Detección de spam:</strong> importa más la precisión (no marcar como spam un correo importante). <strong>Detección de enfermedades:</strong> importa más el recall (no dejar escapar casos). El \(F_\beta\) permite ponderar: \(\beta=2\) si los FN son peores, \(\beta=0{,}5\) si lo son los FP. Con datos <strong>balanceados</strong> la exactitud funciona; con datos <strong>desbalanceados</strong> son preferibles F1, ROC-AUC o precisión/recall según el caso.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>La diapositiva no escribe la fórmula de \(F_\beta\). La definición estándar es \(F_\beta=\frac{(1+\beta^2)P\,R}{\beta^2P+R}\): con \(\beta=1\) es el F1, y \(\beta&gt;1\) da más peso al recall. En el ejemplo de la matriz de confusión: \(F_{0{,}5}=0{,}533\) (premia su precisión) y \(F_2=0{,}381\) (castiga su bajo recall).</p>
+      <p>Relación con el bloque 3: elegir la métrica es la versión «de evaluación» de elegir los costes \(\pi_{ij}\). La anotación del profesor lo dice: la exactitud funciona con datos balanceados «<em>(without \(\pi_{ij}\))</em>», cuando los dos errores cuestan lo mismo.</p>
+    </div></details>
+    <div class="inner"><div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 101</span><p>Junto a «<em>Balanced datasets, accuracy works</em>»: «<em>(without</em> \(\pi_{ij}\)<em>)</em>» y una marca de visto bueno.</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b10-6">
+    <header><h3>Conclusión: reglas de decisión y modelos</h3><span class="ref">Diap. 85 · PDF p. 102</span></header>
+    <div class="summary">
+      <div class="tbl"><table><thead><tr><th>Regla</th><th>Qué se conoce</th><th>Discriminante</th></tr></thead><tbody>
+        <tr><td>MBR</td><td>pdf, priors y un coste para cada tipo de error</td><td>menos el riesgo condicional</td></tr>
+        <tr><td>MAP</td><td>pdf y priors; todos los errores cuestan igual</td><td>la posterior</td></tr>
+        <tr><td>NP</td><td>pdf, pero no las priors</td><td>la pdf (cociente con umbral)</td></tr>
+      </tbody></table></div>
+      <div class="tbl"><table><thead><tr><th>Modelo de pdf</th><th>Supuesto</th><th>Fronteras</th></tr></thead><tbody>
+        <tr><td>LDA</td><td>gaussianas con la misma covarianza</td><td>lineales (hiperplanos); otros modelos, como Bernoulli, también</td></tr>
+        <tr><td>QDA</td><td>gaussianas con covarianzas distintas</td><td>hipercuádricas</td></tr>
+        <tr><td>Naive Bayes</td><td>componentes independientes; la pdf de cada una, la más adecuada</td><td>según el modelo</td></tr>
+        <tr><td>No paramétrico (Parzen, KNN)</td><td>ninguno: se estima con histogramas</td><td>arbitrarias</td></tr>
+      </tbody></table></div>
+      <p>Las priors se conocen o se estiman como frecuencias relativas del entrenamiento. Para cualquiera de los cuatro modelos se puede construir un clasificador con cualquiera de las tres reglas.</p>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b10"></div>
+  <div class="pager"></div>
+</section>

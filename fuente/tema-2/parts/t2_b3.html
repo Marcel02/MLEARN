@@ -1,0 +1,108 @@
+<section class="view" id="v-b3" data-sec="b3">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 3 · Apartado 2.1.3 del PDF</div>
+    <h1>Regla de riesgo mínimo (MBR)</h1>
+    <p class="lede">Cuando los errores no cuestan lo mismo: costes \(\pi_{ij}\), riesgo de Bayes y la regla «decidir la clase de menor riesgo condicional».</p>
+    <div class="meta"><span class="chip">Diap. 17–22</span><span class="chip">PDF p. 17–24</span><span class="chip">incluye manuscritas p. 19–20</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b3-1">
+    <header><h3>Costes \(\pi_{ij}\) y riesgo de Bayes</h3><span class="ref">Diap. 17 · PDF p. 17 + manuscrita p. 19</span></header>
+    <div class="summary">
+      <p>Con \(c\) clases, \(P(e)=\sum_{i=1}^c\sum_{j\neq i}\Pr(\omega_i|\omega_j)\Pr(\omega_j)\). Si las decisiones tienen costes distintos, se define el <strong>riesgo de Bayes</strong>:</p>
+      \[\mathcal R=\sum_{i=1}^c\sum_{j=1}^c\pi_{ij}\Pr(\omega_i|\omega_j)\Pr(\omega_j),\]
+      <p>donde \(\pi_{ij}\) es el <strong>coste de decidir \(\omega_i\) cuando ocurre \(\omega_j\)</strong> y \(\pi_{ii}\) el coste de acertar.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Lectura.</strong> Cada pareja (decisión \(\omega_i\), verdad \(\omega_j\)) ocurre con probabilidad \(\Pr(\omega_i|\omega_j)\Pr(\omega_j)\) y cuesta \(\pi_{ij}\). \(\mathcal R\) es el coste medio.</li>
+        <li><strong>En términos de densidades</strong> (apunte p. 19): \(\Pr(\omega_1|\omega_2)=\Pr(\bx\in R_1\mid\bx\sim f_{\bx|\omega_2})=\int_{\bx\in R_1}f_{\bx|\omega_2}(\bx|\omega_2)\,d\bx\): el área de la densidad de \(\omega_2\) que cae en la región de \(\omega_1\).</li>
+        <li><strong>Dos clases con \(\pi_{11}=\pi_{22}=0\):</strong> \(\mathcal R=\pi_{12}\Pr(\omega_1|\omega_2)\Pr(\omega_2)+\pi_{21}\Pr(\omega_2|\omega_1)\Pr(\omega_1)\).</li>
+        <li><strong>MAP como caso particular.</strong> Con \(\pi_{ij}=1\) si \(i\neq j\) y \(\pi_{ii}=0\), \(\mathcal R=P(e)\): minimizar el riesgo es minimizar el error.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 17 y 19</span>
+        <p>Junto a los \(\pi_{ij}\): «<em>In this case these values are the cost associated to errors</em>»; junto a \(\pi_{ii}\): «<em>cost to correct could be</em> 0». En la p. 19 lo explica en 1D con tornillos: \(\omega_1\) tornillos buenos (verde), \(\omega_2\) defectuosos (rosa); el error \(\int_{\bx\in R_1}f_{\bx|\omega_2}(\bx|\omega_2)d\bx\) es la cola de la densidad rosa que cae en \(R_1\), y escribe \(\mathcal R=\pi_{12}\Pr(\omega_1|\omega_2)\Pr(\omega_2)+\pi_{21}\Pr(\omega_2|\omega_1)\Pr(\omega_1)\).</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span><p>Invertir los índices: \(\pi_{12}\) es el coste de decidir \(\omega_1\) siendo \(\omega_2\) (primer índice = decisión, segundo = verdad).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b3-2">
+    <header><h3>Teorema: decidir la clase de menor riesgo condicional</h3><span class="ref">Diap. 18–19 · PDF p. 18, 21</span></header>
+    <div class="summary">
+      <p>Objetivo: diseñar las regiones \(R_1,\dots,R_c\) (disjuntas y que cubren \(\mathbb{R}^d\)) que minimizan \(\mathcal R\). <strong>Teorema:</strong> para cada \(\bx\), la clase que minimiza el riesgo es la de menor <strong>riesgo condicional</strong></p>
+      \[C(\omega_i|\bx)\triangleq\sum_{j=1}^c\pi_{ij}\Pr(\omega_j|\bx),\qquad \omega_{MBR}=\arg\min_{\omega}C(\omega|\bx).\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la demostración de la diap. 19</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Sustituir las probabilidades de decisión.</strong> \(\Pr(\omega_i|\omega_j)=\int_{\bx\in R_i}f(\bx|\omega_j)\,d\bx\), así que \(\mathcal R=\sum_i\sum_j\pi_{ij}\left(\int_{R_i}f(\bx|\omega_j)d\bx\right)\Pr(\omega_j)\).</li>
+        <li><strong>Meter la suma en \(j\) dentro de la integral</strong> (la integral sobre \(R_i\) no depende de \(j\)): \(\mathcal R=\sum_i\int_{R_i}\sum_j\pi_{ij}f(\bx|\omega_j)\Pr(\omega_j)\,d\bx\).</li>
+        <li><strong>Teorema de Bayes.</strong> \(f(\bx|\omega_j)\Pr(\omega_j)=\Pr(\omega_j|\bx)f(\bx)\): \(\mathcal R=\sum_i\int_{R_i}\underbrace{\sum_j\pi_{ij}\Pr(\omega_j|\bx)}_{C_i(\bx)}f(\bx)\,d\bx\).</li>
+        <li><strong>Minimizar.</strong> Cada \(\bx\) pertenece a una sola región y aporta \(C_i(\bx)f(\bx)\) si está en \(R_i\). Como \(f(\bx)\ge0\), lo mejor es meter cada \(\bx\) en la región de menor \(C_i(\bx)\): \(R_i=\{\bx:C_i(\bx)&lt;C_k(\bx)\ \forall k\neq i\}\).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Erratas en la diap. 19</span><p>Dice que el espacio se divide en «\(M\)» regiones con «\(i=0,\dots,c-1\)» y define \(R_i\) con \(\bx\in\mathbb{C}^{N\times1}\). Coherente con el resto del tema sería: \(c\) regiones, \(i=1,\dots,c\) y \(\bx\in\mathbb{R}^d\).</p></div>
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 18</span><p>Resume el teorema como \(\omega_{MBR}=\arg\min_\omega C(\omega|\bx)\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b3-3">
+    <header><h3>Caso binario: un umbral \(\gamma\) sobre el cociente de posteriores</h3><span class="ref">Diap. 20–21 · PDF p. 22–23 + manuscrita p. 20</span></header>
+    <div class="summary">
+      <p>Con \(c=2\): \(C(\omega_1|\bx)=\pi_{11}\Pr(\omega_1|\bx)+\pi_{12}\Pr(\omega_2|\bx)\) y \(C(\omega_2|\bx)=\pi_{21}\Pr(\omega_1|\bx)+\pi_{22}\Pr(\omega_2|\bx)\). Comparándolos:</p>
+      \[\frac{\Pr(\omega_1|\bx)}{\Pr(\omega_2|\bx)}\ \underset{\omega_2}{\overset{\omega_1}{\gtrless}}\ \frac{\pi_{12}-\pi_{22}}{\pi_{21}-\pi_{11}}=\gamma.\]
+      <p>El umbral no depende de \(\bx\). El riesgo mínimo <strong>sesga</strong> el cociente respecto a MAP (que es \(\gamma=1\)).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Decidir \(\omega_1\) si \(C(\omega_1|\bx)&lt;C(\omega_2|\bx)\):</strong> \(\pi_{11}P_1+\pi_{12}P_2&lt;\pi_{21}P_1+\pi_{22}P_2\), con \(P_i=\Pr(\omega_i|\bx)\) (etiqueta mía).</li>
+        <li><strong>Agrupar:</strong> \((\pi_{12}-\pi_{22})P_2&lt;(\pi_{21}-\pi_{11})P_1\). Suponiendo, como es lógico, que equivocarse cuesta más que acertar (\(\pi_{21}&gt;\pi_{11}\)), se divide sin cambiar el sentido: \(P_1/P_2&gt;\gamma\).</li>
+        <li><strong>Efecto del umbral.</strong> Subir \(\gamma\) exige más evidencia para decidir \(\omega_1\): más puntos van a \(R_2\) (diap. 21). Ejemplo del profesor (p. 20): con \(\pi_{11}=\pi_{22}=0\) y \(\pi_{12}&gt;\pi_{21}\), \(\gamma&gt;1\) y \(R_1\) se encoge.</li>
+        <li><strong>MAP como caso particular</strong> (diap. 21). Si \(\pi_{ij}=\alpha\) para \(i=j\) y \(\pi\) para \(i\neq j\): \(C(\omega_i|\bx)=\alpha\Pr(\omega_i|\bx)+\pi\left(1-\Pr(\omega_i|\bx)\right)=\pi-(\pi-\alpha)\Pr(\omega_i|\bx)\). Con \(\pi&gt;\alpha\), minimizar \(C\) es maximizar \(\Pr(\omega_i|\bx)\): MBR se convierte en MAP.</li>
+        <li><strong>En forma de verosimilitudes.</strong> Con Bayes, \(\frac{f(\bx|\omega_1)}{f(\bx|\omega_2)}\gtrless\gamma\frac{\Pr(\omega_2)}{\Pr(\omega_1)}\): los costes actúan igual que cambiar las priors (lo usa el ejercicio 4.2).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>En un punto con \(\Pr(\omega_1|\bx)=0{,}6\): MAP decide \(\omega_1\). Con \(\pi_{12}=3\), \(\pi_{21}=1\), \(\pi_{11}=\pi_{22}=0\): \(\gamma=3\) y \(0{,}6/0{,}4=1{,}5&lt;3\), así que MBR decide \(\omega_2\). Comprobación directa: \(C(\omega_1|\bx)=3\cdot0{,}4=1{,}2\) y \(C(\omega_2|\bx)=1\cdot0{,}6=0{,}6\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Matices</span><p>La diap. 20 lo llama «<em>likelihood ratio</em>», pero lo que compara es un cociente de <em>posteriores</em>; el de verosimilitudes es el del paso 5. La diapositiva escribe \(\omega_{MRB}\) y el profesor \(\omega_{MBR}\): es lo mismo. En la p. 20 el profesor anota «\(\pi_{12}&gt;\pi_{11}\)»; para que \(\gamma&gt;1\) con \(\pi_{11}=\pi_{22}=0\) debe leerse \(\pi_{12}&gt;\pi_{21}\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="map1d">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>MAP y riesgo mínimo en 1D</h3></div><span class="ref small">Diap. 13–21</span></div>
+    <p class="small">Dos clases gaussianas. Arriba, \(\Pr(\omega_i)f(x|\omega_i)\) con las regiones de decisión sombreadas; abajo, las posteriores. Con varianzas distintas aparecen dos fronteras.</p>
+    <div class="controls">
+      <div class="ctl"><label for="m1-p1"><span>\(\Pr(\omega_1)\)</span><output id="m1-p1-o"></output></label><input type="range" id="m1-p1" min="0.05" max="0.95" step="0.01" value="0.5"></div>
+      <div class="ctl"><label for="m1-mu2"><span>Media de \(\omega_2\) (\(\mu_1=0\))</span><output id="m1-mu2-o"></output></label><input type="range" id="m1-mu2" min="0.5" max="5" step="0.1" value="2.5"></div>
+      <div class="ctl"><label for="m1-s2"><span>\(\sigma_2/\sigma_1\)</span><output id="m1-s2-o"></output></label><input type="range" id="m1-s2" min="0.4" max="2.5" step="0.05" value="1"></div>
+      <div class="ctl"><label for="m1-c12"><span>Coste \(\pi_{12}\) (decidir \(\omega_1\) siendo \(\omega_2\))</span><output id="m1-c12-o"></output></label><input type="range" id="m1-c12" min="0.2" max="10" step="0.1" value="1"></div>
+      <div class="ctl"><label for="m1-c21"><span>Coste \(\pi_{21}\) (decidir \(\omega_2\) siendo \(\omega_1\))</span><output id="m1-c21-o"></output></label><input type="range" id="m1-c21" min="0.2" max="10" step="0.1" value="1"></div>
+    </div>
+    <div class="plots">
+      <div class="plot wide"><canvas id="m1-c1" height="230" aria-label="Densidades ponderadas y regiones"></canvas><div class="legend"><span><i style="background:var(--c1)"></i>\(\Pr(\omega_1)f(x|\omega_1)\)</span><span><i style="background:var(--c2)"></i>\(\Pr(\omega_2)f(x|\omega_2)\)</span><span>Franja inferior: región elegida (azul \(R_1\), naranja \(R_2\))</span></div></div>
+      <div class="plot wide"><canvas id="m1-c2" height="170" aria-label="Probabilidades a posteriori"></canvas><div class="cap">Posteriores \(\Pr(\omega_1|x)\) y \(\Pr(\omega_2|x)\); la línea discontinua marca el nivel \(\gamma/(1+\gamma)\) que debe superar \(\Pr(\omega_1|x)\) para decidir \(\omega_1\).</div></div>
+    </div>
+    <div class="readout" id="m1-out"></div>
+  </div>
+
+  <article class="concept" data-cid="t2b3-4">
+    <header><h3>En resumen: MAP es un caso particular de MBR</h3><span class="ref">Diap. 22 · PDF p. 24</span></header>
+    <div class="summary">
+      <p>Los dos clasificadores se implementan a partir de las posteriores. MAP: \(\Pr(\omega_1|\bx),\dots,\Pr(\omega_c|\bx)\to\max\to\hat\omega_{MAP}\). MBR: las posteriores pasan por la matriz de costes \(\boldsymbol\Pi\) (\(c\times c\)), que da \(C(\omega_1|\bx),\dots,C(\omega_c|\bx)\), y después \(\min\to\hat\omega_{MRB}\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>En notación matricial, con \(\mathbf p(\bx)=(\Pr(\omega_1|\bx),\dots,\Pr(\omega_c|\bx))^T\) (etiqueta mía), el vector de riesgos condicionales es \(\boldsymbol\Pi\,\mathbf p(\bx)\): la fila \(i\) de \(\boldsymbol\Pi\) contiene los costes \(\pi_{i1},\dots,\pi_{ic}\) de decidir \(\omega_i\). Con \(\boldsymbol\Pi=\mathbf 1\mathbf 1^T-\mathbf I\) (ceros en la diagonal y unos fuera), \(\boldsymbol\Pi\mathbf p=\mathbf 1-\mathbf p\), y minimizar es maximizar \(\mathbf p\): MAP.</p>
+    </div></details>
+    <div class="inner"><div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 24</span><p>«<em>Parte igual pero la diferencia es que reagrupa las probabilidades según su cost associated</em>».</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b3"></div>
+  <div class="pager"></div>
+</section>

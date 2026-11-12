@@ -1,0 +1,43 @@
+MLEARN · Tema 2 · Decision theory
+Plataforma de estudio (Bayes, MAP, riesgo mínimo, Neyman-Pearson, LDA/QDA, ML, ROC)
+====================================================================================
+
+CÓMO ABRIRLA
+- Haz doble clic en index.html. Se abre en el navegador (Chrome, Edge, Firefox o Safari).
+- Funciona sin internet: las fórmulas, las tipografías y los gráficos van dentro del archivo.
+- Está pensada para el ordenador. En el móvil depende de si el visor de archivos
+  permite páginas interactivas; si no, ábrela en el ordenador.
+
+QUÉ HAY EN LA CARPETA
+- index.html
+    Teoría de los 10 bloques (diapositivas 1–85 y apuntes manuscritos del profesor),
+    con derivaciones paso a paso, 5 laboratorios interactivos (MAP/MBR en 1D, fronteras
+    LDA/QDA en 2D, sesgo del estimador ML, ROC y Neyman-Pearson, test diagnóstico),
+    un test por bloque con modo «Repasar falladas», los ejercicios asignados de la hoja
+    (1, 2, 4, 5, 7.1, 7.2, 7.3, 9, 10 y 11) con pistas y solución, 36 flashcards y la
+    hoja resumen.
+- hoja-resumen.pdf
+    Todas las fórmulas del tema en 2 páginas A4, lista para imprimir.
+- hoja-resumen.html
+    La misma hoja en formato web (se abre sin internet).
+
+EL PROGRESO
+- Se guarda en el navegador de cada persona: conceptos marcados, tests, ejercicios
+  y flashcards. Al compartir la carpeta, cada compañero empieza de cero; tu progreso
+  no viaja con ella.
+- Si borras los datos del navegador, cambias de navegador o mueves o renombras la
+  carpeta, el progreso puede volver a empezar.
+
+IMPRIMIR
+- Hoja resumen: abre hoja-resumen.pdf, o en la página ve a «Hoja resumen» y pulsa
+  «Imprimir hoja resumen».
+- Cualquier otra sección: ábrela y usa Imprimir del navegador (Ctrl+P o Cmd+P).
+  Las explicaciones desplegables se abren solas al imprimir.
+
+SOBRE EL CONTENIDO
+- Basado en las diapositivas del tema 2 (ML_Chapter2, 102 páginas) y en la hoja de
+  ejercicios (ExercisesChapter2MLEARN.pdf). No es material oficial de la asignatura.
+- Las erratas y dudas detectadas en ese material están en la página de inicio
+  («Erratas y dudas detectadas en el material») y señaladas en cada tarjeta.
+- Las prevalencias del ejercicio 10 son datos históricos de fuentes oficiales,
+  citadas en la solución.

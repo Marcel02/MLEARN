@@ -1,0 +1,127 @@
+<section class="view" id="v-b7" data-sec="b7">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 7 · Apartado 2.1.7 del PDF</div>
+    <h1>Estimación por máxima verosimilitud</h1>
+    <p class="lede">Las reglas anteriores suponen conocidas \(f(\bx|\omega_i)\) y \(\Pr(\omega_i)\). En la práctica se estiman con los datos de entrenamiento, y esas estimaciones tienen sesgo y varianza.</p>
+    <div class="meta"><span class="chip">Diap. 51–62</span><span class="chip">PDF p. 60–75</span><span class="chip">incluye manuscritas p. 67, 72, 73, 75</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b7-1">
+    <header><h3>Por qué estimar, y dos maneras de hacerlo</h3><span class="ref">Diap. 51–53 · PDF p. 60–62</span></header>
+    <div class="summary">
+      <p>La decisión bayesiana exige conocer con precisión \(f_{\bx}(\bx|\omega_i)\) y \(\Pr(\omega_i)\): hace falta una base de datos etiquetada fiable (entrenamiento) y estimadores. Estimar una pdf cualquiera exige muchos datos, salvo que usemos una función con <strong>pocos parámetros</strong> \(\boldsymbol\theta_i\); en el caso gaussiano, \(\boldsymbol\theta_i\) son la media y la covarianza. Dos enfoques: <strong>máxima verosimilitud (ML)</strong>, con parámetros deterministas aunque desconocidos, y <strong>estimación bayesiana</strong>, con parámetros aleatorios con una pdf a priori («creencia»).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li>La base de datos se parte <strong>al azar</strong> en entrenamiento y test. Con la de entrenamiento, separada por clases (\(D_1,\dots,D_c\)), se estima \(\hat{\boldsymbol\theta}_i\) para cada clase y se obtiene \(f_{\bx}(\bx|\omega_i,\hat{\boldsymbol\theta}_i)\). Con la de test se evalúa el clasificador.</li>
+        <li><strong>Consecuencia importante</strong> (diap. 53): como la partición es aleatoria, los parámetros estimados también lo son. Con otra partición saldrían otros \(\hat{\boldsymbol\theta}_i\) (apunte: «\(\hat\bmu\), \(\hat\bC\) <em>will provide random values</em>»). Por eso tiene sentido hablar del sesgo y la varianza de un estimador.</li>
+        <li>En este tema solo se desarrolla ML.</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b7-2">
+    <header><h3>El estimador ML</h3><span class="ref">Diap. 54–55 · PDF p. 63–64</span></header>
+    <div class="summary">
+      <p>Suponiendo que los vectores \(\bx_{k,i}\in D_i\) de cada clase son estadísticamente independientes, la verosimilitud es \(f(D_i|\boldsymbol\theta_i)=\prod_{k=1}^{N_{c_i}}f_{\bx}(\bx_{k,i}|\boldsymbol\theta_i)\), y</p>
+      \[\hat{\boldsymbol\theta}_{i,ML}=\arg\max_{\boldsymbol\theta_i}f(D_i|\boldsymbol\theta_i)=\arg\max_{\boldsymbol\theta_i}\ln f(D_i|\boldsymbol\theta_i).\]
+      <p>Condición necesaria: \(\nabla_{\boldsymbol\theta_i}\ln f(D_i|\boldsymbol\theta_i)=\mathbf 0\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Qué se maximiza.</strong> Con los datos fijos, \(f(D_i|\boldsymbol\theta_i)\) se mira como función de \(\boldsymbol\theta_i\): ¿para qué parámetros son más probables los datos observados?</li>
+        <li><strong>Por qué el producto.</strong> Por la independencia, la densidad conjunta de los \(N_{c_i}\) vectores es el producto de las individuales.</li>
+        <li><strong>Por qué el logaritmo.</strong> Es creciente (mismo máximo) y convierte el producto en suma, mucho más fácil de derivar. Además evita números diminutos: en la figura de la diap. 55 la verosimilitud es del orden de \(10^{-7}\), mientras que su logaritmo es una curva suave con el máximo en el mismo \(\hat\theta\).</li>
+        <li><strong>Necesaria, no suficiente.</strong> El gradiente nulo también se cumple en mínimos o puntos de silla; hay que comprobar que es un máximo (o que la log-verosimilitud es cóncava, como en los ejemplos gaussianos).</li>
+      </ol>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b7-3">
+    <header><h3>Sesgo y varianza de un estimador</h3><span class="ref">Diap. 56–57 · PDF p. 65–67</span></header>
+    <div class="summary">
+      <p>Cada partición \(l\) de la base de datos da una estimación distinta \(\hat{\boldsymbol\theta}_{l,i}\). Con \(L\) particiones:</p>
+      \[B\{\hat{\boldsymbol\theta}_i\}=\boldsymbol\theta-\frac1L\sum_{l=1}^L\hat{\boldsymbol\theta}_{l,i},\qquad \mathrm{var}\{\hat\theta_i\}=\frac1L\sum_{l=1}^L\left(\hat\theta_{l,i}-\frac1L\sum_{s=1}^L\hat\theta_{s,i}\right)^2.\]
+      <p>El <strong>sesgo</strong> mide el error sistemático (diferencia entre el valor verdadero y la media de las estimaciones); la <strong>varianza</strong>, cuánto depende el resultado de la partición concreta.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Las dianas</strong> (diap. 57): poco sesgo = disparos centrados en la diana; poca varianza = disparos agrupados. Se pueden tener las cuatro combinaciones.</li>
+        <li>La media sobre las \(L\) particiones es la versión empírica de la esperanza \(E\{\hat\theta\}\). Con infinitas particiones, \(B=\theta-E\{\hat\theta\}\) y \(\mathrm{var}=E\{(\hat\theta-E\{\hat\theta\})^2\}\).</li>
+        <li><strong>Ejemplo clave</strong> (lo verás en el laboratorio): el estimador ML de la varianza, \(\hat\sigma^2_{ML}=\frac1N\sum(x_k-\hat\mu)^2\), cumple \(E\{\hat\sigma^2_{ML}\}=\frac{N-1}{N}\sigma^2\). Está sesgado, aunque el sesgo desaparece al crecer \(N\).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 65 y 67</span><p>«<em>Low BIAS</em> → cerca del <em>mean</em>»; «<em>High bias</em> → lejos del centro (más error)». En la p. 67: «<em>BIAS and variance are indicators of how good the estimation</em> [is]».</p></div>
+      <div class="note trap"><span class="lab">Signo del sesgo</span><p>La diapositiva define el sesgo como \(\theta-\text{media}(\hat\theta)\). En muchos libros se define al revés, \(E\{\hat\theta\}-\theta\). Solo cambia el signo; lo importante es si es cero o no.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="mlest">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Sesgo y varianza del estimador ML</h3></div><span class="ref small">Diap. 56–59</span></div>
+    <p class="small">Se simulan 2000 «particiones» de \(N\) muestras de \(N(\mu=0,\sigma^2=1)\). En cada una se calculan \(\hat\mu_{ML}\) y \(\hat\sigma^2_{ML}\). Los histogramas muestran cómo se reparten las estimaciones.</p>
+    <div class="controls">
+      <div class="ctl"><label for="ml-n"><span>Muestras por partición \(N\)</span><output id="ml-n-o"></output></label><input type="range" id="ml-n" min="2" max="100" step="1" value="5"></div>
+      <div class="ctl" style="justify-content:flex-end"><button class="btn" id="ml-re">Nuevas particiones</button></div>
+    </div>
+    <div class="plots">
+      <div class="plot"><canvas id="ml-c1" height="210" aria-label="Histograma de la media estimada"></canvas><div class="cap">\(\hat\mu_{ML}\): centrado en el valor verdadero (sin sesgo). Línea continua: valor verdadero; discontinua naranja: media de las 2000 estimaciones.</div></div>
+      <div class="plot"><canvas id="ml-c2" height="210" aria-label="Histograma de la varianza estimada"></canvas><div class="cap">\(\hat\sigma^2_{ML}\): su media (naranja) queda por debajo del valor verdadero 1 (continua), sobre la línea gris \((N-1)/N\).</div></div>
+    </div>
+    <div class="readout" id="ml-out"></div>
+  </div>
+
+  <article class="concept" data-cid="t2b7-4">
+    <header><h3>Propiedades del estimador ML</h3><span class="ref">Diap. 58 · PDF p. 68</span></header>
+    <div class="summary">
+      <p>(1) Es <strong>asintóticamente insesgado</strong> (muchas veces insesgado incluso con \(N\) pequeño). (2) Es <strong>asintóticamente eficiente</strong>: para \(N\) grande, su varianza alcanza el mínimo posible (cota de Cramér-Rao). Pero: (1) no garantiza el mínimo error de clasificación cuando se usa en \(f_{\bx}(\bx|\omega_i,\hat{\boldsymbol\theta}_{i,ML})\), y (2) si la pdf supuesta está lejos de la real, las estimaciones pueden ser de muy baja calidad.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>El primer «pero» es sutil. ML ajusta cada clase por separado para describir bien sus datos, no para separar clases; el error del clasificador depende sobre todo de la forma de la frontera. El segundo enlaza con la diap. 30: si el modelo generativo es malo, es preferible un método discriminativo. La varianza \(\hat\sigma^2_{ML}\) del laboratorio ilustra la propiedad 1: sesgada para \(N\) pequeño, insesgada en el límite.</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b7-5">
+    <header><h3>Ejemplos: media y covarianza gaussianas, y Bernoulli</h3><span class="ref">Diap. 59–60 · PDF p. 69–70</span></header>
+    <div class="summary">
+      \[\hat\bmu_{i,ML}=\frac{1}{N_{c_i}}\sum_{k=1}^{N_{c_i}}\bx_k,\qquad \hat\bC_{i,ML}=\frac{1}{N_{c_i}}\sum_{k=1}^{N_{c_i}}(\bx_k-\hat\bmu_{i,ML})(\bx_k-\hat\bmu_{i,ML})^T,\qquad \hat p_k=\frac{1}{N_i}\sum_{j=1}^{N_i}x_{k,j}.\]
+      <p>La media muestral, la covarianza muestral con \(\frac1N\) y la frecuencia relativa de unos.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: las tres derivaciones</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Media (\(\bC_i\) conocida).</strong> \(\ln f(D_i|\bmu)=-\frac12\sum_k(\bx_k-\bmu)^T\bC^{-1}(\bx_k-\bmu)+\text{cte}\). Gradiente: \(\sum_k\bC^{-1}(\bx_k-\bmu)=\mathbf 0\Rightarrow\sum_k\bx_k=N\bmu\Rightarrow\hat\bmu=\frac1N\sum_k\bx_k\). La log-verosimilitud es cóncava en \(\bmu\): es un máximo.</li>
+        <li><strong>Covarianza.</strong> Escribe la log-verosimilitud en función de \(\bP=\bC^{-1}\) (etiqueta mía): \(\frac N2\ln|\bP|-\frac12\tr\!\left(\bP\sum_k(\bx_k-\bmu)(\bx_k-\bmu)^T\right)+\text{cte}\), usando que un escalar es su traza y la propiedad cíclica. Con \(\nabla_{\bP}\ln|\bP|=\bP^{-1}\) y \(\nabla_{\bP}\tr(\bP\bA)=\bA^T\): \(\frac N2\bC-\frac12\sum_k(\bx_k-\bmu)(\bx_k-\bmu)^T=\mathbf 0\). Sustituyendo \(\bmu\) por \(\hat\bmu\) sale \(\hat\bC_{ML}\).</li>
+        <li><strong>Su sesgo.</strong> \(E\{\hat\bC_{ML}\}=\frac{N-1}{N}\bC\): está sesgado (por usar \(\hat\bmu\) en lugar de \(\bmu\)), pero es asintóticamente insesgado. La versión insesgada divide por \(N-1\).</li>
+        <li><strong>Bernoulli.</strong> \(\ln f(D|\mathbf p)=\sum_j\sum_k\left[x_{k,j}\ln p_k+(1-x_{k,j})\ln(1-p_k)\right]\). Derivando respecto a \(p_k\): \(\sum_j\left[\frac{x_{k,j}}{p_k}-\frac{1-x_{k,j}}{1-p_k}\right]=0\Rightarrow(1-p_k)\sum_jx_{k,j}=p_k\sum_j(1-x_{k,j})\Rightarrow\hat p_k=\frac1N\sum_jx_{k,j}\).</li>
+      </ol>
+    </div></details>
+    <div class="inner"><div class="note link"><span class="lab">Conexión con el tema 3</span><p>\(\hat\bC_{ML}\) con \(\frac1N\) es la que usaba el profesor en la p. 3 del tema 3, y la dispersión \(\bS\) de PCA es \(N\hat\bC_{ML}\).</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b7-6">
+    <header><h3>Implementación de QDA y LDA</h3><span class="ref">Diap. 61–62 · PDF p. 71–75</span></header>
+    <div class="summary">
+      <p>Con \(S_k=\{\bx_i\mid y_i=\omega_k\}\) y \(N_k=|S_k|\): \(\hat\Pr(\omega_k)=\frac{N_k}{N}\), \(\hat\bmu_k=\frac{1}{N_k}\sum_{\bx\in S_k}\bx\). <strong>QDA</strong> (covarianzas distintas): \(\hat\bC_k=\frac{1}{N_k}\sum_{\bx\in S_k}(\bx-\hat\bmu_k)(\bx-\hat\bmu_k)^T\). <strong>LDA</strong> (covarianza común): \(\hat\bC=\frac1N\sum_{k=1}^cN_k\hat\bC_k\). En el iris, LDA da fronteras rectas y QDA curvas (diap. 62).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li>\(\hat\Pr(\omega_k)=N_k/N\) es el estimador ML de las priors: es el ejercicio 9.</li>
+        <li>La covarianza común de LDA es la media de las de cada clase <em>ponderada por su tamaño</em>; equivale a \(\frac1N\sum_k\sum_{\bx\in S_k}(\bx-\hat\bmu_k)(\bx-\hat\bmu_k)^T\), la \(\bS_C/N\) del tema 3.</li>
+        <li><strong>Cuál elegir.</strong> QDA tiene \(c\) veces más parámetros de covarianza: es más flexible pero necesita más datos (bloque 8).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 72–75</span><p>Recap del 25 de septiembre: DB \((\bx_i,y_i)\) partida en <em>train/test</em>, \(\bx_i\in\mathbb{R}^2\), tres clases; \(\hat y_i=h_{\boldsymbol\theta}(\bx_j)\) «<em>as close as possible to</em> \(y_i\)»; MAP vía Bayes con el «<em>model for DATA</em>» \(f_{\bx|\omega}(\bx|\omega,\boldsymbol\theta)\), por ejemplo la campana gaussiana con \(\bmu\) y \(\bC\); fronteras \(\Pr(\omega_i|\bx)=\Pr(\omega_j|\bx)\); \(P(e)\) y MBR; y «<em>Si estoy cerca de la boundary estoy menos seguro</em>». En la copia anotada de la diap. 62 señala las «<em>Decision Boundaries</em>». En la p. 75: «(1) <em>LINEAR ⇒ we are assuming all covariance matrix is the same</em>, o usamos una sola: \(\hat\bC=\frac1c\sum_{j=1}^c\hat\bC_j\)»; «(2) <em>Quadratic Discriminant</em> ⇒ una covarianza por clase (<em>NOT LINEAR</em>)».</p></div>
+      <div class="note errata"><span class="lab">Discrepancia</span><p>En la p. 75 el profesor promedia las covarianzas con \(\frac1c\sum_j\hat\bC_j\) (media simple); la diap. 61 usa \(\frac1N\sum_kN_k\hat\bC_k\) (ponderada). Coinciden solo si todas las clases tienen el mismo número de muestras.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b7"></div>
+  <div class="pager"></div>
+</section>

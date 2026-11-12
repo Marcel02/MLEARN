@@ -1,0 +1,77 @@
+<section class="view" id="v-b4" data-sec="b4">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 4 · Apartado 2.1.4 del PDF</div>
+    <h1>Neyman-Pearson y minimax</h1>
+    <p class="lede">Qué hacer cuando no conocemos las probabilidades a priori: fijar la falsa alarma y maximizar la detección, o protegerse frente a las peores priors.</p>
+    <div class="meta"><span class="chip">Diap. 23–28</span><span class="chip">PDF p. 25–31</span><span class="chip">incluye manuscrita p. 28</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b4-1">
+    <header><h3>Sin priors: probabilidad de detección y de falsa alarma</h3><span class="ref">Diap. 23–24 · PDF p. 25–26</span></header>
+    <div class="summary">
+      <p>En algunas situaciones <strong>no tenemos acceso a las priors</strong> \(\Pr(\omega_i)\): radar pulsado (\(x(n)=A\,p(n-n_0)+w(n)\)), detección de barcos en imágenes de satélite. Con \(\omega_1\): no hay blanco y \(\omega_2\): hay blanco, se definen</p>
+      \[P_D\triangleq\Pr(\text{decidir }\omega_2\text{ cuando }\omega_2)=\int_{R_2}f_{\bx|\omega_2}(\bx|\omega_2)\,d\bx,\qquad P_{FA}\triangleq\Pr(\text{decidir }\omega_2\text{ cuando }\omega_1)=\int_{R_2}f_{\bx|\omega_1}(\bx|\omega_1)\,d\bx.\]
+      <p>El criterio de <strong>Neyman-Pearson (NP)</strong> elige la región \(R_2\) resolviendo \(\ R_2=\arg\max_{R_2}P_D\ \) sujeto a \(\ P_{FA}\le\alpha\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Por qué no basta MAP.</strong> En radar, la prior de «hay un avión» es desconocida y además cambia con el escenario. Lo que sí se puede fijar es cuántas falsas alarmas se toleran.</li>
+        <li><strong>El conflicto.</strong> Agrandar \(R_2\) sube \(P_D\) y también \(P_{FA}\); encogerla baja las dos. NP fija el máximo aceptable \(\alpha\) de falsas alarmas y, con esa restricción, busca la mayor detección posible.</li>
+        <li>Las dos integrales son sobre \(R_2\): \(P_D\) con la densidad de \(\omega_2\), \(P_{FA}\) con la de \(\omega_1\).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 25–26</span><p>Pone como ejemplo la detección de aviones. Dibuja en 1D \(f(\bx|\omega_1)\) (verde) y \(f(\bx|\omega_2)\) (rosa) con un umbral \(\gamma'\): \(P_{FA}\) es la cola verde a la derecha del umbral. Mover la frontera hacia la izquierda sube \(P_D\), pero también \(P_{FA}\); por eso escribe el Lagrangiano \(\mathcal L=P_D-\gamma(P_{FA}-\alpha)\), con \(\gamma\) el «<em>multiplier (variable to be optimized)</em>», «<em>to optimize this function</em>».</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b4-2">
+    <header><h3>Teorema de Neyman-Pearson: un test de cociente de verosimilitudes</h3><span class="ref">Diap. 25 · PDF p. 27 + manuscrita p. 28</span></header>
+    <div class="summary">
+      <p>Dado \(\bx\), el detector NP decide \(\omega_2\) si</p>
+      \[\frac{f_{\bx|\omega_2}(\bx|\omega_2)}{f_{\bx|\omega_1}(\bx|\omega_1)}\ \underset{\omega_1}{\overset{\omega_2}{\gtrless}}\ \gamma,\]
+      <p>con \(\gamma\) elegido para que se cumpla la restricción: \(P_{FA}=\int_{R_2}f_{\bx|\omega_1}(\bx|\omega_1)d\bx=\alpha\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la demostración</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Lagrangiano.</strong> \(\mathcal L=P_D-\gamma(P_{FA}-\alpha)=\int_{R_2}f_{\bx|\omega_2}d\bx-\gamma\left(\int_{R_2}f_{\bx|\omega_1}d\bx-\alpha\right)\).</li>
+        <li><strong>Juntar las integrales.</strong> \(\mathcal L=\int_{R_2}\left(f_{\bx|\omega_2}(\bx|\omega_2)-\gamma f_{\bx|\omega_1}(\bx|\omega_1)\right)d\bx+\gamma\alpha\).</li>
+        <li><strong>Maximizar respecto a la región.</strong> \(\gamma\alpha\) es constante. La integral es máxima si \(R_2\) contiene exactamente los \(\bx\) donde el integrando es positivo: \(f_{\bx|\omega_2}-\gamma f_{\bx|\omega_1}\ge0\). Añadir un punto con integrando negativo restaría; dejar fuera uno positivo, también.</li>
+        <li><strong>Forma de cociente.</strong> Dividiendo por \(f_{\bx|\omega_1}&gt;0\): decidir \(\omega_2\) si \(f_{\bx|\omega_2}/f_{\bx|\omega_1}\ge\gamma\). El umbral \(\gamma\) se ajusta para que \(P_{FA}=\alpha\) (cuanto mayor \(\gamma\), menor \(R_2\) y menor \(P_{FA}\)).</li>
+        <li><strong>Ejemplo gaussiano en 1D</strong> (misma varianza, \(\mu_2&gt;\mu_1\)). El cociente es creciente en \(x\), así que el test equivale a \(x\gtrless\gamma'\). Con \(P_{FA}=Q\!\left(\frac{\gamma'-\mu_1}{\sigma}\right)=\alpha\): \(\gamma'=\mu_1+\sigma Q^{-1}(\alpha)\) y \(P_D=Q\!\left(\frac{\gamma'-\mu_2}{\sigma}\right)=Q\!\left(Q^{-1}(\alpha)-D'\right)\), con \(D'=\frac{\mu_2-\mu_1}{\sigma}\).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico (comprobado en código)</span><p>\(\alpha=0{,}05\Rightarrow Q^{-1}(0{,}05)=1{,}645\). Con \(D'=2\): \(P_D=Q(1{,}645-2)=Q(-0{,}355)=0{,}639\). Con \(D'=3\): \(P_D=Q(-1{,}355)=0{,}912\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 27–28</span><p>Tacha «\(\omega_1\)» en el enunciado del teorema y escribe \(\omega_2\). En la p. 28 lo resume: «<em>Resumen criterio NP</em>: \(\frac{f_{\bx|\omega_2}(\bx|\omega_2)}{f_{\bx|\omega_1}(\bx|\omega_1)}\gtrless\gamma\); <em>saco</em> \(\gamma'\) <em>de</em> \(P_{FA}\le\alpha\Rightarrow\gamma'\)».</p></div>
+      <div class="note errata"><span class="lab">Erratas en la diap. 25</span><p>El enunciado dice «<em>the NP detector decides</em> \(\omega_1\) <em>if</em> \(f_2/f_1\ge\gamma\)»: es \(\omega_2\), como corrige el profesor. La demostración dice «<em>Define \(R_1\) as the region where \(\omega_1\) is decided</em>» y escribe \(\mathcal L(R_1,\gamma)\), pero todas las integrales son sobre \(R_2\) (da igual porque \(R_2\) es el complemento de \(R_1\), pero confunde). «<em>Theorem 3.4</em>» es numeración de otro documento.</p></div>
+      <div class="note link"><span class="lab">Conexión</span><p>Pruébalo en el laboratorio del bloque 9: el botón «Aplicar NP» coloca el umbral con \(P_{FA}=\alpha\). El ejercicio 13 de la hoja (no asignado) es justo un detector NP de radar.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b4-3">
+    <header><h3>Minimax: un riesgo que no depende de las priors</h3><span class="ref">Diap. 26–28 · PDF p. 29–31</span></header>
+    <div class="summary">
+      <p>Se usa cuando las priors no se conocen o cambian con el tiempo de forma desconocida. <strong>Minimiza el peor riesgo total</strong>, eligiendo las regiones de forma que el riesgo no dependa de \(\Pr(\omega_1)\):</p>
+      \[\mathcal R_{\text{mini-max}}=\pi_{22}+(\pi_{12}-\pi_{22})\int_{R_1}f_{\bx|\omega_2}(\bx|\omega_2)\,d\bx.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la derivación de la diap. 27</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Riesgo por regiones.</strong> \(\mathcal R=\int_{R_1}C(\omega_1|\bx)f(\bx)d\bx+\int_{R_2}C(\omega_2|\bx)f(\bx)d\bx\). Sustituyendo \(C\) y \(\Pr(\omega_j|\bx)f(\bx)=\Pr(\omega_j)f_{\bx|\omega_j}\): \(\mathcal R=\int_{R_1}(\pi_{11}\Pr(\omega_1)f_1+\pi_{12}\Pr(\omega_2)f_2)d\bx+\int_{R_2}(\pi_{21}\Pr(\omega_1)f_1+\pi_{22}\Pr(\omega_2)f_2)d\bx\) (\(f_i\): etiqueta mía para \(f_{\bx|\omega_i}\)).</li>
+        <li><strong>Dejarlo todo en función de \(\Pr(\omega_1)\).</strong> Usa \(\Pr(\omega_2)=1-\Pr(\omega_1)\) y \(\int_{R_1}f_1=1-\int_{R_2}f_1\), \(\int_{R_2}f_2=1-\int_{R_1}f_2\). Agrupando:
+          \[\mathcal R=\pi_{22}+(\pi_{12}-\pi_{22})\!\int_{R_1}\!f_2+\Pr(\omega_1)\Big[(\pi_{11}-\pi_{22})+(\pi_{21}-\pi_{11})\!\int_{R_2}\!f_1-(\pi_{12}-\pi_{22})\!\int_{R_1}\!f_2\Big].\]
+          (Comprobado numéricamente contra el cálculo directo.)</li>
+        <li><strong>Lectura.</strong> Con las regiones fijas, \(\mathcal R\) es una función <em>lineal</em> de \(\Pr(\omega_1)\). Si las priors reales son otras distintas de las usadas al diseñar, el riesgo puede dispararse por la pendiente.</li>
+        <li><strong>Idea minimax.</strong> Elegir \(R_1,R_2\) para que el corchete valga 0: pendiente nula, \(\mathcal R\) igual para cualquier prior. Queda \(\mathcal R_{\text{mini-max}}\).</li>
+        <li><strong>La figura de la diap. 28.</strong> El riesgo de Bayes mínimo en función de \(\Pr(\omega_1)\) es una curva cóncava, nula en los extremos (si una clase es segura no hay error). Con regiones optimizadas para un prior concreto (0,25 en la figura) el riesgo sigue la recta tangente en ese punto, que se dispara para otros priors. La solución minimax es la tangente horizontal, en el máximo de la curva: es la peor prior, y con ella el riesgo queda acotado por ese máximo.</li>
+        <li><strong>Con costes 0–1</strong> (\(\pi_{ii}=0\), \(\pi_{ij}=1\)), la condición del corchete es \(\int_{R_2}f_1=\int_{R_1}f_2\): los dos errores condicionados son iguales.</li>
+      </ol>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b4"></div>
+  <div class="pager"></div>
+</section>

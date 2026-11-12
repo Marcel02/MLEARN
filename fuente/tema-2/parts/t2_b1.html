@@ -1,0 +1,105 @@
+<section class="view" id="v-b1" data-sec="b1">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 1 · Apartado 2.1.1 del PDF</div>
+    <h1>Introducción: el enfoque bayesiano</h1>
+    <p class="lede">Qué es un clasificador, por qué se plantea en términos de probabilidades y cuáles son las cuatro piezas de la fórmula de Bayes.</p>
+    <div class="meta"><span class="chip">Diap. 1–12</span><span class="chip">PDF p. 1–12</span><span class="chip">incluye anotaciones p. 4, 6, 7, 11</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b1-1">
+    <header><h3>Objetivo: una regla \(\hat y=h_{\boldsymbol\theta}(\bx)\) y sus regiones de decisión</h3><span class="ref">Diap. 1–4 · PDF p. 1–4</span></header>
+    <div class="summary">
+      <p>Partimos de un conjunto etiquetado \(D=\{(\bx_1,y_1),\dots,(\bx_N,y_N)\}\), con vectores de características \(\bx_i\in\mathbb{R}^d\) y etiquetas \(y_i\in\mathcal Y=\{\omega_1,\dots,\omega_c\}\). Queremos una regla \(\hat y=h_{\boldsymbol\theta}(\bx)\) que prediga bien la clase de vectores nuevos. Clasificación <strong>binaria</strong> si \(|\mathcal Y|=2\) (spam/no spam) y <strong>multiclase</strong> si \(|\mathcal Y|&gt;2\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Regiones de decisión:</strong> zonas del espacio de características donde todos los puntos se asignan a la misma clase. Una regla de clasificación <em>es</em> un reparto de \(\mathbb{R}^d\) en regiones \(R_1,\dots,R_c\) que no se solapan y lo cubren entero.</li>
+        <li><strong>Fronteras de decisión:</strong> los puntos que separan regiones.</li>
+        <li><strong>Clasificadores lineales:</strong> sus fronteras son hiperplanos de dimensión \(d-1\) (una recta en 2D, un plano en 3D).</li>
+        <li>La figura del <em>iris dataset</em> compara dos clasificadores sobre los mismos datos: uno con fronteras curvas e irregulares y otro lineal. La pregunta de todo el tema es cómo elegir esas fronteras de forma óptima.</li>
+        <li>\(\boldsymbol\theta\) son los parámetros del modelo que se ajustan con los datos de entrenamiento (diap. 11).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 4</span><p>Junto a la figura de la derecha del iris anota «<em>linear classif.</em>»: es la de fronteras rectas.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b1-2">
+    <header><h3>¿Por qué un enfoque probabilístico?</h3><span class="ref">Diap. 5 · PDF p. 5</span></header>
+    <div class="summary">
+      <p>Por dos razones: (1) tenemos <strong>representaciones incompletas</strong> de la realidad (por ejemplo, no conocemos el ADN de los peces capturados, solo unas medidas), y (2) hay problemas <strong>intrínsecamente aleatorios</strong> (los dígitos manuscritos: el mismo número se escribe de muchas formas).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>En los dos casos, un mismo \(\bx\) puede venir de clases distintas. No existe una función determinista perfecta de \(\bx\) a la clase, y lo más que podemos hacer es cuantificar cuánto se parece \(\bx\) a cada clase. Eso es una probabilidad. A partir de aquí, decidir bien significa decidir con el menor error (o coste) <em>medio</em>.</p>
+    </div></details>
+    <div class="inner"><div class="note errata"><span class="lab">Numeración</span><p>La diapositiva se titula «1.1 INTRODUCTION», pero en el índice (diap. 2) es el apartado 2.1.1. Lo mismo pasa con «1.2 MAP», «1.3», … y con «2 PERFORMANCE INDICATORS», que en el índice es el 2.2.</p></div></div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b1-3">
+    <header><h3>Prior, verosimilitud, posterior y evidencia</h3><span class="ref">Diap. 6–7 · PDF p. 6–7</span></header>
+    <div class="summary">
+      <p>El estado de la naturaleza es una variable aleatoria con \(c\) valores \(\omega_1,\dots,\omega_c\). Con las probabilidades a priori \(\Pr(\omega_j)\) y las densidades condicionadas \(f_{\bx|\omega_j}(\bx|\omega_j)\), la <strong>fórmula de Bayes</strong> da la probabilidad a posteriori:</p>
+      \[\Pr(\omega_j|\bx)=\frac{f_{\bx|\omega_j}(\bx|\omega_j)\Pr(\omega_j)}{f_{\bx}(\bx)},\qquad f_{\bx}(\bx)=\sum_{j=1}^cf_{\bx|\omega_j}(\bx|\omega_j)\Pr(\omega_j).\]
+      <p><strong>POSTERIOR = LIKELIHOOD × PRIOR / EVIDENCE.</strong></p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: de dónde sale la fórmula</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Densidad conjunta.</strong> La densidad de «clase \(\omega_j\) y vector \(\bx\)» se puede escribir de dos maneras: primero la clase y luego \(\bx\) dada la clase, \(f_{\bx|\omega_j}(\bx|\omega_j)\Pr(\omega_j)\); o primero \(\bx\) y luego la clase dado \(\bx\), \(\Pr(\omega_j|\bx)f_{\bx}(\bx)\).</li>
+        <li><strong>Igualar y despejar.</strong> \(\Pr(\omega_j|\bx)f_{\bx}(\bx)=f_{\bx|\omega_j}(\bx|\omega_j)\Pr(\omega_j)\Rightarrow\Pr(\omega_j|\bx)=\dfrac{f_{\bx|\omega_j}(\bx|\omega_j)\Pr(\omega_j)}{f_{\bx}(\bx)}\).</li>
+        <li><strong>La evidencia.</strong> Por probabilidad total, \(f_{\bx}(\bx)\) es la suma de las conjuntas sobre todas las clases: \(\sum_jf_{\bx|\omega_j}(\bx|\omega_j)\Pr(\omega_j)\). Es la misma para todas las clases: solo normaliza.</li>
+        <li><strong>Consecuencia.</strong> Las posteriores suman 1: \(\sum_j\Pr(\omega_j|\bx)=\frac{\sum_jf(\bx|\omega_j)\Pr(\omega_j)}{f_{\bx}(\bx)}=1\).</li>
+        <li><strong>Significado de cada término</strong> (diap. 7): posterior = probabilidad de un estado de la naturaleza dado el vector observado; verosimilitud = caracterización de los datos para una clase dada; prior = conocimiento previo de la clase; evidencia = factor de escala independiente de la clase.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico 1D (comprobado en código)</span>
+        <p>\(\Pr(\omega_1)=0{,}7\), \(\Pr(\omega_2)=0{,}3\), \(f(x|\omega_1)=N(0,1)\), \(f(x|\omega_2)=N(2,1)\). En \(x=1{,}5\): \(f(1{,}5|\omega_1)=0{,}1295\), \(f(1{,}5|\omega_2)=0{,}3521\).</p>
+        <p>Numeradores: \(0{,}1295\cdot0{,}7=0{,}0907\) y \(0{,}3521\cdot0{,}3=0{,}1056\). Evidencia \(=0{,}1963\). Posteriores: \(\Pr(\omega_1|x)=0{,}462\), \(\Pr(\omega_2|x)=0{,}538\). Aunque \(\omega_1\) es más probable a priori, la observación inclina la balanza hacia \(\omega_2\).</p>
+        <p>En \(x=1\) las dos verosimilitudes valen lo mismo (\(0{,}2420\)) y las posteriores coinciden con las priors: la observación no aporta información (diap. 15).</p>
+      </div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 6–7</span>
+        <p>Rodea el dataset «\(\bx_i\in\mathbb{R}^d\), \(y_i\in\{\omega_1,\dots\}\)». Sobre las densidades condicionadas: si \(f_{\bx|\omega_i}\) es <em>known</em>, se usa el modelo; si no, «<em>we try to</em>» estimarla (bloque 7). Escribe \(\sum_i\Pr(\omega_i|\bx)=1\) y, en azul: «<em>Pr can be related to other probabilities using the Bayesian theory</em>», con la fórmula de Bayes. En la p. 7 etiqueta cada término (\(\Pr(\omega_j|\bx)\) «<em>reliability</em>», \(f_{\bx|\omega_j}(\bx|\omega_j)\), \(\Pr(\omega_j)\), \(f_{\bx}(\bx)\)) y subraya que la verosimilitud es la «caracterización de los datos para una clase dada».</p>
+      </div>
+      <div class="note trap"><span class="lab">Error habitual</span><p>Confundir \(f(\bx|\omega_j)\) con \(\Pr(\omega_j|\bx)\). La primera es una densidad en \(\bx\) (integra 1 sobre \(\bx\), puede valer más que 1); la segunda es una probabilidad sobre las clases (suma 1 sobre \(j\)).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b1-4">
+    <header><h3>Dos interpretaciones de la probabilidad y qué estamos calculando</h3><span class="ref">Diap. 8–10 · PDF p. 8–10</span></header>
+    <div class="summary">
+      <p>\(\Pr(\omega_j)\) se interpreta como <strong>frecuencia</strong> (la del décimo de lotería: cuántas veces aparece cada clase); \(\Pr(\omega_j|\bx)\) como <strong>fiabilidad o creencia</strong> (lo seguros que estamos de la clase tras ver \(\bx\)). El esquema de la diap. 9: la naturaleza elige \(\omega_j\), nosotros solo vemos \(\bx\), y con el modelo \(f_{\bx}(\bx|\omega_j)\) y las priors calculamos \(\Pr(\omega_j|\bx)\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <p>La diap. 10 da el contexto histórico: el ensayo de Thomas Bayes (1702–1761) se publicó en 1763, dos años después de su muerte, y trata de inferir las causas a partir de los efectos observados (más tarde lo formuló con precisión Laplace). Kant (1724–1804) discute en la <em>Crítica de la razón pura</em> (1781) el conocimiento <em>a priori</em>, no basado en la experiencia. En nuestro problema, la «causa» es la clase y el «efecto» es el vector medido: la regla de Bayes invierte el sentido del modelo.</p>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b1-5">
+    <header><h3>Etapas del diseño de un clasificador supervisado</h3><span class="ref">Diap. 11–12 · PDF p. 11–12</span></header>
+    <div class="summary">
+      <p>Preprocesado → extracción de características → recogida de datos, que se parten en una base de <strong>entrenamiento</strong> y otra de <strong>test</strong> → selección de características → elección del algoritmo ⇄ entrenamiento → test → clasificador. Con flechas de vuelta: si el test sale mal, se revisan pasos anteriores.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li>El clasificador asigna una categoría a cada vector de características.</li>
+        <li><strong>Entrenar</strong> es ajustar parámetros con los vectores de entrenamiento.</li>
+        <li>La <strong>evaluación</strong> depende del criterio elegido: mínimo error de clasificación, mínimo riesgo, etc. Es justo lo que distinguen los bloques 2–4.</li>
+        <li>La <strong>dificultad</strong> depende de la variabilidad: baja variabilidad entre clases y alta dentro de cada clase hacen el problema difícil.</li>
+        <li>La <strong>eficiencia computacional</strong> pesa distinto en entrenamiento y en test.</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 11</span><p>Numera «(1)» la base de entrenamiento y «(2)» la de test, y junto a la de entrenamiento escribe «<em>obtain model parameters</em> \(\boldsymbol\theta\)».</p></div>
+      <div class="note link"><span class="lab">Conexión con el tema 3</span><p>La etapa «feature selection» es el tema 3 entero. Y «baja variabilidad entre clases, alta dentro de cada clase» es lo que miden \(\bS_B\) y \(\bS_C\) en MDA: el criterio de MDA busca justo lo contrario.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b1"></div>
+  <div class="pager"></div>
+</section>

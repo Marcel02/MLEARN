@@ -1,0 +1,57 @@
+<section class="view" id="v-b8" data-sec="b8">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 8 · Apartados 2.1.8 y 2.1.9 del PDF</div>
+    <h1>Pocos datos: RDA y Naive Bayes</h1>
+    <p class="lede">Qué hacer cuando no hay datos suficientes para estimar covarianzas completas: regularizarlas, o suponer características independientes.</p>
+    <div class="meta"><span class="chip">Diap. 63–65</span><span class="chip">PDF p. 76–79</span><span class="chip">incluye manuscrita p. 77</span></div>
+  </div>
+
+  <article class="concept" data-cid="t2b8-1">
+    <header><h3>Análisis discriminante regularizado (RDA)</h3><span class="ref">Diap. 63 · PDF p. 76–77</span></header>
+    <div class="summary">
+      <p>Con pocos datos: si \(d&gt;N_k\) para alguna clase, \(\hat\bC_k\) es singular y no se puede aplicar QDA; si \(d&gt;N\), tampoco LDA. RDA combina las estimaciones:</p>
+      \[\hat\bC_k(\alpha)=\alpha\hat\bC_k+(1-\alpha)\hat\bC,\quad\alpha\in[0,1],\qquad \hat\bC_k(\alpha,\gamma)=(1-\gamma)\hat\bC_k(\alpha)+\gamma\hat\sigma^2\mathbf I,\quad \hat\sigma^2=\tfrac1d\tr\!\left[\hat\bC_k(\alpha)\right].\]
+      <p>La primera resuelve el primer problema; la segunda, el segundo.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Por qué se hace singular</strong> (apunte p. 77). \(\hat\bC=\frac1N\sum_j\bz_j\bz_j^T=\frac1N[\bz_1\cdots\bz_N][\bz_1\cdots\bz_N]^T\), con \(\bz_j=\bx_j-\hat\bmu\). Sus columnas son combinaciones lineales de los \(N\) vectores \(\bz_j\), y como estos suman \(\mathbf 0\), generan como mucho \(N-1\) dimensiones. Si \(N-1&lt;d\), algún autovalor es 0 y no existe \(\hat\bC^{-1}\).</li>
+        <li><strong>Primera regularización.</strong> \(\alpha=1\) es QDA puro y \(\alpha=0\) es LDA puro (covarianza común). Valores intermedios mezclan la covarianza de la clase (poco fiable si \(N_k\) es pequeño) con la común (estimada con todos los datos).</li>
+        <li><strong>Segunda regularización.</strong> Mezclar con \(\hat\sigma^2\mathbf I\) suma \(\gamma\hat\sigma^2\) a todos los autovalores: si \(\hat\bC_k(\alpha)\) tiene autovalores \(\lambda_i\ge0\), los de \(\hat\bC_k(\alpha,\gamma)\) son \((1-\gamma)\lambda_i+\gamma\hat\sigma^2&gt;0\) para \(\gamma&gt;0\). Matriz invertible siempre.</li>
+        <li><strong>Por qué \(\hat\sigma^2=\frac1d\tr\).</strong> La traza es la suma de autovalores: \(\hat\sigma^2\) es la varianza media por dimensión, así que la mezcla conserva la «escala» de la matriz.</li>
+        <li>\(\alpha\) y \(\gamma\) son hiperparámetros: se ajustan validando.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(\hat\bC_k(\alpha)=\begin{pmatrix}2&0\\0&0\end{pmatrix}\) (singular). \(\hat\sigma^2=\frac12\cdot2=1\). Con \(\gamma=0{,}1\): \(\hat\bC_k(\alpha,\gamma)=\begin{pmatrix}1{,}9&0\\0&0{,}1\end{pmatrix}\), invertible.</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 77</span><p>QDA necesita \(\hat\bmu_i,\hat\bC_i^{-1}\) (\(i=1\dots c\)); LDA, \(\hat\bmu_i,\hat\bC^{-1}\). Las matrices «<em>may be singular</em>»: (1) no existe \(\bC^{-1}\); (2) al menos un \(\lambda_k=0\); (3) las columnas de \(\bC\) no son linealmente independientes (tres formas de decir lo mismo). Concluye «<em>at least N = d, can't have N &lt; d</em>» y, en rosa, «<em>If N &lt; d we cannot have d indep. columns and</em> ∄\(\bC^{-1}\)».</p></div>
+      <div class="note errata"><span class="lab">Matiz sobre «d &gt; N»</span><p>Como los vectores centrados suman cero, el rango es como mucho \(N-1\) (o \(N_k-1\) por clase). La matriz ya es singular con \(N\le d\), no solo con \(N&lt;d\): hace falta \(N\ge d+1\). El mismo matiz que en el tema 3.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t2b8-2">
+    <header><h3>Clasificador Naive Bayes</h3><span class="ref">Diap. 64–65 · PDF p. 78–79</span></header>
+    <div class="summary">
+      <p>Supone que las características son independientes dentro de cada clase:</p>
+      \[f(\bx|\omega)=\prod_{j=1}^df(x_j|\omega)\quad\Rightarrow\quad g_i(\bx)=\ln\Pr(\omega_i)+\sum_{j=1}^d\log f(x_j|\omega_i).\]
+      <p>Reduce drásticamente los parámetros: basta estimar las priors como frecuencias y cada densidad unidimensional por separado. <strong>Ejemplo 1</strong>: características binarias (Bernoulli) → discriminante lineal. <strong>Ejemplo 2</strong>: características reales gaussianas → QDA con covarianzas diagonales.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Cuánto ahorra.</strong> Con gaussianas, una covarianza completa tiene \(d(d+1)/2\) parámetros por clase; la diagonal, \(d\). Con \(d=100\): 5050 frente a 100.</li>
+        <li><strong>Ejemplo 1.</strong> \(f(x_j|\omega_i)=p_{ij}^{x_j}(1-p_{ij})^{1-x_j}\), con \(p_{ij}\) la probabilidad de un 1 en la característica \(j\) para la clase \(i\): \(g_i(\bx)=\ln\Pr(\omega_i)+\sum_j\left[x_j\log p_{ij}+(1-x_j)\log(1-p_{ij})\right]\), lineal en \(\bx\). Los \(p_{ij}\) se estiman con frecuencias de los datos (ML, diap. 60). Es el modelo del ejercicio 5.</li>
+        <li><strong>Ejemplo 2.</strong> Cada \(f(x_j|\omega_i)\) gaussiana con su \(\mu_{ij}\) y \(\sigma^2_{ij}\): el producto es una gaussiana con covarianza diagonal \(\mathrm{diag}(\sigma^2_{i1},\dots,\sigma^2_{id})\), distinta por clase. Es QDA con diagonales; si además la diagonal fuera común, sería el caso 2 del bloque 6 (lineal).</li>
+        <li><strong>El precio.</strong> Si las características están correladas, el modelo es incorrecto. Aun así, funciona bien a menudo porque para clasificar basta con que la frontera salga razonable.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 78</span><p>«→ <em>assumes independency</em>»; «→ <em>for the gaussian case</em>…» (cortado: en el caso gaussiano, covarianzas diagonales).</p></div>
+      <div class="note errata"><span class="lab">Errata menor</span><p>La diap. 65 escribe «Benoulli»: es Bernoulli.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b8"></div>
+  <div class="pager"></div>
+</section>

@@ -1,0 +1,323 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+/* ================= utilidades ================= */
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+const KATEX_MACROS = {
+  "\\bx":"\\mathbf{x}","\\bz":"\\mathbf{z}","\\by":"\\mathbf{y}","\\bw":"\\mathbf{w}","\\bW":"\\mathbf{W}","\\bm":"\\mathbf{m}",
+  "\\bS":"\\mathbf{S}","\\bC":"\\mathbf{C}","\\bX":"\\mathbf{X}","\\bU":"\\mathbf{U}","\\bV":"\\mathbf{V}","\\bI":"\\mathbf{I}",
+  "\\be":"\\mathbf{e}","\\bu":"\\mathbf{u}","\\bP":"\\mathbf{P}","\\bA":"\\mathbf{A}","\\bB":"\\mathbf{B}","\\bQ":"\\mathbf{Q}",
+  "\\bD":"\\mathbf{D}","\\bM":"\\mathbf{M}","\\bv":"\\mathbf{v}","\\ba":"\\mathbf{a}",
+  "\\balpha":"\\boldsymbol{\\alpha}","\\bmu":"\\boldsymbol{\\mu}","\\bLambda":"\\boldsymbol{\\Lambda}","\\bGamma":"\\boldsymbol{\\Gamma}",
+  "\\bSigma":"\\boldsymbol{\\Sigma}","\\tr":"\\operatorname{tr}","\\rank":"\\operatorname{rank}"
+};
+function renderMath(el){
+  if (!el || !window.renderMathInElement) return;
+  try {
+    renderMathInElement(el, {delimiters:[{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],
+      throwOnError:false, macros:KATEX_MACROS, strict:false});
+  } catch(e){ console.warn(e); }
+}
+function fmt(x, n=3){ if (!isFinite(x)) return '∞'; return x.toFixed(n).replace('.', ','); }
+function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+/* ================= tema ================= */
+const root = document.documentElement;
+const hostTheme = root.getAttribute('data-theme');
+const THEMES = ['auto','light','dark'];
+const THEME_LBL = {auto:'auto', light:'claro', dark:'oscuro'};
+let theme = 'auto';
+try { theme = localStorage.getItem('mlearn-t3-theme') || 'auto'; } catch(e){}
+function applyTheme(){
+  if (theme === 'auto') { if (hostTheme) root.setAttribute('data-theme', hostTheme); else root.removeAttribute('data-theme'); }
+  else root.setAttribute('data-theme', theme);
+  $('#themeBtn').innerHTML = '<span class="tl">Tema: </span>' + THEME_LBL[theme];
+  redrawAll();
+}
+$('#themeBtn').addEventListener('click', () => {
+  theme = THEMES[(THEMES.indexOf(theme)+1) % 3];
+  try { localStorage.setItem('mlearn-t3-theme', theme); } catch(e){}
+  applyTheme();
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => redrawAll());
+new MutationObserver(() => redrawAll()).observe(root, {attributes:true, attributeFilter:['data-theme']});
+
+/* ================= estado y guardado ================= */
+const LS_KEY = 'mlearn-t2-progress-v1';
+function emptyState(){ return {v:1, read:{}, quiz:{}, flash:{}, ex:{}, hints:{}, updatedAt:0}; }
+let state = emptyState();
+try { const raw = localStorage.getItem(LS_KEY); if (raw) state = Object.assign(emptyState(), JSON.parse(raw)); } catch(e){}
+let cloudRef = null, cloudBusy = false, cloudDirty = false, cloudTimer = null;
+function setSync(t){ const el = $('#syncState'); if (el) el.textContent = t; }
+function save(){
+  state.updatedAt = Date.now();
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
+  if (cloudRef){ cloudDirty = true; clearTimeout(cloudTimer); cloudTimer = setTimeout(pushCloud, 1200); }
+  updateProgress();
+}
+async function pushCloud(){
+  if (!cloudRef || cloudBusy) return;
+  cloudBusy = true; cloudDirty = false;
+  try { await cloudRef.set({json: JSON.stringify(state), updatedAt: state.updatedAt}); setSync('Guardado en tu cuenta'); }
+  catch(e){ setSync('Guardado en este navegador'); if (e && e.code === 'invalid_argument') cloudRef = null; }
+  cloudBusy = false;
+  if (cloudDirty) pushCloud();
+}
+function newer(a, b){ if (!a) return b; if (!b) return a; return (a.t||0) >= (b.t||0) ? a : b; }
+function mergeStates(a, b){
+  const m = emptyState();
+  for (const k of ['read']) m[k] = Object.assign({}, a[k], b[k]);
+  for (const k of ['quiz','flash','ex','hints']){
+    const keys = new Set([...Object.keys(a[k]||{}), ...Object.keys(b[k]||{})]);
+    keys.forEach(id => { m[k][id] = newer((a[k]||{})[id], (b[k]||{})[id]); });
+  }
+  m.updatedAt = Math.max(a.updatedAt||0, b.updatedAt||0);
+  return m;
+}
+async function initCloud(){
+  try {
+    if (!window.claude || typeof window.claude.use !== 'function') return;
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!db || !user) return;
+    const uid = await user.id();
+    if (!uid) return;
+    const ref = db.doc('data/users/' + uid + '/progress');
+    const snap = await ref.get();
+    cloudRef = ref;
+    if (snap.exists){
+      let remote = emptyState();
+      try { remote = Object.assign(emptyState(), JSON.parse(snap.data().json || '{}')); } catch(e){}
+      const merged = mergeStates(state, remote);
+      const changed = JSON.stringify(merged) !== JSON.stringify(state);
+      state = merged;
+      try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
+      if (changed) refreshAllUI();
+      if (JSON.stringify(merged) !== JSON.stringify(remote)) pushCloud();
+    } else if (state.updatedAt) { pushCloud(); }
+    setSync('Guardado en tu cuenta');
+  } catch(e){ setSync('Guardado en este navegador'); }
+}
+
+/* ================= navegación ================= */
+const nav = $('#nav');
+function buildNav(){
+  let html = '', grp = '';
+  SECTIONS.forEach(s => {
+    if (s.grp !== grp){ grp = s.grp; html += `<h4>${grp}</h4>`; }
+    html += `<a href="#${s.id}" data-id="${s.id}"><span class="n">${s.n}</span><span class="t">${s.t}</span><span class="bar"><i></i></span><span class="meta"></span></a>`;
+  });
+  nav.innerHTML = html;
+}
+function currentId(){
+  const h = (location.hash || '').replace('#','');
+  return SECTIONS.some(s => s.id === h) ? h : 'inicio';
+}
+const shown = new Set();
+function show(id){
+  $$('.view').forEach(v => v.classList.toggle('on', v.dataset.sec === id));
+  $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.id === id));
+  document.body.classList.remove('nav-open'); $('#menuBtn').setAttribute('aria-expanded','false');
+  window.scrollTo(0, 0);
+  if (!shown.has(id)){ shown.add(id); initVizIn($('#v-' + id)); }
+  if (id === 'repaso') buildRepaso();
+  if (typeof onShowSection === 'function') onShowSection(id);
+  redrawAll();
+}
+window.addEventListener('hashchange', () => show(currentId()));
+$('#menuBtn').addEventListener('click', () => {
+  const open = !document.body.classList.contains('nav-open');
+  document.body.classList.toggle('nav-open', open);
+  $('#menuBtn').setAttribute('aria-expanded', String(open));
+});
+function buildPagers(){
+  $$('.view').forEach(v => {
+    const pg = $('.pager', v); if (!pg) return;
+    const i = SECTIONS.findIndex(s => s.id === v.dataset.sec);
+    const p = SECTIONS[i-1], n = SECTIONS[i+1];
+    pg.innerHTML = (p ? `<a href="#${p.id}"><small>Anterior</small>${p.n !== '·' ? p.n + '. ' : ''}${p.t}</a>` : '<span></span>') +
+                   (n ? `<a class="nx" href="#${n.id}"><small>Siguiente</small>${n.n}. ${n.t}</a>` : '');
+  });
+}
+
+/* ================= conceptos (marcar como entendido) ================= */
+function initConcepts(){
+  $$('.view').forEach(v => { const s = SECTIONS.find(x => x.id === v.dataset.sec); if (!s || !/^\d+$/.test(s.n)) return;
+    $$('.concept', v).forEach((c, i) => { const h = $('header h3', c); if (h && !$('.cnum', h)) h.insertAdjacentHTML('afterbegin', `<span class="cnum">${s.n}.${i+1}</span> `); }); });
+  $$('.concept').forEach(c => {
+    const b = $('.mark', c); if (!b) return;
+    b.addEventListener('click', () => {
+      const id = c.dataset.cid; const on = !state.read[id];
+      if (on) state.read[id] = true; else delete state.read[id];
+      b.setAttribute('aria-pressed', String(on));
+      b.textContent = on ? 'Entendido' : 'Marcar como entendido';
+      save();
+    });
+  });
+  syncConcepts();
+}
+function syncConcepts(){
+  $$('.concept').forEach(c => {
+    const b = $('.mark', c); if (!b) return; const on = !!state.read[c.dataset.cid];
+    b.setAttribute('aria-pressed', String(on)); b.textContent = on ? 'Entendido' : 'Marcar como entendido';
+  });
+}
+
+/* ================= derivaciones paso a paso ================= */
+function initSteps(scope=document){
+  $$('ol.steps', scope).forEach(ol => {
+    if (ol.dataset.ready) return; ol.dataset.ready = '1';
+    const items = $$(':scope > li', ol); if (items.length < 2) return;
+    const bar = document.createElement('div'); bar.className = 'stepbar';
+    bar.innerHTML = `<button class="btn pri" data-a="next">Siguiente paso</button><button class="btn" data-a="all">Mostrar todos</button><button class="btn" data-a="reset">Reiniciar</button><span class="cnt"></span>`;
+    ol.parentNode.insertBefore(bar, ol);
+    let k = 1;
+    const upd = (fresh) => {
+      items.forEach((li, i) => { li.classList.toggle('hid', i >= k); li.classList.toggle('fresh', fresh && i === k-1); });
+      $('.cnt', bar).textContent = `Paso ${k} de ${items.length}`;
+      $('[data-a=next]', bar).disabled = k >= items.length;
+      $('[data-a=all]', bar).disabled = k >= items.length;
+    };
+    bar.addEventListener('click', e => {
+      const a = e.target.closest('button')?.dataset.a; if (!a) return;
+      if (a === 'next') k = Math.min(items.length, k+1);
+      if (a === 'all') k = items.length;
+      if (a === 'reset') k = 1;
+      upd(a === 'next');
+      if (a === 'next') items[k-1].scrollIntoView({block:'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+    });
+    upd(false);
+  });
+}
+
+/* ================= tests ================= */
+const LETTERS = 'ABCDEF';
+function qState(id){ return state.quiz[id] || null; }
+function renderQuestion(q, idx, total, opts={}){
+  const st = opts.fresh ? null : qState(q.id);
+  const answered = st && st.a !== null && st.a !== undefined;
+  const div = document.createElement('div');
+  div.className = 'qitem' + (answered ? ' done' : ''); div.dataset.qid = q.id;
+  div.innerHTML = `<div class="q-num">${opts.label || `Pregunta ${idx+1} de ${total}`}</div><div class="q-text">${q.q}</div>
+    <div class="opts">${q.opts.map((o,i) => `<button class="opt" data-i="${i}"><span class="l">${LETTERS[i]}</span><span class="t">${o.t}</span><span class="fb"><b class="${o.ok?'v-ok':'v-bad'}">${o.ok?'Correcta.':'Falsa.'}</b> ${o.fb}</span></button>`).join('')}</div>
+    <div class="verdict"></div>`;
+  if (answered) paintAnswered(div, q, st.a);
+  div.addEventListener('click', e => {
+    const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+    const i = +b.dataset.i; const ok = !!q.opts[i].ok;
+    const prev = state.quiz[q.id] || {};
+    state.quiz[q.id] = {a:i, ok, everOk: !!(prev.everOk || ok), wrong: !ok, t: Date.now()};
+    div.classList.add('done'); paintAnswered(div, q, i); save();
+    if (opts.onAnswer) opts.onAnswer(ok);
+  });
+  return div;
+}
+function paintAnswered(div, q, a){
+  $$('.opt', div).forEach((b, i) => {
+    b.disabled = true;
+    if (q.opts[i].ok) b.classList.add('right');
+    if (i === a && !q.opts[i].ok) b.classList.add('wrong');
+  });
+  const v = $('.verdict', div); const ok = !!q.opts[a].ok;
+  v.className = 'verdict ' + (ok ? 'ok' : 'bad');
+  v.textContent = ok ? 'Has acertado. Lee también por qué las otras son falsas.' : `Has fallado: la correcta es la ${LETTERS[q.opts.findIndex(o=>o.ok)]}. Queda guardada para repasar.`;
+}
+function buildQuiz(box){
+  const sid = box.dataset.quiz; const qs = QUIZ[sid] || []; if (!qs.length) return;
+  const mode = box.dataset.mode || 'all';
+  const sec = SECTIONS.find(s => s.id === sid);
+  const wrongN = qs.filter(q => (qState(q.id)||{}).wrong).length;
+  const okN = qs.filter(q => (qState(q.id)||{}).ok && (qState(q.id)||{}).a != null).length;
+  box.innerHTML = `<div class="qh"><div><h3>Test rápido · bloque ${sec.n}</h3><span class="score">Aciertos en la última ronda: ${okN} de ${qs.length}</span></div>
+    <div class="seg" role="group" aria-label="Modo del test"><button data-m="all" aria-pressed="${mode==='all'}">Todas</button><button data-m="wrong" aria-pressed="${mode==='wrong'}" ${wrongN?'':'disabled'}>Repasar falladas (${wrongN})</button><button data-m="reset" aria-pressed="false">Reiniciar</button></div></div>`;
+  const list = mode === 'wrong' ? qs.filter(q => (qState(q.id)||{}).wrong) : qs;
+  if (!list.length){ const d = document.createElement('div'); d.className = 'qitem'; d.innerHTML = '<p class="small">No tienes preguntas falladas en este bloque.</p>'; box.appendChild(d); }
+  list.forEach((q, i) => box.appendChild(renderQuestion(q, qs.indexOf(q), qs.length, {fresh: mode === 'wrong', onAnswer: () => updateQuizHead(box)})));
+  $$('.seg button', box).forEach(b => b.addEventListener('click', () => {
+    const m = b.dataset.m;
+    if (m === 'reset'){ qs.forEach(q => { if (state.quiz[q.id]) state.quiz[q.id] = Object.assign({}, state.quiz[q.id], {a:null, ok:null, t:Date.now()}); }); save(); box.dataset.mode = 'all'; }
+    else box.dataset.mode = m;
+    buildQuiz(box); renderMath(box);
+  }));
+}
+function updateQuizHead(box){
+  const qs = QUIZ[box.dataset.quiz] || [];
+  const okN = qs.filter(q => (qState(q.id)||{}).ok && (qState(q.id)||{}).a != null).length;
+  const wrongN = qs.filter(q => (qState(q.id)||{}).wrong).length;
+  $('.score', box).textContent = `Aciertos en la última ronda: ${okN} de ${qs.length}`;
+  const wb = $('[data-m=wrong]', box); if (wb){ wb.textContent = `Repasar falladas (${wrongN})`; wb.disabled = !wrongN && box.dataset.mode !== 'wrong'; }
+}
+function buildRepaso(){
+  const box = $('#repasoBox'); box.innerHTML = '';
+  const all = [];
+  Object.keys(QUIZ).forEach(sid => QUIZ[sid].forEach(q => { if ((qState(q.id)||{}).wrong) all.push([sid, q]); }));
+  const wrap = document.createElement('div'); wrap.className = 'quiz';
+  wrap.innerHTML = `<div class="qh"><h3>${all.length ? all.length + ' pregunta' + (all.length>1?'s':'') + ' por repasar' : 'Nada que repasar'}</h3><span class="score">Responde de nuevo; las que aciertes saldrán de la lista al volver a entrar.</span></div>`;
+  if (!all.length){ const d = document.createElement('div'); d.className='qitem'; d.innerHTML = '<p class="small">Cuando falles una pregunta de algún test aparecerá aquí.</p>'; wrap.appendChild(d); }
+  all.forEach(([sid, q], i) => { const s = SECTIONS.find(x => x.id === sid); wrap.appendChild(renderQuestion(q, i, all.length, {fresh:true, label:`Bloque ${s.n} · ${s.t}`})); });
+  box.appendChild(wrap); renderMath(box);
+}
+
+/* ================= progreso ================= */
+function sectionStats(id){
+  const v = $('#v-' + id); if (!v) return {done:0, total:0, read:0, cards:0, qok:0, qn:0};
+  const cards = $$('.concept', v).map(c => c.dataset.cid);
+  const read = cards.filter(c => state.read[c]).length;
+  const qs = QUIZ[id] || [];
+  const qok = qs.filter(q => (state.quiz[q.id]||{}).everOk).length;
+  let extraDone = 0, extraTotal = 0;
+  if (typeof extraStats === 'function'){ const e = extraStats(id); extraDone = e.done; extraTotal = e.total; }
+  return {done: read + qok + extraDone, total: cards.length + qs.length + extraTotal, read, cards: cards.length, qok, qn: qs.length, extraDone, extraTotal};
+}
+function updateProgress(){
+  let D = 0, T = 0;
+  SECTIONS.forEach(s => {
+    const st = sectionStats(s.id); D += st.done; T += st.total;
+    const a = $(`#nav a[data-id="${s.id}"]`); if (!a) return;
+    const pct = st.total ? Math.round(100 * st.done / st.total) : 0;
+    $('.bar i', a).style.width = pct + '%';
+    let meta = '';
+    if (st.cards) meta += `${st.read}/${st.cards} conceptos`;
+    if (st.qn) meta += (meta ? ' · ' : '') + `test ${st.qok}/${st.qn}`;
+    if (st.extraTotal) meta += (meta ? ' · ' : '') + (typeof extraLabel === 'function' ? extraLabel(s.id, st) : `${st.extraDone}/${st.extraTotal}`);
+    if (!st.total) meta = s.id === 'inicio' || s.id === 'repaso' ? '' : 'próximamente';
+    $('.meta', a).textContent = meta;
+    $('.bar', a).style.visibility = st.total ? 'visible' : 'hidden';
+  });
+  const p = T ? Math.round(100 * D / T) : 0;
+  $('#totBar').style.width = p + '%'; $('#totPct').textContent = p + ' %';
+}
+
+/* ================= tablas de inicio ================= */
+function buildTables(){
+  const secName = id => { const s = SECTIONS.find(x => x.id === id); return s ? (/^\d+$/.test(s.n) ? 'Bloque ' + s.n : s.t) : id; };
+  $('#mapBody').innerHTML = MAP.map(r => `<tr><td class="num">${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td><td><a href="#${r[3]}">${secName(r[3])}</a></td></tr>`).join('');
+  $('#errBody').innerHTML = ERRATA.map(r => `<tr><td><a href="#${r[3]}">${r[0]}</a></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+}
+
+/* ================= visualizaciones: registro ================= */
+const VIZ = {}; const vizInst = [];
+function initVizIn(view){
+  if (!view) return;
+  $$('[data-viz]', view).forEach(el => {
+    if (el.dataset.vready) return; const f = VIZ[el.dataset.viz]; if (!f) return;
+    el.dataset.vready = '1'; const inst = f(el); if (inst) vizInst.push(inst);
+  });
+}
+let redrawQueued = false;
+function redrawAll(){
+  if (redrawQueued) return; redrawQueued = true;
+  requestAnimationFrame(() => { redrawQueued = false; vizInst.forEach(v => { try { if (v.el.offsetParent !== null) v.draw(); } catch(e){ console.error(e); } }); });
+}
+window.addEventListener('resize', redrawAll);
+let printOpened = [];
+window.addEventListener('beforeprint', () => { printOpened = $$('.view.on details:not([open])'); printOpened.forEach(d => { d.open = true; }); });
+window.addEventListener('afterprint', () => { printOpened.forEach(d => { d.open = false; }); printOpened = []; });
+
+function refreshAllUI(){
+  syncConcepts();
+  $$('.quiz[data-quiz]').forEach(b => { buildQuiz(b); renderMath(b); });
+  if (typeof refreshExtras === 'function') refreshExtras();
+  updateProgress();
+}
+</script>
