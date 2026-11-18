@@ -10,7 +10,8 @@ Cada tema tiene su propia carpeta con una **plataforma de estudio interactiva**:
 |---|---|---|---|---|
 | **2** | **Decision theory: Bayes, MAP, riesgo mínimo, Neyman-Pearson, LDA/QDA, estimación ML, ROC y métricas** | **Disponible** | [▶ Abrir](https://marcel02.github.io/MLEARN/Tema%202%20-%20Decision%20Theory/) | [`Tema 2 - Decision Theory`](Tema%202%20-%20Decision%20Theory/) |
 | **3** | **Feature selection: dimensionalidad, PCA, MDA, enfoques no lineales** | **Disponible** | [▶ Abrir](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/) | [`Tema 3 - Feature Selection`](Tema%203%20-%20Feature%20Selection/) |
-| 4 | k vecinos, lógica difusa, SVM, redes neuronales, árboles de decisión | Pendiente | — | — |
+| **4.1** | **Non-parametric classifiers: histograma, ventanas de Parzen, k vecinos, distancias, elegir k** | **Disponible** | [▶ Abrir](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/) | [`Tema 4.1 - Non-parametric Classifiers`](Tema%204.1%20-%20Non-parametric%20Classifiers/) |
+| 4.x | Lógica difusa, SVM, redes neuronales, árboles de decisión | Pendiente | — | — |
 | 5 | Random forest | Pendiente | — | — |
 | 6 | K-means y clustering | Pendiente | — | — |
 
@@ -57,6 +58,25 @@ Cada enlace abre la plataforma del tema directamente en ese bloque, sin descarga
 | R | [Repasar las preguntas falladas](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#repaso) | — |
 | ∑ | [Hoja resumen](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/#resumen) · [PDF](https://marcel02.github.io/MLEARN/Tema%203%20-%20Feature%20Selection/hoja-resumen.pdf) | — |
 
+### Tema 4.1 · Non-parametric classifiers
+
+| Bloque | Lección | Diapositivas |
+|---|---|---|
+| — | [Inicio, notación, mapa del PDF y erratas](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#inicio) | — |
+| 1 | [Estimar una densidad sin modelo: histograma y convergencia](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b1) | 1–7 |
+| 2 | [Ventanas de Parzen](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b2) | 8–14 |
+| 3 | [Clasificador neuronal probabilístico](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b3) | 15–17 |
+| 4 | [Estimación por k vecinos](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b4) | 18–20 |
+| 5 | [Regla de los k vecinos y vecino más cercano](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b5) | 21–22 |
+| 6 | [Distancias y similitudes](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b6) | 23–24 |
+| 7 | [Elegir k, estandarizar y combinar etiquetas](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b7) | 25–29 |
+| 8 | [Conclusiones y ejemplo de San Francisco](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b8) | 30–35 |
+| 9 | [Competiciones y proyectos de ML](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#b9) | 36–41 |
+| E | [Ejercicios 1 y 2 (Non-Parametric)](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#ejercicios) | — |
+| F | [Flashcards](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#flashcards) | — |
+| R | [Repasar las preguntas falladas](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#repaso) | — |
+| ∑ | [Hoja resumen](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/#resumen) · [PDF](https://marcel02.github.io/MLEARN/Tema%204.1%20-%20Non-parametric%20Classifiers/hoja-resumen.pdf) | — |
+
 ## Abrir online
 
 La web del repositorio está publicada con GitHub Pages: la portada, con todos los temas, está en **https://marcel02.github.io/MLEARN/**. Los enlaces de arriba llevan directamente a cada lección.
@@ -73,14 +93,14 @@ El progreso (conceptos marcados, tests, ejercicios y flashcards) se guarda en el
 
 ## Qué incluye cada tema
 
-Los temas 2 y 3 siguen el mismo modelo:
+Todos los temas siguen el mismo modelo:
 
 - **Teoría por bloques**, en el orden del PDF, con «Diapositiva X · PDF p. Y» en cada tarjeta, un resumen visible y la explicación a fondo desplegable. Las derivaciones se revelan paso a paso.
 - **Cajas destacadas**: apuntes manuscritos del profesor, errores habituales, erratas del material y conexiones con otros temas.
 - **Figuras**: recortes de las figuras de las diapositivas (con «Diap. X · PDF p. Y» y un pie que explica qué mirar; se amplían al pulsarlas) y esquemas propios donde el PDF no tiene figura: geometría del error de PCA, S_T = S_C + S_B, matriz de costes, Neyman-Pearson, frontera LDA, RDA, Naive Bayes y el árbol de frecuencias del test médico.
-- **Laboratorios interactivos**: en el tema 2, MAP y riesgo mínimo en 1D, fronteras LDA/QDA en 2D, sesgo del estimador ML, ROC con Neyman-Pearson y matriz de confusión, y el test diagnóstico con prevalencias reales; en el tema 3, Pr(e) = Q(r/2), PCA en 2D, efecto de d′, restar o no la media, y MDA frente a PCA.
+- **Laboratorios interactivos**: en el tema 4.1, densidad 1D con Parzen y KNN (con sesgo y varianza), clasificador KNN en 2D (distancias, votos y escalado), forma de la distancia y error frente a k; en el tema 2, MAP y riesgo mínimo en 1D, fronteras LDA/QDA en 2D, sesgo del estimador ML, ROC con Neyman-Pearson y matriz de confusión, y el test diagnóstico con prevalencias reales; en el tema 3, Pr(e) = Q(r/2), PCA en 2D, efecto de d′, restar o no la media, y MDA frente a PCA.
 - **Tests** de 4–6 preguntas por bloque, con explicación de cada opción y modo «Repasar falladas».
-- **Ejercicios** de la hoja con tres pistas graduales y solución paso a paso, comprobada numéricamente. En el tema 2 solo están los que mandó el profesor: 1, 2, 4, 5, 7.1, 7.2, 7.3, 9, 10 y 11.
+- **Ejercicios** de la hoja con tres pistas graduales y solución paso a paso, comprobada numéricamente. En el tema 2 solo están los que mandó el profesor: 1, 2, 4, 5, 7.1, 7.2, 7.3, 9, 10 y 11. En el tema 4.1, los dos de «Non-Parametric» (1 y 2).
 - **Flashcards** de fórmulas y definiciones, y una **hoja resumen** con todas las fórmulas.
 - **Erratas**: lista de erratas y dudas detectadas en el material, en la página de inicio.
 
@@ -92,6 +112,8 @@ MLEARN/
 ├── index.html              portada con la lista de temas (GitHub Pages)
 ├── Tema 2 - Decision Theory/
 │   └── …                   mismos cuatro archivos que el tema 3
+├── Tema 4.1 - Non-parametric Classifiers/
+│   └── …                   mismos cuatro archivos que el tema 3
 ├── Tema 3 - Feature Selection/
 │   ├── index.html          plataforma completa (un solo archivo)
 │   ├── hoja-resumen.pdf    fórmulas del tema en 2 páginas A4
@@ -99,7 +121,8 @@ MLEARN/
 │   └── LEEME.txt           instrucciones para compartir la carpeta
 └── fuente/
     ├── tema-2/             piezas (parts/), figuras (img/) y scripts que generan el index.html del tema 2
-    └── tema-3/             ídem para el tema 3
+    ├── tema-3/             ídem para el tema 3
+    └── tema-4.1/           ídem para el tema 4.1
 ```
 
 Cada tema nuevo se añade como una carpeta `Tema N - Nombre/` y, si se quiere poder editar, su fuente en `fuente/tema-N/`.
@@ -116,6 +139,8 @@ for p in @fontsource/ibm-plex-sans@5.0.20 @fontsource/ibm-plex-mono@5.0.13 @font
 for f in *.tgz; do mkdir -p "${f%.tgz}" && tar xzf "$f" -C "${f%.tgz}"; done
 cd ../tema-3
 python3 build_local.py "../../Tema 3 - Feature Selection"
+cd ../tema-4.1
+python3 build_local.py "../../Tema 4.1 - Non-parametric Classifiers"
 cd ../tema-2
 python3 build_local.py "../../Tema 2 - Decision Theory"
 ```
@@ -130,7 +155,8 @@ python3 build_local.py "../../Tema 2 - Decision Theory"
 | 2026-11-12 | Temas 2 y 3: figuras de las diapositivas (24 y 16) y esquemas propios (7 y 3) en las explicaciones. |
 | 2026-11-12 | README: enlaces directos a cada lección, a los ejercicios, a las flashcards y a la hoja resumen. |
 | 2026-11-12 | Temas 2 y 3: botón «Temas» en la cabecera y enlace «← Todos los temas» en el índice para volver a la portada. |
+| 2026-11-18 | Tema 4.1 (Non-parametric Classifiers): primera versión completa, con figuras, 4 laboratorios y los ejercicios 1 y 2. |
 
 ## Origen del contenido
 
-Elaborado a partir de las diapositivas y las hojas de ejercicios de la asignatura (tema 2: `ML_Chapter2` y `ExercisesChapter2MLEARN.pdf`; tema 3: `ML_Chapter3_FS_GO.pdf` y `ExercisesChapter3MLEARN.pdf`). **No es material oficial**: para cualquier duda manda lo que diga el profesor. Las erratas detectadas en el material original se señalan en cada tema.
+Elaborado a partir de las diapositivas y las hojas de ejercicios de la asignatura (tema 2: `ML_Chapter2` y `ExercisesChapter2MLEARN.pdf`; tema 3: `ML_Chapter3_FS_GO.pdf` y `ExercisesChapter3MLEARN.pdf`; tema 4.1: `ML_Chapter4_1_KNN_Go.pdf` y `ExercisesChapter4.1MLEARN.pdf`). **No es material oficial**: para cualquier duda manda lo que diga el profesor. Las erratas detectadas en el material original se señalan en cada tema.

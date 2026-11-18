@@ -1,0 +1,133 @@
+<section class="view" id="v-b2" data-sec="b2">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 2 · Apartado 4.1.2 del PDF</div>
+    <h1>Ventanas de Parzen</h1>
+    <p class="lede">Se fija el volumen de la región y se cuentan las muestras con una ventana \(\varphi\). La anchura \(h_n\) decide el compromiso entre sesgo (promediar demasiado) y varianza (estimación ruidosa).</p>
+    <div class="meta"><span class="chip">Diap. 8–14</span><span class="chip">PDF p. 9–15</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b2-1">
+    <header><h3>La ventana \(\varphi\) y el estimador de Parzen</h3><span class="ref">Diap. 8–9 · PDF p. 9–10</span></header>
+    <div class="summary">
+      <p>La región \(R\) se define con una función \(\varphi(\bx)\) que encierra un hipervolumen \(V_{R,n}\) alrededor de \(\bx\). El número (ponderado) de vectores dentro es</p>
+      \[k_n(\bx)=\sum_{i=1}^n\varphi\!\left(\frac{\bx-\bx_i}{h_n}\right),\]
+      <p>y la estimación de la densidad,</p>
+      \[f_n(\bx)=\frac1n\sum_{i=1}^n\frac{1}{V_{R,n}}\varphi\!\left(\frac{\bx-\bx_i}{h_n}\right)=\frac1n\sum_{i=1}^n\gamma_n(\bx-\bx_i).\]
+      <p>Para que \(f_n\) sea una pdf: \(\varphi(\bx)\ge0\), \(\int\varphi(\bx)d\bx=1\) y \(V_n\propto h_n^d\).</p>
+      <figure class="fig slide" data-fig="t41-p10"><div class="frame"><img src="img/t41-p10.webp" width="1200" height="464" loading="lazy" alt="Ventana de Parzen para tres anchuras"></div><figcaption><span class="src">Diap. 9 · PDF p. 10</span>Ejemplo 1: la ventana \(\gamma(\bx)\) en 2D para \(h=1\), 0,5 y 0,2. Al estrecharse se hace más alta (el volumen sigue siendo 1). Con \(h=1\) la estimación sale muy promediada; con \(h=0{,}2\), ruidosa.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>La ventana rectangular.</strong> \(\varphi(\mathbf u)=1\) si \(|u_j|\le\frac12\) para todo \(j\), y 0 si no: un hipercubo unidad. Entonces \(\varphi\big((\bx-\bx_i)/h_n\big)=1\) exactamente cuando \(\bx_i\) cae en el cubo de lado \(h_n\) centrado en \(\bx\), y \(k_n(\bx)\) es el conteo del histograma, con \(V_{R,n}=h_n^d\).</li>
+        <li><strong>Cada muestra aporta un «montículo».</strong> \(f_n\) es la media de \(n\) copias de \(\gamma_n\), una centrada en cada \(\bx_i\). Con una ventana suave (gaussiana), los montículos son campanas y \(f_n\) sale suave.</li>
+        <li><strong>Por qué \(f_n\) integra 1.</strong> Con el cambio \(\mathbf u=(\bx-\bx_i)/h_n\), \(d\bx=h_n^d\,d\mathbf u=V_{R,n}d\mathbf u\): \(\int\gamma_n(\bx-\bx_i)d\bx=\int\varphi(\mathbf u)d\mathbf u=1\). La media de \(n\) funciones que integran 1 también integra 1. Y \(\varphi\ge0\) garantiza \(f_n\ge0\).</li>
+        <li><strong>Ventana gaussiana</strong> (la de los ejemplos): \(\varphi(\mathbf u)=(2\pi)^{-d/2}e^{-\|\mathbf u\|^2/2}\), así que \(\gamma_n\) es una gaussiana de desviación \(h_n\) en cada eje.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>Datos 1D \(\{1;\ 2;\ 2{,}5;\ 4\}\), ventana rectangular con \(h=1\) en \(x=2\): caen dentro de \([1{,}5;\ 2{,}5]\) los puntos 2 y 2,5, así que \(k=2\) y \(f_n(2)=\frac{2}{4\cdot1}=0{,}5\). Con ventana gaussiana y datos \(\{0;\ 1\}\), \(h=1\): \(f_n(0{,}5)=\frac12\left[\phi(0{,}5)+\phi(-0{,}5)\right]=0{,}352\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note trap"><span class="lab">Error habitual</span><p>Confundir \(\varphi\) con \(\gamma_n\). \(\varphi\) es la ventana «patrón», de volumen unidad; \(\gamma_n(\bx)=\frac{1}{V_{R,n}}\varphi(\bx/h_n)\) es la ventana ya escalada a anchura \(h_n\) y normalizada para que siga integrando 1. Si \(h_n\) se reduce a la mitad en 1D, \(\gamma_n\) es el doble de alta.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b2-2">
+    <header><h3>Efecto de la anchura \(h\) y ventanas radiales</h3><span class="ref">Diap. 9–10 · PDF p. 10–11</span></header>
+    <div class="summary">
+      <p>Con \(h\) grande, cada muestra reparte su peso en una zona amplia: la estimación sale muy promediada (suave, pero puede borrar detalles). Con \(h\) pequeño, cada muestra deja un pico estrecho: la estimación sale ruidosa. La diapositiva 10 lo muestra con \(n=5\) vectores y \(h=1;\ 0{,}5;\ 0{,}2\).</p>
+      <p>Normalmente se usan <strong>funciones de base radial</strong>: \(\|\bx_1\|=\|\bx_2\|\Rightarrow\varphi(\bx_1)=\varphi(\bx_2)\). La ventana solo depende de la distancia al centro.</p>
+      <figure class="fig slide" data-fig="t41-p11"><div class="frame"><img src="img/t41-p11.webp" width="1200" height="346" loading="lazy" alt="Estimación de Parzen con cinco muestras"></div><figcaption><span class="src">Diap. 10 · PDF p. 11</span>Estimación de \(f_n(\bx)\) con \(n=5\) vectores: con \(h=1\) los cinco montículos se funden; con \(h=0{,}2\) quedan cinco picos aislados.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Altura y anchura van juntas.</strong> En la figura del ejemplo 1, al bajar \(h\) de 1 a 0,2 la ventana se estrecha y se hace mucho más alta: el área sigue siendo 1.</li>
+        <li><strong>Con pocos datos</strong> (\(n=5\)) y \(h=0{,}2\) la estimación son cinco picos aislados, uno por muestra: «memoriza» los datos. Con \(h=1\) se funden en una superficie suave.</li>
+        <li><strong>Radial = isotrópica.</strong> Una ventana radial trata igual todas las direcciones, así que presupone que las características están en escalas comparables. De ahí la importancia de estandarizar (bloque 7).</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b2-3">
+    <header><h3>La media del estimador: una convolución con la pdf</h3><span class="ref">Diap. 11 · PDF p. 12</span></header>
+    <div class="summary">
+      <p>Como las muestras son independientes y con la misma pdf \(f\),</p>
+      \[\bar f_n(\bx)=E\{f_n(\bx)\}=\frac1n\sum_{i=1}^nE\left\{\frac{1}{V_{R,n}}\varphi\!\left(\frac{\bx-\bx_i}{h_n}\right)\right\}=\int\frac{1}{V_{R,n}}\varphi\!\left(\frac{\bx-\mathbf v}{h_n}\right)f(\mathbf v)d\mathbf v=\int\gamma_n(\bx-\mathbf v)f(\mathbf v)d\mathbf v.\]
+      <p>Es la <strong>convolución de la ventana con la pdf verdadera</strong>: en media, Parzen ve una versión emborronada de \(f\). Si \(V_{R,n}\to0\), \(\varphi\) tiende a una delta de Dirac y el estimador es insesgado, pero el número de vectores por región tiende a cero: hay que mirar la varianza.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Linealidad.</strong> La esperanza de una suma es la suma de esperanzas, y los \(n\) términos son iguales en media (misma pdf): \(\bar f_n=E\{\gamma_n(\bx-\bx_i)\}\) para cualquier \(i\).</li>
+        <li><strong>Esperanza como integral.</strong> \(E\{g(\bx_i)\}=\int g(\mathbf v)f(\mathbf v)d\mathbf v\), con \(g(\mathbf v)=\gamma_n(\bx-\mathbf v)\). Esa integral es justo la convolución \((\gamma_n*f)(\bx)\).</li>
+        <li><strong>Sesgo.</strong> \(\bar f_n-f\) no depende de \(n\) a través del número de muestras, sino de la anchura: solo desaparece si la ventana se estrecha.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>Si \(f=\mathcal N(0,1)\) y la ventana es gaussiana de anchura \(h\), la convolución de dos gaussianas es otra gaussiana: \(\bar f_n=\mathcal N(0,\,1+h^2)\). Con \(h=1\), en \(x=0\): \(\bar f_n(0)=1/\sqrt{2\pi\cdot2}=0{,}282\) frente a \(f(0)=0{,}399\). El pico sale un 29 % más bajo, por mucho que crezca \(n\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Errata menor</span><p>El título dice «<em>mean and variance of the histogram</em>», pero las fórmulas son las del estimador de Parzen con una ventana \(\varphi\) cualquiera (el histograma es el caso de la ventana rectangular).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b2-4">
+    <header><h3>La varianza y el compromiso sesgo-varianza</h3><span class="ref">Diap. 12–13 · PDF p. 13–14</span></header>
+    <div class="summary">
+      \[\sigma_n^2(\bx)=\frac{1}{nV_{R,n}}\int\frac{1}{V_{R,n}}\varphi^2\!\left(\frac{\bx-\mathbf v}{h_n}\right)f(\mathbf v)d\mathbf v-\frac1n\bar f_n^2(\bx)\ \le\ \frac{\sup(\varphi(\cdot))\,\bar f_n(\bx)}{nV_{R,n}}.\]
+      <p>La varianza puede ser pequeña si \(V_{R,n}\) es grande. Pero, dado \(n\), varianza baja implica \(V_{R,n}\) grande y, por tanto, <strong>sesgo grande</strong>. El ejemplo 2 (ventana gaussiana, \(n=1,16,256,\infty\) y tres anchuras) lo muestra.</p>
+      <figure class="fig slide" data-fig="t41-p14"><div class="frame"><img src="img/t41-p14.webp" width="1200" height="777" loading="lazy" alt="Estimaciones de Parzen en una rejilla de n y h"></div><figcaption><span class="src">Diap. 13 · PDF p. 14</span>Ejemplo 2 (Duda): ventana gaussiana con \(h_n=h_1/\sqrt n\), filas \(n=1,16,256,\infty\) y columnas \(h_1=1;\ 0{,}5;\ 0{,}2\). Con \(h_1\) grande la estimación es suave pero emborrona el triángulo y el escalón; con \(h_1\) pequeño es ruidosa hasta que \(n\) es muy grande.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: la derivación</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Suma de independientes.</strong> \(f_n=\sum_iT_i\) con \(T_i=\frac{1}{nV_{R,n}}\varphi\big(\frac{\bx-\bx_i}{h_n}\big)\). Como los \(T_i\) son independientes, la varianza de la suma es la suma de varianzas: \(\sigma_n^2=\sum_iE\{(T_i-E\{T_i\})^2\}\), con \(E\{T_i\}=\bar f_n/n\). Es la primera línea de la diapositiva.</li>
+        <li><strong>Desarrollo.</strong> \(\mathrm{Var}\{T_i\}=E\{T_i^2\}-E\{T_i\}^2\), así que \(\sigma_n^2=nE\{T_i^2\}-n\frac{\bar f_n^2}{n^2}=nE\left\{\frac{1}{n^2V_{R,n}^2}\varphi^2\right\}-\frac1n\bar f_n^2\).</li>
+        <li><strong>Esperanza como integral.</strong> \(nE\{\cdot\}=\frac{1}{nV_{R,n}}\int\frac{1}{V_{R,n}}\varphi^2\big(\frac{\bx-\mathbf v}{h_n}\big)f(\mathbf v)d\mathbf v\).</li>
+        <li><strong>Cota.</strong> Se descarta el término negativo y se usa \(\varphi^2\le\sup(\varphi)\,\varphi\): la integral queda acotada por \(\sup(\varphi)\,\bar f_n(\bx)\).</li>
+        <li><strong>Lectura conjunta.</strong> Sesgo pequeño pide \(V_{R,n}\to0\); varianza pequeña pide \(nV_{R,n}\to\infty\). Como \(nV_{R,n}f\approx k_n\), son las condiciones \(V\to0\) y \(k_n\to\infty\) del bloque 1. Se cumplen, por ejemplo, con \(h_n=h_1/\sqrt n\) (lo que usa la figura).</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>Ventana rectangular (\(\sup\varphi=1\)), \(\bar f_n(\bx)=0{,}2\), \(n=100\), \(V_{R,n}=0{,}5\): \(\sigma_n^2\le\frac{0{,}2}{100\cdot0{,}5}=0{,}004\), es decir, \(\sigma_n\le0{,}063\) (un 32 % del valor medio). Con \(V_{R,n}=0{,}05\) la cota sería diez veces mayor.</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2</span><p>Es el mismo par sesgo-varianza de la estimación ML (diap. 56–57 del tema 2), pero aquí el «hiperparámetro» que lo controla es la anchura de la ventana.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="dens" data-mode="pg">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Estimar una densidad en 1D: Parzen y KNN</h3></div><span class="ref small">Diap. 8–13 y 18–19</span></div>
+    <p class="small">La pdf verdadera (negra) es la del ejemplo 2: un triángulo más un rectángulo. Mueve \(n\), la anchura o \(k\), y activa «media ± 1σ» para ver el sesgo (la media se separa de la curva negra) y la varianza (la banda). En el punto \(x_0\) se ve la región usada y la cuenta \(f_n=k/(nV)\).</p>
+    <div class="controls">
+      <div class="ctl"><label><span>Método</span></label><select data-k="method"><option value="pg">Parzen, ventana gaussiana</option><option value="pb">Parzen, ventana rectangular</option><option value="knn">k vecinos (KNN)</option></select></div>
+      <div class="ctl"><label><span>Muestras \(n\)</span><output data-o="n"></output></label><input type="range" data-k="n" min="0" max="5" step="1" value="2"></div>
+      <div class="ctl" data-show="parzen"><label><span>Anchura \(h_1\) (\(h_n=h_1/\sqrt n\))</span><output data-o="h"></output></label><input type="range" data-k="h" min="0.1" max="3" step="0.05" value="1"></div>
+      <div class="ctl" data-show="knn"><label><span>Vecinos \(k\)</span><output data-o="k"></output></label><input type="range" data-k="k" min="1" max="64" step="1" value="4"></div>
+      <div class="ctl chk" data-show="knn"><label><input type="checkbox" data-k="ksqrt" checked> <span>usar \(k_n=\sqrt n\)</span></label></div>
+      <div class="ctl"><label><span>Punto \(x_0\)</span><output data-o="x0"></output></label><input type="range" data-k="x0" min="-0.5" max="4.5" step="0.05" value="1"></div>
+      <div class="ctl chk"><label><input type="checkbox" data-k="mc"> <span>media ± 1σ (repitiendo el muestreo)</span></label></div>
+      <div class="ctl"><button class="btn" data-k="re">Nueva muestra</button></div>
+    </div>
+    <div class="plots">
+      <div class="plot wide"><canvas data-c="1" height="270" aria-label="Densidad verdadera y estimación"></canvas><div class="legend"><span><i style="background:var(--ink)"></i>pdf verdadera</span><span><i style="background:var(--accent)"></i>estimación \(f_n\)</span><span><i style="background:var(--cmda)"></i>región en \(x_0\)</span><span>puntos grises: las \(n\) muestras</span></div></div>
+    </div>
+    <div class="readout" data-o="out"></div>
+  </div>
+
+  <article class="concept" data-cid="t41b2-5">
+    <header><h3>Fronteras de decisión con Parzen</h3><span class="ref">Diap. 14 · PDF p. 15</span></header>
+    <div class="summary">
+      <p>Para clasificar se estima \(f_n(\bx|\omega_i)\) con Parzen en cada clase y se aplica la regla bayesiana: se decide la clase con mayor \(f_n(\bx|\omega_i)\Pr(\omega_i)\). Con \(h\) pequeño las fronteras son muy irregulares (se ajustan a cada punto); con \(h\) grande, suaves.</p>
+      <p><strong>Observación</strong> de la diapositiva: el tamaño óptimo de la ventana posiblemente depende de la región; debería ser mayor donde la densidad de datos es pequeña. Esa idea lleva directamente a KNN.</p>
+      <figure class="fig slide" data-fig="t41-p15"><div class="frame"><img src="img/t41-p15.webp" width="1200" height="532" loading="lazy" alt="Fronteras con h pequeño y grande"></div><figcaption><span class="src">Diap. 14 · PDF p. 15</span>Ejemplo 3: fronteras de dos clases con Parzen gaussiano. Con \(h\) pequeño (izquierda) aparecen islas alrededor de cada muestra; con \(h\) grande (derecha) la frontera es suave.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Sobreajuste con \(h\) pequeño.</strong> Cada muestra crea una «isla» de su clase a su alrededor: error de entrenamiento casi nulo, pero mala generalización.</li>
+        <li><strong>Infraajuste con \(h\) grande.</strong> Las densidades de las clases se emborronan tanto que la frontera pierde la forma real del problema.</li>
+        <li><strong>Una sola \(h\) no sirve para todo.</strong> Donde hay muchas muestras conviene una ventana estrecha (hay datos para estimar el detalle); donde hay pocas, una ancha (si no, quedan huecos sin ninguna muestra). KNN hace exactamente eso de forma automática.</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b2"></div>
+  <div class="pager"></div>
+</section>

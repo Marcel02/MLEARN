@@ -1,0 +1,68 @@
+<section class="view" id="v-resumen" data-sec="resumen">
+  <div class="sec-head">
+    <div class="eyebrow">Para imprimir</div>
+    <h1>Hoja resumen</h1>
+    <p class="lede">Todas las fórmulas del tema en una página, con la diapositiva de la que sale cada una (y las erratas ya corregidas).</p>
+    <div class="meta">
+      <button class="btn pri" id="sheetDl">Descargar como HTML para imprimir</button>
+      <span class="small" id="sheetMsg">Se guarda un archivo que se abre en cualquier navegador; desde ahí, Imprimir o Guardar como PDF.</span>
+    </div>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet-title"><b>MLEARN · Tema 4.1 · Non-parametric classifiers</b><span>Duda, Hart &amp; Stork, cap. 4 · diap. 1–41</span></div>
+
+    <div class="sh-block">
+      <h3>1 · Estimación no paramétrica <i>(d. 4–7)</i></h3>
+      <div class="sh-row"><span class="sh-k">Región <i>(d. 4)</i></span><span class="sh-v">\(P=\int_Rf_{\bx}(\bx')d\bx'\) · \(P_k=\binom nkP^k(1-P)^{n-k}\), \(E\{k\}=nP\), \(\hat P=k/n\)</span></div>
+      <div class="sh-row"><span class="sh-k">Histograma <i>(d. 5)</i></span><span class="sh-v">\(\int_Rf\approx f(\bx)V_R\Rightarrow f(\bx)\cong\dfrac{k/n}{V_R}\)</span></div>
+      <div class="sh-row"><span class="sh-k">Convergencia <i>(d. 7)</i></span><span class="sh-v">\(f_n=\frac{k_n/n}{V_{R,n}}\to f\) si \(V_{R,n}\to0,\ k_n\to\infty,\ k_n/n\to0\) · Parzen: fija \(V\), cuenta \(k\) · KNN: fija \(k\), \(V(\bx)\) variable</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>2 · Ventanas de Parzen <i>(d. 8–14)</i></h3>
+      <div class="sh-row"><span class="sh-k">Estimador <i>(d. 8)</i></span><span class="sh-v">\(k_n(\bx)=\sum_i\varphi\big(\frac{\bx-\bx_i}{h_n}\big)\) · \(f_n(\bx)=\frac1n\sum_i\frac1{V_{R,n}}\varphi\big(\frac{\bx-\bx_i}{h_n}\big)=\frac1n\sum_i\gamma_n(\bx-\bx_i)\)</span></div>
+      <div class="sh-row"><span class="sh-k">Ventana <i>(d. 9)</i></span><span class="sh-v">\(\varphi\ge0\), \(\int\varphi=1\), \(V_n\propto h_n^d\) · \(h\) grande: promediada; \(h\) pequeña: ruidosa · radial: \(\|\bx_1\|=\|\bx_2\|\Rightarrow\varphi(\bx_1)=\varphi(\bx_2)\)</span></div>
+      <div class="sh-row"><span class="sh-k">Media <i>(d. 11)</i></span><span class="sh-v">\(\bar f_n(\bx)=\int\gamma_n(\bx-\mathbf v)f(\mathbf v)d\mathbf v\) (convolución) · \(\mathcal N(0,1)\) y ventana gaussiana: \(\bar f_n=\mathcal N(0,1+h^2)\)</span></div>
+      <div class="sh-row"><span class="sh-k">Varianza <i>(d. 12)</i></span><span class="sh-v">\(\sigma_n^2\le\frac{\sup(\varphi)\bar f_n(\bx)}{nV_{R,n}}\) · dado \(n\): varianza baja ⇒ \(V\) grande ⇒ sesgo grande · p. ej. \(h_n=h_1/\sqrt n\)</span></div>
+      <div class="sh-row"><span class="sh-k">Clasificar <i>(d. 14)</i></span><span class="sh-v">\(\arg\max_if_n(\bx|\omega_i)\Pr(\omega_i)\) · \(h\) pequeño: fronteras irregulares · ventana ideal más ancha donde hay pocos datos</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>3 · Clasificador neuronal probabilístico <i>(d. 15–17)</i></h3>
+      <div class="sh-row"><span class="sh-k">Capas</span><span class="sh-v">\(d\) entradas → \(n\) patrones (\(\mathbf w_i=\bx_i\), normalizados) → \(c\) clases → max</span></div>
+      <div class="sh-row"><span class="sh-k">Activación <i>(d. 17)</i></span><span class="sh-v">\(e^{-\|\bx-\mathbf w_i\|^2/2\sigma^2}=e^{(\bx^T\mathbf w_i-1)/\sigma^2}\) · suma de clase \(\propto n_jf_n(\bx|\omega_j)\) (ya incluye priors \(n_j/n\))</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>4 · k vecinos <i>(d. 18–22)</i></h3>
+      <div class="sh-row"><span class="sh-k">Densidad <i>(d. 18)</i></span><span class="sh-v">\(f_n(\bx)=\frac{k_n/n}{V_R(\bx)}\), \(V_R\): bola hasta el \(k_n\)-ésimo vecino · converge con \(k_n=\sqrt n\) (no basta \(k_n\le\sqrt n\)) · no integra 1</span></div>
+      <div class="sh-row"><span class="sh-k">Posterior <i>(d. 20)</i></span><span class="sh-v">\(f(\bx|\omega_i)\Pr(\omega_i)\approx\frac{k_i/n_i}{V}\frac{n_i}{n}=\frac{k_i}{nV}\Rightarrow\Pr(\omega_i|\bx)=\frac{k_i}{k}\)</span></div>
+      <div class="sh-row"><span class="sh-k">Regla <i>(d. 21)</i></span><span class="sh-v">MAP: \(\arg\max_ik_i\) (mayoría) · riesgo mínimo (ej. 1): \(\arg\min_i\sum_j\pi_{ij}k_j\); binario: \(k_1/k_2\gtrless\frac{\pi_{12}-\pi_{22}}{\pi_{21}-\pi_{11}}\)</span></div>
+      <div class="sh-row"><span class="sh-k">1-NN <i>(d. 22)</i></span><span class="sh-v">celdas de Voronoi · \(P_{MAP}\le P_{1NN}\le P_{MAP}\big(2-P_{MAP}\frac c{c-1}\big)\le2P_{MAP}\); \(c=2\): \(\le2P_{MAP}(1-P_{MAP})\) (Cover y Hart, 1967)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>5 · Distancias y similitudes <i>(d. 23–24)</i></h3>
+      <div class="sh-row"><span class="sh-k">Distancia</span><span class="sh-v">\(D\ge0\); \(D=0\iff\bx=\mathbf z\); simétrica; \(D(\bx,\mathbf z)+D(\mathbf z,\mathbf t)\ge D(\bx,\mathbf t)\) · se valida</span></div>
+      <div class="sh-row"><span class="sh-k">Ejemplos</span><span class="sh-v">\(\|\bx-\mathbf z\|_p=(\sum|x_i-z_i|^p)^{1/p}\) (\(p=1\) rombo, 2 círculo, ∞ cuadrado) · Mahalanobis \((\bx-\mathbf z)^T\bC^{-1}(\bx-\mathbf z)\) · Hamming: nº de componentes distintas</span></div>
+      <div class="sh-row"><span class="sh-k">Similitudes</span><span class="sh-v">\(-1\le s\le1\) o \(0\le s\le1\) · coseno \(\frac{\bx^T\mathbf z}{\|\bx\|\|\mathbf z\|}\) · Pearson (coseno centrado en \(\bmu\)) · Jaccard \(\frac{\#[x_j=z_j=1]}{\#[x_j=1\text{ o }z_j=1]}\)</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>6 · Práctica <i>(d. 25–30)</i></h3>
+      <div class="sh-row"><span class="sh-k">Elegir \(k\)</span><span class="sh-v">pequeño: sobreajuste (\(k=1\): error de entrenamiento 0) · grande: infraajuste (\(k=n\): clase mayoritaria) · validación cruzada</span></div>
+      <div class="sh-row"><span class="sh-k">Estandarizar</span><span class="sh-v">\(x_j'=(x_j-\mu_j)/\sigma_j\) con \(\mu_j,\sigma_j\) del entrenamiento · sin ella domina la escala mayor</span></div>
+      <div class="sh-row"><span class="sh-k">Votos</span><span class="sh-v">mayoría (empates al azar) · ponderado \(1/d\) o \(1/d^2\) (= Parzen) · regresión: media (ponderada) de los \(k\) vecinos</span></div>
+      <div class="sh-row"><span class="sh-k">Conclusiones</span><span class="sh-v">sin covarianzas (útil con \(d\) grande frente a \(n\)) · lento al predecir · sobreajuste · maldición de la dimensionalidad (lado \(r^{1/d}\)) · irrelevantes · estandarizar</span></div>
+    </div>
+
+    <div class="sh-block">
+      <h3>7 · Evaluación y proyectos <i>(d. 31–41)</i></h3>
+      <div class="sh-row"><span class="sh-k">Log loss <i>(d. 33)</i></span><span class="sh-v">\(-\frac1{N_{test}}\sum_i\sum_jy_{ij}\log\Pr(\omega_j|\bx_i)\) · solo cuenta la clase real · evitar \(k_i/k=0\)</span></div>
+      <div class="sh-row"><span class="sh-k">Competición <i>(d. 36–38)</i></span><span class="sh-v">BD1 entrena · BD2 ranking público (envíos repetidos) · BD3 envío único, ranking final</span></div>
+      <div class="sh-row"><span class="sh-k">Proyecto <i>(d. 40–41)</i></span><span class="sh-v">definir · analizar · preparar · evaluar · mejorar · presentar · ≈80 % del tiempo en preparar los datos</span></div>
+    </div>
+  </div>
+  <div class="pager"></div>
+</section>

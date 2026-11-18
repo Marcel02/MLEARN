@@ -1,0 +1,59 @@
+<section class="view" id="v-inicio" data-sec="inicio">
+  <div class="hero">
+    <div class="eyebrow">MLEARN · Tema 4.1 · Duda, Hart &amp; Stork, cap. 4</div>
+    <h1>Clasificadores no paramétricos</h1>
+    <p class="lede">Plataforma de estudio construida sobre las 42 páginas del tema 4.1 (41 diapositivas y la página de apuntes de pizarra del profesor) y la hoja de ejercicios. Notación exacta del PDF: \(\bx\in\mathbb{R}^d\), \(\omega_i\), \(f_{\bx}(\bx|\omega_i)\), \(R\), \(V_R\), \(P\), \(n\), \(k\), \(f_n(\bx)\), \(\varphi(\cdot)\), \(h_n\), \(V_{R,n}\), \(\gamma_n\), \(k_i\), \(D(\bx,\mathbf z)\), \(s(\bx,\mathbf z)\).</p>
+  </div>
+
+  <div class="cards3">
+    <div class="mini"><h4>Cómo está organizado</h4><p>Cada concepto tiene un resumen visible y una explicación a fondo desplegable. Las derivaciones se revelan paso a paso con «Siguiente paso». Las figuras de las diapositivas se amplían al pulsarlas.</p></div>
+    <div class="mini"><h4>Etiquetas de cada tarjeta</h4><p>Todas indican «Diapositiva X · PDF p. Y». Las cajas de colores recogen apuntes del profesor, errores habituales, erratas y conexiones con los temas 2 y 3.</p></div>
+    <div class="mini"><h4>Ejercicios</h4><p>Los dos de la hoja (los dos de «Non-Parametric»): KNN con riesgo mínimo y el iris con \(k=3\) y dos distancias, con pistas y solución paso a paso comprobada en código.</p></div>
+  </div>
+
+  <div class="legend" style="margin:6px 0 4px">
+    <span><i class="dot" style="background:var(--prof)"></i>Apuntes del profesor</span>
+    <span><i class="dot" style="background:var(--trap)"></i>Error habitual</span>
+    <span><i class="dot" style="background:var(--err)"></i>Posible errata</span>
+    <span><i class="dot" style="background:var(--link)"></i>Conexión con otros temas</span>
+  </div>
+
+  <h2>Notación del tema</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Símbolo</th><th>Significado</th><th>Dónde aparece</th></tr></thead>
+    <tbody>
+      <tr><td>\(\bx\in\mathbb{R}^d\)</td><td>Vector de características que se quiere clasificar (o en el que se estima la densidad).</td><td>Diap. 4–8</td></tr>
+      <tr><td>\(f_{\bx}(\bx|\omega_i)\)</td><td>Densidad de la clase \(\omega_i\). En el tema 2 se suponía gaussiana; aquí se estima sin modelo.</td><td>Diap. 4, 20</td></tr>
+      <tr><td>\(R,\ V_R\)</td><td>Región alrededor de \(\bx\) y su volumen (hipervolumen en \(\mathbb{R}^d\)).</td><td>Diap. 4–7</td></tr>
+      <tr><td>\(P\)</td><td>Probabilidad de que una muestra caiga en \(R\): \(P=\int_Rf_{\bx}(\bx')d\bx'\).</td><td>Diap. 4–5</td></tr>
+      <tr><td>\(n,\ D=\{\bx_1,\dots,\bx_n\}\)</td><td>Número de vectores de entrenamiento y el conjunto. Algunas diapositivas usan \(N\).</td><td>Diap. 4, 22, 33, 36</td></tr>
+      <tr><td>\(k,\ k_n\)</td><td>Número de vectores dentro de \(R\). Con subíndice \(n\) cuando se elige en función de \(n\).</td><td>Diap. 4–7, 18</td></tr>
+      <tr><td>\(f_n(\bx)\)</td><td>Estimación de la densidad con \(n\) muestras: \(f_n(\bx)=\dfrac{k_n/n}{V_{R,n}}\).</td><td>Diap. 6–8, 18</td></tr>
+      <tr><td>\(\varphi(\cdot),\ h_n\)</td><td>Ventana (núcleo) de Parzen y su anchura. \(V_{R,n}\propto h_n^d\).</td><td>Diap. 8–10</td></tr>
+      <tr><td>\(\gamma_n(\bx)\)</td><td>Ventana escalada: \(\gamma_n(\bx)=\frac{1}{V_{R,n}}\varphi\!\left(\frac{\bx}{h_n}\right)\).</td><td>Diap. 8, 11</td></tr>
+      <tr><td>\(\bar f_n(\bx),\ \sigma_n^2(\bx)\)</td><td>Media y varianza del estimador de Parzen.</td><td>Diap. 11–12</td></tr>
+      <tr><td>\(\mathbf w_i,\ \sigma\)</td><td>Pesos del bloque \(i\) del clasificador neuronal (\(\mathbf w_i=\bx_i\)) y anchura de su gaussiana.</td><td>Diap. 16–17</td></tr>
+      <tr><td>\(k_i,\ n_i\)</td><td>Vecinos de la clase \(\omega_i\) entre los \(k\) de \(\bx\), y vectores de entrenamiento de esa clase.</td><td>Diap. 20</td></tr>
+      <tr><td>\(P_{MAP}(e),\ P_{1NN}(e)\)</td><td>Error de Bayes (el mínimo posible) y error del vecino más cercano.</td><td>Diap. 22</td></tr>
+      <tr><td>\(D(\bx,\mathbf z),\ s(\bx,\mathbf z)\)</td><td>Distancia y similitud entre dos vectores.</td><td>Diap. 23–24</td></tr>
+      <tr><td>\(y_{ij}\)</td><td>1 si la muestra de test \(i\) es de la clase \(j\) y 0 si no (pérdida logarítmica).</td><td>Diap. 33</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note trap"><span class="lab">Choques de notación que conviene tener presentes</span>
+    <p><strong>\(k\)</strong> significa dos cosas: en el histograma y en Parzen es lo que se <em>cuenta</em> dentro de una región fija; en KNN es lo que se <em>fija</em> y la región crece hasta contenerlo. <strong>\(D\)</strong> es el conjunto de datos en la diap. 4 y una distancia en la diap. 23. <strong>\(n\)</strong> y <strong>\(N\)</strong> son lo mismo (número de vectores de entrenamiento). Las diap. 11–12 hablan de la media y la varianza «del histograma», pero las fórmulas son las del estimador de Parzen. En el ejercicio 1 vuelven los costes \(\pi_{ij}\) del tema 2. Y la numeración de apartados de las diapositivas no coincide con el índice: «7 Choosing K» y «7 Organization of a ML competition» llevan el mismo número; aquí se sigue el índice.</p>
+  </div>
+
+  <h2>Mapa diapositiva ↔ página del PDF</h2>
+  <p class="small">El PDF tiene 42 páginas: 41 diapositivas y una página manuscrita (p. 5, la pizarra del 16/10). Las diapositivas 36–38 no muestran su número; las he numerado por posición.</p>
+  <div class="map-grid"><div class="tbl"><table>
+    <thead><tr><th>Diap.</th><th>PDF p.</th><th>Contenido</th><th>Bloque</th></tr></thead>
+    <tbody id="mapBody"></tbody>
+  </table></div></div>
+
+  <h2>Erratas y dudas detectadas en el material</h2>
+  <p class="small">Cada una aparece también en su tarjeta. Donde el material es ambiguo lo digo en lugar de elegir en silencio.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Dónde</th><th>Qué pone</th><th>Qué debería poner / matiz</th></tr></thead>
+    <tbody id="errBody"></tbody>
+  </table></div>
+</section>

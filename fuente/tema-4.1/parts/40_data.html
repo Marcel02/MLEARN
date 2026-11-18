@@ -1,0 +1,321 @@
+<script>
+const R = String.raw;
+const SECTIONS = [
+  {id:'inicio', n:'·', t:'Inicio y notación', grp:'Tema'},
+  {id:'b1', n:'1', t:'Estimación no paramétrica', grp:'Teoría'},
+  {id:'b2', n:'2', t:'Ventanas de Parzen', grp:'Teoría'},
+  {id:'b3', n:'3', t:'Clasificador neuronal', grp:'Teoría'},
+  {id:'b4', n:'4', t:'Estimación por k vecinos', grp:'Teoría'},
+  {id:'b5', n:'5', t:'Regla KNN y 1-NN', grp:'Teoría'},
+  {id:'b6', n:'6', t:'Distancias y similitudes', grp:'Teoría'},
+  {id:'b7', n:'7', t:'Elegir k y estandarizar', grp:'Teoría'},
+  {id:'b8', n:'8', t:'Conclusiones y ejemplo', grp:'Teoría'},
+  {id:'b9', n:'9', t:'Competiciones y proyectos', grp:'Teoría'},
+  {id:'ejercicios', n:'E', t:'Ejercicios', grp:'Práctica'},
+  {id:'flashcards', n:'F', t:'Flashcards', grp:'Práctica'},
+  {id:'repaso', n:'R', t:'Repasar falladas', grp:'Práctica'},
+  {id:'resumen', n:'∑', t:'Hoja resumen', grp:'Práctica'}
+];
+
+const MAP = [
+  ['1','1',R`Portada «Lecture 4.1 Non-parametric classifiers». Bibliografía: Duda, Hart y Stork, cap. 4`,'b1'],
+  ['2','2',R`Course overview: fila «Non-parametric» (k vecinos, lógica difusa)`,'b1'],
+  ['3','3',R`Índice 4.1.1–4.1.8`,'b1'],
+  ['4','4',R`«1 Non-parametric estimation of the pdf»: \(P=\int_Rf\), binomial, \(E\{k\}=nP\)`,'b1'],
+  ['—','5',R`Manuscrita (16/10): del histograma a \(\hat f=k/(nV_R)\); Parzen frente a KNN`,'b1'],
+  ['5','6',R`\(\hat P=k/n\) y el histograma \(f\approx(k/n)/V_R\)`,'b1'],
+  ['6','7',R`«Convergence conditions»: \(f_n=(k_n/n)/V_{R,n}\)`,'b1'],
+  ['7','8',R`Tres condiciones de convergencia; Parzen y KNN`,'b1'],
+  ['8','9',R`«2 Parzen windows»: \(k_n(\bx)\) y \(f_n(\bx)\)`,'b2'],
+  ['9','10',R`Condiciones sobre \(\varphi\); ejemplo 1 (\(h=1;\ 0{,}5;\ 0{,}2\))`,'b2'],
+  ['10','11',R`\(f_n\) con \(n=5\) para tres \(h\); funciones de base radial`,'b2'],
+  ['11','12',R`Media del estimador: convolución con la pdf`,'b2'],
+  ['12','13',R`Varianza, cota superior y sesgo`,'b2'],
+  ['13','14',R`Ejemplo 2: ventana gaussiana, \(n=1,16,256,\infty\)`,'b2'],
+  ['14','15',R`Ejemplo 3: fronteras con \(h\) pequeño y grande`,'b2'],
+  ['15','16',R`«3 Neural probabilistic classifier»: arquitectura`,'b3'],
+  ['16','17',R`Fase de entrenamiento`,'b3'],
+  ['17','18',R`Fase de decisión: \(e^{(\bx^T\mathbf w_i-1)/\sigma^2}\)`,'b3'],
+  ['18','19',R`«4 K-nearest neighbors estimation»; ejemplo 4`,'b4'],
+  ['19','20',R`Ejemplo 5: estimaciones KNN (comparar con la diap. 13)`,'b4'],
+  ['20','21',R`Posteriores \(\Pr(\omega_i|\bx)=k_i/k\)`,'b4'],
+  ['21','22',R`«5 K-nearest neighbors rule»; ejemplo 6 (\(k=8\))`,'b5'],
+  ['22','23',R`Parzen frente a KNN; 1-NN, Voronoi y cotas de Cover y Hart`,'b5'],
+  ['23','24',R`«6 Distances»: propiedades, Minkowski, Mahalanobis, Hamming`,'b6'],
+  ['24','25',R`Similitudes: coseno, Pearson, Jaccard`,'b6'],
+  ['25','26',R`«7 Choosing K»; ejemplo 7 (iris)`,'b7'],
+  ['26','27',R`Fronteras con \(k=1\), 12 y 50`,'b7'],
+  ['27','28',R`Importancia de la estandarización`,'b7'],
+  ['28','29',R`Combinar etiquetas: votos y regresión`,'b7'],
+  ['29','30',R`Comparación en conjuntos de juguete (KNN, LDA, QDA)`,'b7'],
+  ['30','31',R`Conclusiones sobre los métodos no paramétricos`,'b8'],
+  ['31','32',R`Ejemplo 8: crímenes en San Francisco (datos)`,'b8'],
+  ['32','33',R`Mapa de los crímenes por tipo`,'b8'],
+  ['33','34',R`Tabla de ejemplos y pérdida logarítmica`,'b8'],
+  ['34','35',R`Estimación de \(f(\bx|\omega_j)\) para 4 clases`,'b8'],
+  ['35','36',R`Robo de vehículos: mapa, día y año, serie temporal`,'b8'],
+  ['36','37',R`«7 Organization of a ML competition»: entrenamiento`,'b9'],
+  ['37','38',R`Ranking público con envíos repetidos`,'b9'],
+  ['38','39',R`Fase 2: envío único y ranking final`,'b9'],
+  ['39','40',R`La competición de Kaggle de MLEARN`,'b9'],
+  ['40','41',R`«Launching an ML project»: mapa de fases`,'b9'],
+  ['41','42',R`Tiempo dedicado a cada tarea (The Economist, 2020)`,'b9']
+];
+
+const ERRATA = [
+  ['Diap. 11–12', R`«Mean and variance of the histogram»`, R`Las fórmulas son las del estimador de Parzen con ventana \(\varphi\) cualquiera; el histograma es el caso rectangular.`, 'b2'],
+  ['Diap. 18', R`«Convergence is guaranteed if \(\lim k_n/n=0\)»; ejemplo 4: \(k_n\le\sqrt n\), \(k_n\le\ln n\)`, R`Hace falta también \(k_n\to\infty\) (diap. 7). Con «\(\le\)» valdría \(k_n=1\), que no converge: debería ser \(k_n=\sqrt n\) o \(k_n=\ln n\).`, 'b4'],
+  ['Diap. 20', R`\(\sum_{i=1}^cf(\bx|\omega_i)\Pr(\omega_i)\) en el denominador de \(\Pr(\omega_i|\bx)\)`, R`El índice del sumatorio choca con la clase \(i\) del numerador: \(\sum_{j=1}^c\).`, 'b4'],
+  ['Diap. 22', R`Parzen: ventana «centrada en \(\bx_i\)»`, R`Para clasificar \(\bx\), la ventana se centra en \(\bx\) (por simetría de \(\varphi\), equivale a evaluar en \(\bx\) ventanas centradas en cada \(\bx_i\)).`, 'b5'],
+  ['Diap. 22', R`«Cover&amp;Hart 1965»; \(N\to\infty\)`, R`El artículo es de 1967. \(N\) es el \(n\) del resto del tema.`, 'b5'],
+  ['Diap. 23', R`Hamming: «fraction of common elements»`, R`La distancia de Hamming cuenta las componentes <strong>distintas</strong>; la fracción de comunes sería una similitud.`, 'b6'],
+  ['Diap. 23', R`Mahalanobis \(D=(\bx-\mathbf z)^T\bC^{-1}(\bx-\mathbf z)\)`, R`Es la forma cuadrática; la distancia (con desigualdad triangular) es su raíz. Para ordenar vecinos da igual.`, 'b6'],
+  ['Diap. 24', R`«\(-1\ge s\ge1\) or \(0\ge s\ge1\)»; máximo «iff \(\bx=\mathbf z\)»`, R`\(-1\le s\le1\) o \(0\le s\le1\). El coseno vale 1 para cualquier múltiplo positivo de \(\bx\).`, 'b6'],
+  ['Diap. 25 y 36–38', R`«7 Choosing K» y «7 Organization of a ML competition»`, R`Mismo número en los dos apartados; «Choosing K» no está en el índice (4.1.7 es la competición).`, 'b7'],
+  ['Diap. 30', R`«Only suitable methods when \(d\) is large compared to the number of training vectors»`, R`Choca con la maldición de la dimensionalidad de la misma diapositiva. Viene de que no hay que estimar covarianzas (nota 2 del <em>overview</em>), pero con \(d\) grande las distancias pierden contraste.`, 'b8'],
+  ['Diap. 33', R`\(-\frac1N\sum_{i=1}^{N_{test}}\cdots\)`, R`El \(N\) del denominador es \(N_{test}\); la base del logaritmo no se indica (Kaggle usa el natural).`, 'b8'],
+  ['Ejercicio 1, solución', R`\(\Pr(\omega_j|\bx)=k_i/k\) y \(\arg\min_i\sum_j\pi_{ij}k_i\)`, R`Índice cambiado: \(\Pr(\omega_j|\bx)=k_j/k\) y \(\arg\min_i\sum_j\pi_{ij}k_j\).`, 'ejercicios'],
+  ['Ejercicio 2, solución', R`«a vector of \(d\) coefficients characterises» la regresión logística`, R`Con el término independiente son \(d+1\). La regresión logística no está en estas diapositivas.`, 'ejercicios']
+];
+
+const QUIZ = {
+b1: [
+ {id:'b1q1', q:R`Con \(n\) muestras independientes y una región \(R\) de probabilidad \(P\), ¿qué distribución sigue el número \(k\) de muestras que caen en \(R\)?`, opts:[
+  {t:R`Normal de media \(P\) y varianza \(1/n\).`, fb:R`\(k\) es un recuento entero entre 0 y \(n\); su media es \(nP\), no \(P\).`},
+  {t:R`Binomial: \(P_k=\binom nkP^k(1-P)^{n-k}\), con \(E\{k\}=nP\).`, ok:1, fb:R`Cada muestra cae dentro con probabilidad \(P\) de forma independiente: son \(n\) ensayos de Bernoulli.`},
+  {t:R`Uniforme entre 0 y \(n\).`, fb:R`Los valores cercanos a \(nP\) son mucho más probables que los extremos.`},
+  {t:R`Poisson de media \(P\).`, fb:R`Con \(n\) grande y \(P\) pequeña la binomial se parece a una Poisson, pero de media \(nP\).`}]},
+ {id:'b1q2', q:R`En una región de volumen \(V_R=0{,}5\) caen \(k=5\) de \(n=100\) muestras. ¿Qué estima el histograma para \(f(\bx)\)?`, opts:[
+  {t:R`\(0{,}05\)`, fb:R`Eso es \(\hat P=k/n\): falta dividir por el volumen.`},
+  {t:R`\(0{,}025\)`, fb:R`Se ha multiplicado por \(V_R\) en lugar de dividir.`},
+  {t:R`\(0{,}1\)`, ok:1, fb:R`\(f\approx\frac{k/n}{V_R}=\frac{0{,}05}{0{,}5}=0{,}1\).`},
+  {t:R`\(10\)`, fb:R`\(k/V_R\) sin dividir por \(n\).`}]},
+ {id:'b1q3', q:R`¿Cuál de estas condiciones <strong>no</strong> es necesaria para que \(f_n(\bx)=\frac{k_n/n}{V_{R,n}}\to f(\bx)\)?`, opts:[
+  {t:R`\(V_{R,n}\to0\)`, fb:R`Sí es necesaria: elimina el promediado (sesgo).`},
+  {t:R`\(k_n\to\infty\)`, fb:R`Sí es necesaria: hace fiable el conteo (varianza).`},
+  {t:R`\(k_n/n\to0\)`, fb:R`Sí es necesaria: como \(k/n\approx fV\), si \(V\to0\) también \(k/n\to0\).`},
+  {t:R`\(k_n=n\) para todo \(n\)`, ok:1, fb:R`Al contrario: si \(k_n=n\), \(k_n/n=1\) y la región tiene que contener todos los datos, así que no puede encogerse.`}]},
+ {id:'b1q4', q:R`¿Qué fija cada estrategia?`, opts:[
+  {t:R`Parzen fija \(k\) y KNN fija el volumen.`, fb:R`Al revés.`},
+  {t:R`Parzen fija el volumen \(V_R\) (igual en todo el dominio) y cuenta \(k\); KNN fija \(k\) y deja que \(V_R(\bx)\) varíe.`, ok:1, fb:R`Es el resumen de la pizarra (p. 5): «① fix \(V_R\) … and count k; ② fix k and vary \(V_R(\bx)\)».`},
+  {t:R`Las dos fijan el volumen; solo cambia la forma de la ventana.`, fb:R`KNN no fija el volumen: crece hasta incluir \(k\) muestras.`},
+  {t:R`Las dos fijan \(k\).`, fb:R`Parzen cuenta \(k\) dentro de una ventana fija.`}]},
+ {id:'b1q5', q:R`¿Por qué la estimación por histograma es una versión «distorsionada» de \(f\)?`, opts:[
+  {t:R`Porque redondea los datos.`, fb:R`No hay redondeo; el problema es el promediado.`},
+  {t:R`Porque promedia \(f\) dentro de la región: con \(V_R\) finito, los detalles más pequeños que la región se pierden.`, ok:1, fb:R`\(\int_Rf/V_R\) es la media de \(f\) en \(R\), no su valor en \(\bx\). Por eso interesa \(V_R\to0\).`},
+  {t:R`Porque usa el estimador ML de \(P\), que está sesgado.`, fb:R`\(\hat P=k/n\) es insesgado: \(E\{k/n\}=P\).`},
+  {t:R`Porque supone que \(f\) es gaussiana.`, fb:R`No supone ningún modelo.`}]}
+],
+b2: [
+ {id:'b2q1', q:R`Datos 1D \(\{1;\ 2;\ 2{,}5;\ 4\}\), ventana rectangular de anchura \(h=1\). ¿Cuánto vale \(f_n(2)\)?`, opts:[
+  {t:R`\(0{,}25\)`, fb:R`Sería con un solo punto dentro; caen dos (2 y 2,5).`},
+  {t:R`\(0{,}5\)`, ok:1, fb:R`En \([1{,}5;\ 2{,}5]\) caen 2 y 2,5: \(k=2\), \(f_n=\frac{2}{4\cdot1}=0{,}5\).`},
+  {t:R`\(0{,}75\)`, fb:R`El 1 queda fuera (está a distancia 1 > \(h/2\)).`},
+  {t:R`\(2\)`, fb:R`Falta dividir por \(nV=4\).`}]},
+ {id:'b2q2', q:R`¿Qué condiciones debe cumplir la ventana \(\varphi\) para que \(f_n\) sea una pdf?`, opts:[
+  {t:R`\(\varphi\ge0\) e \(\int\varphi=1\) (y \(V_n\propto h_n^d\)).`, ok:1, fb:R`No negatividad para que \(f_n\ge0\) e integral 1 para que \(f_n\) integre 1 tras escalar con \(V_{R,n}\).`},
+  {t:R`\(\varphi\) debe ser gaussiana.`, fb:R`La gaussiana es una opción; la rectangular también vale.`},
+  {t:R`\(\varphi\) debe valer 1 en el origen.`, fb:R`No es una condición; la gaussiana estándar vale \(1/\sqrt{2\pi}\) en 0.`},
+  {t:R`\(\varphi\) debe ser simétrica y acotada por 1.`, fb:R`Es lo habitual (base radial), pero lo que garantiza una pdf es \(\varphi\ge0\) e \(\int\varphi=1\).`}]},
+ {id:'b2q3', q:R`¿Qué es, en media, el estimador de Parzen?`, opts:[
+  {t:R`La pdf verdadera para cualquier \(h\).`, fb:R`Solo cuando la ventana tiende a una delta.`},
+  {t:R`La convolución de la ventana \(\gamma_n\) con la pdf verdadera.`, ok:1, fb:R`\(\bar f_n=\int\gamma_n(\bx-\mathbf v)f(\mathbf v)d\mathbf v\): una versión emborronada de \(f\).`},
+  {t:R`El histograma con bins de volumen 1.`, fb:R`Ese es un caso particular, no la media del estimador.`},
+  {t:R`La media de las muestras.`, fb:R`\(\bar f_n\) es una función de \(\bx\), no un número.`}]},
+ {id:'b2q4', q:R`Con \(n\) fijo, ¿qué pasa si se aumenta mucho la anchura \(h_n\)?`, opts:[
+  {t:R`Bajan el sesgo y la varianza.`, fb:R`Están en conflicto: no bajan los dos a la vez.`},
+  {t:R`Sube la varianza y baja el sesgo.`, fb:R`Al revés.`},
+  {t:R`Baja la varianza (cota \(\propto1/(nV)\)) pero sube el sesgo (más emborronado).`, ok:1, fb:R`«Given n, a low variance implies a large \(V_{R,n}\) ⇒ large bias».`},
+  {t:R`No cambia nada si \(n\) es grande.`, fb:R`La anchura importa siempre; por eso se elige \(h_n\) en función de \(n\).`}]},
+ {id:'b2q5', q:R`\(f=\mathcal N(0,1)\) y ventana gaussiana con \(h=1\). ¿Cuánto vale \(\bar f_n(0)\)?`, opts:[
+  {t:R`\(0{,}399\), como \(f(0)\)`, fb:R`Habría sesgo nulo solo si \(h\to0\).`},
+  {t:R`\(0{,}282\)`, ok:1, fb:R`La convolución de dos gaussianas es \(\mathcal N(0,\,1+h^2)=\mathcal N(0,2)\): \(1/\sqrt{4\pi}=0{,}282\).`},
+  {t:R`\(0{,}199\)`, fb:R`Sería dividir la altura por 2; las varianzas se suman, no las desviaciones.`},
+  {t:R`Depende de \(n\).`, fb:R`La media del estimador no depende de \(n\) (con \(h\) fija).`}]},
+ {id:'b2q6', q:R`Según la observación de la diap. 14, ¿cómo debería ser la ventana ideal?`, opts:[
+  {t:R`Igual en todas partes, lo más estrecha posible.`, fb:R`Donde hay pocos datos dejaría huecos.`},
+  {t:R`Más ancha donde la densidad de datos es pequeña.`, ok:1, fb:R`Es la idea que lleva a KNN: adaptar el volumen a los datos.`},
+  {t:R`Más ancha donde hay muchos datos.`, fb:R`Ahí conviene estrecharla, porque hay datos para estimar el detalle.`},
+  {t:R`Rectangular.`, fb:R`La forma importa menos que la anchura.`}]}
+],
+b3: [
+ {id:'b3q1', q:R`En el clasificador neuronal probabilístico, ¿cuántos nodos tiene la capa de patrones?`, opts:[
+  {t:R`\(d\), uno por característica.`, fb:R`Esos son los de entrada.`},
+  {t:R`\(c\), uno por clase.`, fb:R`Esos son los de clase.`},
+  {t:R`\(n\), uno por vector de entrenamiento.`, ok:1, fb:R`Cada nodo guarda un \(\bx_i\) en sus pesos: la red crece con los datos.`},
+  {t:R`Se elige por validación.`, fb:R`No se elige: es el tamaño del entrenamiento.`}]},
+ {id:'b3q2', q:R`¿En qué consiste el entrenamiento?`, opts:[
+  {t:R`En normalizar los vectores, copiar cada uno en los pesos de su nodo (\(\mathbf w_i=\bx_i\)) y conectarlo con su clase.`, ok:1, fb:R`No hay optimización: entrenar es guardar.`},
+  {t:R`En retropropagar el error durante muchas épocas.`, fb:R`No hay gradientes ni iteraciones.`},
+  {t:R`En estimar una media y una covarianza por clase.`, fb:R`Eso sería un clasificador paramétrico (QDA).`},
+  {t:R`En elegir \(k\).`, fb:R`Aquí el hiperparámetro es \(\sigma\) (la anchura), y no se «entrena».`}]},
+ {id:'b3q3', q:R`Con \(\bx\) y \(\mathbf w_i\) normalizados, \(\bx^T\mathbf w_i=0{,}8\) y \(\sigma^2=0{,}5\), ¿cuánto vale la activación \(e^{(\bx^T\mathbf w_i-1)/\sigma^2}\)?`, opts:[
+  {t:R`\(e^{-0{,}4}\approx0{,}670\)`, ok:1, fb:R`\((0{,}8-1)/0{,}5=-0{,}4\).`},
+  {t:R`\(e^{-0{,}2}\approx0{,}819\)`, fb:R`Falta dividir por \(\sigma^2=0{,}5\).`},
+  {t:R`\(e^{0{,}8}\)`, fb:R`El exponente es \((\bx^T\mathbf w_i-1)/\sigma^2\), que nunca es positivo con vectores normalizados.`},
+  {t:R`\(1\)`, fb:R`Solo si \(\bx=\mathbf w_i\).`}]},
+ {id:'b3q4', q:R`¿Por qué hace falta normalizar los vectores?`, opts:[
+  {t:R`Para que la suma de cada clase dé exactamente la posterior.`, fb:R`La normalización afecta a la distancia, no a la suma de clase.`},
+  {t:R`Porque así \(\|\bx-\mathbf w_i\|^2=2-2\bx^T\mathbf w_i\) y la activación depende solo del producto escalar.`, ok:1, fb:R`Los términos \(\bx^T\bx\) y \(\mathbf w_i^T\mathbf w_i\) valen 1 y se pueden quitar.`},
+  {t:R`Para evitar el sobreajuste.`, fb:R`No tiene que ver con el sobreajuste.`},
+  {t:R`Porque las ventanas de Parzen solo funcionan en la esfera unidad.`, fb:R`Funcionan en cualquier \(\mathbb{R}^d\); la normalización es para escribirlo como una red.`}]}
+],
+b4: [
+ {id:'b4q1', q:R`En 1D, con \(n=100\) y \(k=10\), el décimo vecino de \(x\) está a distancia 0,25. ¿Cuánto vale \(f_n(x)\)?`, opts:[
+  {t:R`\(0{,}4\)`, fb:R`Se ha tomado \(V=0{,}25\); la región va de \(x-0{,}25\) a \(x+0{,}25\).`},
+  {t:R`\(0{,}2\)`, ok:1, fb:R`\(V=2\cdot0{,}25=0{,}5\) y \(f_n=\frac{10}{100\cdot0{,}5}=0{,}2\).`},
+  {t:R`\(0{,}1\)`, fb:R`Sería con \(V=1\).`},
+  {t:R`\(40\)`, fb:R`Falta dividir por \(n\).`}]},
+ {id:'b4q2', q:R`¿Qué elección de \(k_n\) garantiza la convergencia de la estimación KNN?`, opts:[
+  {t:R`\(k_n=1\) para todo \(n\).`, fb:R`\(k_n/n\to0\), pero \(k_n\) no tiende a infinito: quedan picos que no desaparecen.`},
+  {t:R`\(k_n=n/2\).`, fb:R`\(k_n/n=1/2\) no tiende a 0.`},
+  {t:R`\(k_n=\sqrt n\).`, ok:1, fb:R`Crece sin límite, pero más despacio que \(n\): cumple las dos condiciones.`},
+  {t:R`Cualquier \(k_n\le\sqrt n\).`, fb:R`Es lo que pone la diap. 18, pero incluye \(k_n=1\), que no converge.`}]},
+ {id:'b4q3', q:R`Entre los \(k=7\) vecinos de \(\bx\), 4 son de \(\omega_1\) y 3 de \(\omega_2\). ¿Cuánto vale la estimación de \(\Pr(\omega_1|\bx)\)?`, opts:[
+  {t:R`\(4/3\)`, fb:R`Eso es \(k_1/k_2\), no una probabilidad.`},
+  {t:R`\(4/(nV_R(\bx))\)`, fb:R`Eso es \(f(\bx|\omega_1)\Pr(\omega_1)\); falta normalizar.`},
+  {t:R`\(4/7\approx0{,}57\)`, ok:1, fb:R`\(\Pr(\omega_i|\bx)=k_i/k\): la fracción de vecinos de la clase.`},
+  {t:R`\(1/2\)`, fb:R`Las clases no aparecen igual entre los vecinos.`}]},
+ {id:'b4q4', q:R`¿Por qué el volumen \(V_R(\bx)\) desaparece de \(\Pr(\omega_i|\bx)=k_i/k\)?`, opts:[
+  {t:R`Porque se aproxima por 1.`, fb:R`No se aproxima: se cancela.`},
+  {t:R`Porque todas las clases se estiman en la misma región (la de los \(k\) vecinos), así que \(V_R(\bx)\) está en el numerador y en el denominador.`, ok:1, fb:R`También se cancela \(n\). Por eso para clasificar no hace falta calcular volúmenes.`},
+  {t:R`Porque KNN solo funciona en 1D.`, fb:R`Funciona en cualquier dimensión.`},
+  {t:R`Porque las priors son iguales.`, fb:R`No hace falta: las priors estimadas son \(n_i/n\).`}]},
+ {id:'b4q5', q:R`¿Cuál de estas afirmaciones sobre la estimación KNN de la densidad es cierta?`, opts:[
+  {t:R`Siempre integra 1.`, fb:R`Con \(k=1\) en 1D, \(f_n=1/(2n|x-x_1|)\) y su integral diverge.`},
+  {t:R`No integra 1 en general, aunque sirve para comparar densidades y clasificar.`, ok:1, fb:R`Parzen sí integra 1 por construcción; KNN no.`},
+  {t:R`Es idéntica a Parzen con ventana rectangular.`, fb:R`Parzen fija el ancho; KNN, el número de muestras.`},
+  {t:R`Vale cero donde no hay muestras.`, fb:R`Al contrario: el volumen crece hasta encontrar \(k\) muestras, así que nunca vale cero.`}]}
+],
+b5: [
+ {id:'b5q1', q:R`¿Qué decide la regla KNN?`, opts:[
+  {t:R`La clase más representada entre los \(k\) vecinos de \(\bx\).`, ok:1, fb:R`Es MAP con las posteriores \(k_i/k\).`},
+  {t:R`La clase del vecino más lejano de los \(k\).`, fb:R`No: votan todos los \(k\).`},
+  {t:R`La clase cuya media está más cerca.`, fb:R`Eso es el clasificador de distancia mínima (tema 2, caso 3).`},
+  {t:R`La clase con más muestras en todo el entrenamiento.`, fb:R`Eso pasa solo si \(k=n\).`}]},
+ {id:'b5q2', q:R`\(k=5\): vecinos de clases \(\omega_1,\omega_2,\omega_1,\omega_1,\omega_2\). ¿Qué se decide y con qué posterior estimada?`, opts:[
+  {t:R`\(\omega_2\), con 0,4.`, fb:R`\(\omega_2\) tiene 2 de 5 votos.`},
+  {t:R`Empate.`, fb:R`Con \(k\) impar y dos clases no puede haber empate.`},
+  {t:R`\(\omega_1\), con \(\Pr(\omega_1|\bx)\approx0{,}6\).`, ok:1, fb:R`\(k_1=3\), \(k_2=2\).`},
+  {t:R`\(\omega_1\), con 1.`, fb:R`La posterior es la fracción de votos, 3/5.`}]},
+ {id:'b5q3', q:R`Si el error de Bayes es \(P_{MAP}(e)=0{,}1\) y \(c=2\), ¿qué garantizan las cotas de Cover y Hart para 1-NN con infinitas muestras?`, opts:[
+  {t:R`\(P_{1NN}(e)=0{,}1\).`, fb:R`Solo es la cota inferior.`},
+  {t:R`\(0{,}1\le P_{1NN}(e)\le0{,}18\).`, ok:1, fb:R`\(2P_{MAP}(1-P_{MAP})=2\cdot0{,}1\cdot0{,}9=0{,}18\), por debajo de \(2P_{MAP}=0{,}2\).`},
+  {t:R`\(P_{1NN}(e)\le0{,}05\).`, fb:R`Ningún clasificador baja del error de Bayes.`},
+  {t:R`Nada, porque 1-NN no converge.`, fb:R`Las cotas son justamente un resultado asintótico de convergencia.`}]},
+ {id:'b5q4', q:R`¿Qué forma tienen las regiones de decisión de 1-NN?`, opts:[
+  {t:R`Círculos centrados en las medias.`, fb:R`No usa medias.`},
+  {t:R`Celdas de Voronoi: cada muestra «posee» los puntos más cercanos a ella que a ninguna otra.`, ok:1, fb:R`La región de una clase es la unión de las celdas de sus muestras (figura de la diap. 22).`},
+  {t:R`Hiperplanos paralelos.`, fb:R`Las fronteras son trozos de mediatrices entre muestras, no planos globales.`},
+  {t:R`Elipses.`, fb:R`Las celdas son polígonos.`}]},
+ {id:'b5q5', q:R`¿En qué se diferencia Parzen de KNN como clasificador?`, opts:[
+  {t:R`Parzen pondera los votos de las muestras con \(\varphi\) en una ventana de tamaño fijo; KNN cuenta por igual los votos de los \(k\) más cercanos, con un radio que depende de los datos.`, ok:1, fb:R`El voto KNN ponderado por \(1/d\) está a medio camino.`},
+  {t:R`Parzen es paramétrico y KNN no.`, fb:R`Los dos son no paramétricos.`},
+  {t:R`Parzen no necesita los datos de entrenamiento al clasificar.`, fb:R`Los necesita todos.`},
+  {t:R`No hay diferencia.`, fb:R`Difieren en qué se fija: el volumen o el número de muestras.`}]}
+],
+b6: [
+ {id:'b6q1', q:R`\(\bx-\mathbf z=(3,4)\). ¿Cuánto valen \(\|\bx-\mathbf z\|_1\), \(\|\bx-\mathbf z\|_2\) y \(\|\bx-\mathbf z\|_\infty\)?`, opts:[
+  {t:R`7, 5 y 4`, ok:1, fb:R`\(3+4=7\); \(\sqrt{9+16}=5\); \(\max(3,4)=4\).`},
+  {t:R`5, 7 y 4`, fb:R`Están cambiadas \(L_1\) y \(L_2\).`},
+  {t:R`7, 25 y 4`, fb:R`25 es \(L_2\) al cuadrado.`},
+  {t:R`7, 5 y 3`, fb:R`\(L_\infty\) es la mayor diferencia, 4.`}]},
+ {id:'b6q2', q:R`¿Qué forma tiene la bola unidad \(\{\mathbf z:\|\mathbf z\|_1=1\}\) en 2D?`, opts:[
+  {t:R`Un círculo.`, fb:R`Esa es la de \(p=2\).`},
+  {t:R`Un rombo (cuadrado girado 45°).`, ok:1, fb:R`\(|z_1|+|z_2|=1\) son cuatro segmentos.`},
+  {t:R`Un cuadrado con lados paralelos a los ejes.`, fb:R`Esa es la de \(p=\infty\).`},
+  {t:R`Una elipse.`, fb:R`Sería Mahalanobis.`}]},
+ {id:'b6q3', q:R`¿Cuál es la distancia de Hamming entre \(10110\) y \(10011\)?`, opts:[
+  {t:R`3, el número de posiciones en las que coinciden.`, fb:R`Eso es lo que sugiere la errata de la diapositiva: Hamming cuenta las que <em>difieren</em>.`},
+  {t:R`2 (o 0,4 como fracción).`, ok:1, fb:R`Difieren las posiciones 3 y 5.`},
+  {t:R`0,5`, fb:R`Ese es el coeficiente de Jaccard.`},
+  {t:R`\(\sqrt2\)`, fb:R`Sería la euclídea; con vectores binarios es la raíz de Hamming, pero no es Hamming.`}]},
+ {id:'b6q4', q:R`¿Qué similitud da 1 entre \(\bx\) y \(3\bx\)?`, opts:[
+  {t:R`Ninguna: solo da 1 si son iguales.`, fb:R`Es lo que dice la diapositiva, pero el coseno no lo cumple.`},
+  {t:R`El coseno, porque solo mide el ángulo.`, ok:1, fb:R`\(\frac{\bx^T3\bx}{\|\bx\|\,3\|\bx\|}=1\).`},
+  {t:R`Jaccard.`, fb:R`Jaccard es para vectores binarios.`},
+  {t:R`La distancia euclídea.`, fb:R`Es una distancia, no una similitud, y no vale 0.`}]},
+ {id:'b6q5', q:R`¿Por qué Jaccard no cuenta las coincidencias 0–0?`, opts:[
+  {t:R`Porque en datos binarios dispersos casi todo son ceros, y contarlos haría parecidos a todos los vectores.`, ok:1, fb:R`Por ejemplo, dos clientes que no han comprado los mismos 9990 productos de 10 000 no se parecen por eso.`},
+  {t:R`Porque los ceros no se pueden restar.`, fb:R`Se pueden restar; es una cuestión de qué coincidencias son informativas.`},
+  {t:R`Para que cumpla la desigualdad triangular.`, fb:R`Es una similitud; la desigualdad triangular es para distancias.`},
+  {t:R`Por error de la diapositiva.`, fb:R`La definición es correcta.`}]}
+],
+b7: [
+ {id:'b7q1', q:R`¿Por qué no se puede elegir \(k\) minimizando el error de entrenamiento?`, opts:[
+  {t:R`Porque con \(k=1\) cada muestra es su propio vecino y el error de entrenamiento es 0: siempre ganaría \(k=1\).`, ok:1, fb:R`Hay que usar validación (o validación cruzada).`},
+  {t:R`Porque el error de entrenamiento crece con \(n\).`, fb:R`No es el motivo.`},
+  {t:R`Porque KNN no tiene error de entrenamiento.`, fb:R`Sí lo tiene para \(k>1\).`},
+  {t:R`Se puede, si \(k\) es impar.`, fb:R`La paridad no arregla el sesgo hacia \(k=1\).`}]},
+ {id:'b7q2', q:R`¿Qué ocurre con \(k\) muy grande (por ejemplo, \(k=n\))?`, opts:[
+  {t:R`Sobreajuste.`, fb:R`Eso es con \(k\) pequeño.`},
+  {t:R`Infraajuste: con \(k=n\) se decide siempre la clase más frecuente del entrenamiento.`, ok:1, fb:R`Las fronteras se suavizan hasta desaparecer.`},
+  {t:R`Las fronteras se vuelven más irregulares.`, fb:R`Al revés: se suavizan.`},
+  {t:R`Nada, el resultado no depende de \(k\).`, fb:R`KNN es muy sensible a \(k\).`}]},
+ {id:'b7q3', q:R`Una característica se mide en milímetros (valores de miles) y otra en metros (valores de unidades). Sin estandarizar, ¿qué pasa con KNN?`, opts:[
+  {t:R`Nada, KNN es invariante a la escala.`, fb:R`No lo es: la distancia suma diferencias en sus unidades.`},
+  {t:R`Los vecinos los decide casi solo la característica en milímetros.`, ok:1, fb:R`Es la diap. 27: con un eje ×100 las fronteras son franjas paralelas a él.`},
+  {t:R`Los vecinos los decide la característica en metros.`, fb:R`Al revés: domina la de valores grandes.`},
+  {t:R`El error de entrenamiento con \(k=1\) deja de ser 0.`, fb:R`Sigue siendo 0: cada muestra sigue siendo su propio vecino.`}]},
+ {id:'b7q4', q:R`\(k=3\): un vecino de \(\omega_1\) a distancia 0,5 y dos de \(\omega_2\) a distancia 1. ¿Qué decide el voto ponderado por \(1/d^2\)?`, opts:[
+  {t:R`\(\omega_2\)`, fb:R`Eso decide la mayoría simple (2 a 1).`},
+  {t:R`Empate`, fb:R`El empate sale con pesos \(1/d\) (2 frente a 2).`},
+  {t:R`\(\omega_1\)`, ok:1, fb:R`\(\omega_1\): \(1/0{,}25=4\); \(\omega_2\): \(1+1=2\).`},
+  {t:R`No se puede decidir sin conocer \(n\).`, fb:R`Solo intervienen los \(k\) vecinos.`}]},
+ {id:'b7q5', q:R`¿Con qué estadísticos se estandarizan los datos de test?`, opts:[
+  {t:R`Con la media y la desviación del propio test.`, fb:R`Usaría información del test y trataría distinto entrenamiento y test.`},
+  {t:R`Con la media y la desviación calculadas en el entrenamiento.`, ok:1, fb:R`Se aplican al test igual que cualquier otro parámetro aprendido.`},
+  {t:R`Con los de entrenamiento y test juntos.`, fb:R`Es una fuga de información del test.`},
+  {t:R`No hace falta estandarizar el test.`, fb:R`Sí: las distancias tienen que medirse en la misma escala.`}]}
+],
+b8: [
+ {id:'b8q1', q:R`Datos uniformes en un hipercubo unidad de dimensión \(d=10\). ¿Qué lado debe tener un cubo para contener el 1 % de los datos?`, opts:[
+  {t:R`0,01`, fb:R`Eso sería en 1D.`},
+  {t:R`0,1`, fb:R`Sería en 2D (\(0{,}1^2=0{,}01\)).`},
+  {t:R`\(0{,}01^{1/10}\approx0{,}63\)`, ok:1, fb:R`El «vecindario» ya abarca casi dos tercios del rango de cada variable: es la maldición de la dimensionalidad.`},
+  {t:R`1`, fb:R`El cubo entero contiene el 100 %.`}]},
+ {id:'b8q2', q:R`¿Qué propone la diapositiva para que KNN sea menos propenso al sobreajuste?`, opts:[
+  {t:R`Usar siempre \(k=1\).`, fb:R`Es el valor que más sobreajusta.`},
+  {t:R`Quitar las muestras «ruidosas» (las que tienen vecinos de otra clase) y elegir un \(k\) adecuado.`, ok:1, fb:R`Eliminar esas muestras quita las «islas» de las fronteras.`},
+  {t:R`No estandarizar.`, fb:R`Estandarizar es crucial, pero por otro motivo (la escala).`},
+  {t:R`Añadir características irrelevantes.`, fb:R`Las irrelevantes empeoran KNN.`}]},
+ {id:'b8q3', q:R`Un clasificador da probabilidad 0,7, 0,5 y 0,9 a la clase real de tres muestras. ¿Cuánto vale la pérdida logarítmica (logaritmo natural)?`, opts:[
+  {t:R`0,70`, fb:R`Es la media de las probabilidades, no de sus logaritmos.`},
+  {t:R`0,385`, ok:1, fb:R`\(-\frac13(\ln0{,}7+\ln0{,}5+\ln0{,}9)=\frac{0{,}357+0{,}693+0{,}105}{3}\).`},
+  {t:R`1,155`, fb:R`Falta dividir por \(N_{test}=3\).`},
+  {t:R`0`, fb:R`Solo sería 0 si las tres probabilidades fueran 1.`}]},
+ {id:'b8q4', q:R`¿Por qué la pérdida logarítmica da problemas con las posteriores \(k_i/k\) de KNN sin retocar?`, opts:[
+  {t:R`Porque \(k_i/k\) puede ser 0 para la clase real, y \(-\log0=\infty\).`, ok:1, fb:R`Se suaviza, por ejemplo con \((k_i+1)/(k+c)\).`},
+  {t:R`Porque \(k_i/k\) puede ser mayor que 1.`, fb:R`\(k_i\le k\), así que no.`},
+  {t:R`Porque KNN no da probabilidades.`, fb:R`Sí da: \(k_i/k\).`},
+  {t:R`No da ningún problema.`, fb:R`Un solo cero en la clase real hace infinita la pérdida.`}]},
+ {id:'b8q5', q:R`En el ejemplo de San Francisco, ¿qué representan las curvas de nivel sobre el mapa?`, opts:[
+  {t:R`Las fronteras de decisión de LDA.`, fb:R`No son fronteras, son densidades.`},
+  {t:R`Estimaciones no paramétricas de \(f(\bx|\omega_j)\) en 2D (longitud, latitud) para cada categoría.`, ok:1, fb:R`Con varios focos irregulares que una gaussiana no podría representar.`},
+  {t:R`La altitud del terreno.`, fb:R`Son densidades de crímenes.`},
+  {t:R`Los distritos policiales.`, fb:R`Los distritos son otra variable (PdDistrict).`}]}
+],
+b9: [
+ {id:'b9q1', q:R`En una competición en dos fases, ¿para qué sirve la base de datos 3 (envío único)?`, opts:[
+  {t:R`Para entrenar el modelo final.`, fb:R`No tiene etiquetas para los participantes.`},
+  {t:R`Para dar un ranking final que no se haya podido «sobreajustar» con envíos repetidos.`, ok:1, fb:R`El ranking público (base 2) se puede usar, sin querer, para validar; la base 3 no.`},
+  {t:R`Para que el organizador elija \(k\).`, fb:R`El organizador solo evalúa.`},
+  {t:R`Para aumentar los datos de entrenamiento.`, fb:R`No se usa para entrenar.`}]},
+ {id:'b9q2', q:R`¿Qué problema tiene enviar muchas veces y fiarse del ranking público?`, opts:[
+  {t:R`Ninguno: cuantos más envíos, mejor estimación del error.`, fb:R`Al elegir el mejor de muchos se sobreajusta a esa base.`},
+  {t:R`Que se acaba eligiendo el modelo que puntúa bien en esa base por casualidad: su puntuación deja de ser una estimación honesta.`, ok:1, fb:R`Es como validar con el test.`},
+  {t:R`Que el organizador cambia las etiquetas.`, fb:R`No es eso.`},
+  {t:R`Que las probabilidades enviadas dejan de sumar 1.`, fb:R`No tiene relación.`}]},
+ {id:'b9q3', q:R`Según el gráfico de la diap. 41, ¿qué fracción del tiempo de un proyecto de ML se dedica a preparar los datos (limpieza, etiquetado, aumento, agregación e identificación)?`, opts:[
+  {t:R`20 %`, fb:R`Esa es, aproximadamente, la parte de modelos (entrenamiento, ajuste, desarrollo y producción).`},
+  {t:R`50 %`, fb:R`Solo limpieza y etiquetado ya suman 50 %.`},
+  {t:R`80 %`, ok:1, fb:R`\(25+25+15+10+5=80\,\%\).`},
+  {t:R`95 %`, fb:R`Entrenar, ajustar, desarrollar y operacionalizar suman 20 %.`}]},
+ {id:'b9q4', q:R`¿En qué fase del proyecto (diap. 40) está estandarizar las características?`, opts:[
+  {t:R`Definir el problema.`, fb:R`Ahí se describe el problema y los datos disponibles.`},
+  {t:R`Preparar los datos (transformar: escalado).`, ok:1, fb:R`«Prepare Data → Transform Data → Scaling».`},
+  {t:R`Presentar los resultados.`, fb:R`Es mucho antes.`},
+  {t:R`Mejorar los resultados (ensembles).`, fb:R`Los ensembles son otra cosa.`}]}
+]
+};
+</script>

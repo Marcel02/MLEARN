@@ -1,0 +1,96 @@
+<section class="view" id="v-b6" data-sec="b6">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 6 · Apartado 4.1.6 del PDF</div>
+    <h1>Distancias y similitudes</h1>
+    <p class="lede">«Vecino más cercano» depende de cómo se mida la cercanía. Propiedades de una distancia, las más usadas (Minkowski, Mahalanobis, Hamming) y las similitudes (coseno, Pearson, Jaccard).</p>
+    <div class="meta"><span class="chip">Diap. 23–24</span><span class="chip">PDF p. 24–25</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b6-1">
+    <header><h3>Qué es una distancia</h3><span class="ref">Diap. 23 · PDF p. 24</span></header>
+    <div class="summary">
+      <table class="tbl-inline">
+        <tr><td>No negatividad</td><td>\(D(\bx,\mathbf z)\ge0\)</td></tr>
+        <tr><td>Reflexividad</td><td>\(D(\bx,\mathbf z)=0\iff\bx=\mathbf z\)</td></tr>
+        <tr><td>Simetría</td><td>\(D(\bx,\mathbf z)=D(\mathbf z,\bx)\)</td></tr>
+        <tr><td>Desigualdad triangular</td><td>\(D(\bx,\mathbf z)+D(\mathbf z,\mathbf t)\ge D(\bx,\mathbf t)\)</td></tr>
+      </table>
+      <p>La mejor distancia depende del problema y hay que <strong>validarla</strong>.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Para qué sirve cada propiedad.</strong> La simetría hace que «\(\mathbf z\) es vecino de \(\bx\)» y «\(\bx\) es vecino de \(\mathbf z\)» se midan igual. La desigualdad triangular permite acelerar la búsqueda de vecinos (árboles, podas): si \(\mathbf z\) está lejos de \(\mathbf t\) y \(\mathbf t\) cerca de \(\bx\), se puede descartar \(\mathbf z\) sin calcular su distancia.</li>
+        <li><strong>Validar.</strong> La distancia es un hiperparámetro más, como \(k\): se elige comparando el error en validación.</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b6-2">
+    <header><h3>Minkowski, Mahalanobis y Hamming</h3><span class="ref">Diap. 23 · PDF p. 24</span></header>
+    <div class="summary">
+      <ul>
+        <li><strong>Minkowski:</strong> \(D(\bx,\mathbf z)=\|\bx-\mathbf z\|_p=\left(\sum_{i=1}^d|x_i-z_i|^p\right)^{1/p}\); \(p=1\) es Manhattan y \(p=2\), euclídea.</li>
+        <li><strong>Mahalanobis:</strong> \(D(\bx,\mathbf z)=(\bx-\mathbf z)^T\bC^{-1}(\bx-\mathbf z)\).</li>
+        <li><strong>Hamming:</strong> para vectores de símbolos (por ejemplo, binarios), cuántas componentes difieren.</li>
+      </ul>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Bolas unidad.</strong> El conjunto \(\{\mathbf z:D(\mathbf 0,\mathbf z)=1\}\) es un rombo con \(p=1\), un círculo con \(p=2\) y un cuadrado con \(p\to\infty\) (\(\|\cdot\|_\infty=\max_i|x_i-z_i|\)). La «región que contiene \(k\) vecinos» de KNN tiene esa forma.</li>
+        <li><strong>Qué cambia al subir \(p\).</strong> Con \(p=1\) todas las diferencias suman igual; al crecer \(p\), pesa cada vez más la mayor diferencia, hasta que con \(p=\infty\) solo cuenta esa.</li>
+        <li><strong>Mahalanobis</strong> es la euclídea después de blanquear (tema 2): tiene en cuenta escalas y correlaciones. La de la diapositiva es la forma cuadrática; la distancia propiamente dicha (la que cumple la desigualdad triangular) es su raíz. Para buscar vecinos da igual, porque la raíz no cambia el orden.</li>
+        <li><strong>Hamming</strong> sirve para características categóricas o binarias, donde restar no tiene sentido.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(\bx-\mathbf z=(3,4)\): \(L_1=7\), \(L_2=5\), \(L_\infty=4\). Hamming entre \(10110\) y \(10011\): difieren las posiciones 3 y 5, así que la distancia es 2 (o 0,4 como fracción de las 5 componentes).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Errata</span><p>La diapositiva define Hamming como la «<em>fraction of common elements between</em> \(\bx\) <em>and</em> \(\mathbf z\)». Eso sería una similitud (vale 1 si son iguales). La distancia de Hamming es el número (o la fracción) de componentes <strong>distintas</strong>.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="dist">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>La forma de la distancia cambia los vecinos</h3></div><span class="ref small">Diap. 23</span></div>
+    <p class="small">La curva de color es la «bola» \(D(\bx,\mathbf z)=r\) que pasa por el \(k\)-ésimo vecino. Cambia \(p\) (o elige Mahalanobis) y mira qué puntos entran o salen de los \(k\) más cercanos al centro.</p>
+    <div class="controls">
+      <div class="ctl"><label><span>Distancia</span></label><select data-k="kind"><option value="p">Minkowski</option><option value="maha">Mahalanobis</option></select></div>
+      <div class="ctl" data-show="p"><label><span>Exponente \(p\)</span><output data-o="p"></output></label><input type="range" data-k="p" min="0" max="5" step="1" value="2"></div>
+      <div class="ctl" data-show="maha"><label><span>Correlación \(\rho\) de \(\bC\)</span><output data-o="rho"></output></label><input type="range" data-k="rho" min="-0.9" max="0.9" step="0.05" value="0.6"></div>
+      <div class="ctl" data-show="maha"><label><span>\(\sigma_2/\sigma_1\)</span><output data-o="s2"></output></label><input type="range" data-k="s2" min="0.3" max="3" step="0.05" value="1.6"></div>
+      <div class="ctl"><label><span>Vecinos \(k\)</span><output data-o="k"></output></label><input type="range" data-k="k" min="1" max="8" step="1" value="3"></div>
+    </div>
+    <div class="plots">
+      <div class="plot wide"><canvas data-c="1" height="330" aria-label="Bola de la distancia y vecinos"></canvas></div>
+    </div>
+    <div class="readout" data-o="out"></div>
+  </div>
+
+  <article class="concept" data-cid="t41b6-3">
+    <header><h3>Similitudes: coseno, Pearson y Jaccard</h3><span class="ref">Diap. 24 · PDF p. 25</span></header>
+    <div class="summary">
+      <p>Una similitud mide lo contrario: es máxima cuando los vectores son iguales. Propiedades: acotada (\(-1\le s\le1\) o \(0\le s\le1\)), máximo \(s(\bx,\mathbf z)=1\) si \(\bx=\mathbf z\), y simétrica.</p>
+      <ul>
+        <li><strong>Coseno:</strong> \(s(\bx,\mathbf z)=\dfrac{\bx^T\mathbf z}{\|\bx\|_2\|\mathbf z\|_2}\).</li>
+        <li><strong>Correlación de Pearson:</strong> \(s(\bx,\mathbf z)=\dfrac{(\bx-\bmu)^T(\mathbf z-\bmu)}{\|\bx-\bmu\|_2\|\mathbf z-\bmu\|_2}\), con \(\bmu\) la media de todo el entrenamiento.</li>
+        <li><strong>Jaccard</strong> (binarios): \(s(\bx,\mathbf z)=\dfrac{\sum_j[x_j=z_j=1]}{\sum_j[x_j=1\text{ o }z_j=1]}\).</li>
+      </ul>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Coseno</strong> mide el ángulo, no la longitud: \(\bx\) y \(2\bx\) tienen similitud 1. Útil cuando la magnitud no importa (documentos de distinta longitud). Es lo que usa el clasificador neuronal tras normalizar.</li>
+        <li><strong>Pearson</strong> es el coseno después de centrar: mide si los dos vectores se desvían de la media en la misma dirección.</li>
+        <li><strong>Jaccard</strong> ignora las coincidencias 0–0. En datos binarios dispersos (productos comprados, palabras presentes) casi todo son ceros; contarlos como coincidencias haría parecer iguales a todos los vectores.</li>
+        <li><strong>De similitud a distancia:</strong> por ejemplo \(D=1-s\), y se usa igual en KNN.</li>
+      </ul>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>Coseno de \((1,0)\) y \((1,1)\): \(\frac{1}{1\cdot\sqrt2}=0{,}707\) (45°). Jaccard de \(10110\) y \(10011\): unos en común en las posiciones 1 y 4 (2); unos en alguno de los dos en 1, 3, 4 y 5 (4). \(s=2/4=0{,}5\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Erratas</span><p>Las cotas están escritas al revés: «\(-1\ge s(\bx,\mathbf z)\ge1\) o \(0\ge s(\bx,\mathbf z)\ge1\)» debería ser \(-1\le s\le1\) o \(0\le s\le1\). Y el «máximo sii \(\bx=\mathbf z\)» no lo cumple el coseno: cualquier múltiplo positivo de \(\bx\) también da 1.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b6"></div>
+  <div class="pager"></div>
+</section>

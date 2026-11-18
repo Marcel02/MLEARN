@@ -1,0 +1,78 @@
+<section class="view" id="v-b3" data-sec="b3">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 3 · Apartado 4.1.3 del PDF · avanzado</div>
+    <h1>Clasificador neuronal probabilístico</h1>
+    <p class="lede">El clasificador de Parzen con ventana gaussiana escrito como una red neuronal: una neurona por vector de entrenamiento, una por clase y un máximo.</p>
+    <div class="meta"><span class="chip">Diap. 15–17</span><span class="chip">PDF p. 16–18</span><span class="chip">bombilla: material avanzado</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b3-1">
+    <header><h3>La arquitectura: cuatro capas</h3><span class="ref">Diap. 15 · PDF p. 16</span></header>
+    <div class="summary">
+      <p>Un clasificador basado en la estimación de la pdf con <strong>ventanas de Parzen</strong> se puede construir con una estructura tipo red neuronal que estima la pdf e implementa una regla bayesiana. Con \(n\) vectores de entrenamiento \(\bx_i\) de dimensión \(d\):</p>
+      <ul>
+        <li><strong>Entrada:</strong> \(d\) nodos, uno por componente \(x_1,\dots,x_d\).</li>
+        <li><strong>Patrones (<em>training vectors</em>):</strong> \(n\) nodos, uno por vector de entrenamiento, cada uno con su ventana.</li>
+        <li><strong>Clases:</strong> \(c\) nodos \(\omega_1,\dots,\omega_c\); cada patrón está conectado solo con el de su clase.</li>
+        <li><strong>Decisión:</strong> un bloque <em>max</em>.</li>
+      </ul>
+      <figure class="fig slide" data-fig="t41-p16"><div class="frame"><img src="img/t41-p16.webp" width="975" height="880" loading="lazy" alt="Arquitectura del clasificador neuronal probabilístico"></div><figcaption><span class="src">Diap. 15 · PDF p. 16</span>Arquitectura: entradas \(x_1,\dots,x_d\), un nodo por vector de entrenamiento (con su gaussiana), un nodo por clase y el máximo.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Por qué «red».</strong> Cada nodo de patrón hace lo que una neurona: un producto escalar de la entrada con sus pesos y una no linealidad (aquí, una exponencial).</li>
+        <li><strong>Tamaño.</strong> La capa de patrones crece con el entrenamiento: \(n\) nodos. Es la marca de un método no paramétrico (el «modelo» son los datos).</li>
+        <li><strong>Paralelismo.</strong> Las \(n\) activaciones son independientes, así que se pueden calcular a la vez; esa era la motivación original de la estructura.</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b3-2">
+    <header><h3>Fase de entrenamiento: guardar los vectores</h3><span class="ref">Diap. 16 · PDF p. 17</span></header>
+    <div class="summary">
+      <ol>
+        <li>Se normalizan los vectores de entrenamiento (\(\|\bx_i\|=1\)).</li>
+        <li>El bloque de patrón \(i\) pondera sus entradas con los pesos \(\mathbf w_i=\bx_i\).</li>
+        <li>Se pone una arista entre el bloque asociado al vector \(\bx_i\) y su clase.</li>
+      </ol>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>No hay optimización.</strong> «Entrenar» es copiar cada vector en los pesos de su nodo: un solo paso, sin iteraciones ni gradientes. Por eso entrenar es instantáneo y clasificar es lo costoso.</li>
+        <li><strong>Para qué normalizar.</strong> Con \(\|\bx\|=\|\mathbf w_i\|=1\), la distancia se puede calcular con un producto escalar (tarjeta siguiente). El precio: se pierde la información de la norma de cada vector; todos quedan sobre la esfera unidad.</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b3-3">
+    <header><h3>Fase de decisión: activaciones, suma por clase y máximo</h3><span class="ref">Diap. 17 · PDF p. 18</span></header>
+    <div class="summary">
+      <ol>
+        <li>Se normaliza el vector \(\bx\) que se quiere clasificar.</li>
+        <li>Cada bloque de patrón calcula un factor de activación:
+          \[\varphi\!\left(\frac{\bx-\mathbf w_i}{h_n}\right)\propto e^{-(\bx-\mathbf w_i)^T(\bx-\mathbf w_i)/2\sigma^2}=e^{-(\bx^T\bx+\mathbf w_i^T\mathbf w_i-2\bx^T\mathbf w_i)/2\sigma^2}=\{\bx^T\bx=\mathbf w_i^T\mathbf w_i=1\}=e^{(\bx^T\mathbf w_i-1)/\sigma^2}.\]</li>
+        <li>Cada bloque de clase suma sus entradas y genera una verosimilitud \(\propto f_n(\bx|\omega_j)\).</li>
+        <li>La clase se decide maximizando \(g_j(\bx)\). Si se conocen las priors, se pueden ponderar los enlaces con ellas.</li>
+      </ol>
+      <figure class="fig slide" data-fig="t41-p18"><div class="frame"><img src="img/t41-p18.webp" width="1200" height="798" loading="lazy" alt="Fase de decisión del clasificador neuronal"></div><figcaption><span class="src">Diap. 17 · PDF p. 18</span>Fase de decisión, de abajo arriba: normalizar \(\bx\), calcular las activaciones, sumar por clase y tomar el máximo. La nota roja indica que los enlaces de clase se pueden ponderar con las priors si se conocen.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>La distancia con un producto escalar.</strong> \(\|\bx-\mathbf w_i\|^2=\bx^T\bx+\mathbf w_i^T\mathbf w_i-2\bx^T\mathbf w_i=2-2\bx^T\mathbf w_i\) si los dos tienen norma 1. Sustituyendo en la gaussiana: \(e^{-(2-2\bx^T\mathbf w_i)/2\sigma^2}=e^{(\bx^T\mathbf w_i-1)/\sigma^2}\).</li>
+        <li><strong>Es una neurona.</strong> Producto escalar \(\bx^T\mathbf w_i\) más una no linealidad \(e^{(\cdot-1)/\sigma^2}\). Vale 1 cuando \(\bx=\mathbf w_i\) y decae al alejarse; \(\sigma\) hace el papel de \(h_n\).</li>
+        <li><strong>La suma de clase es Parzen.</strong> El nodo de \(\omega_j\) suma las activaciones de sus \(n_j\) patrones: \(\sum_{\bx_i\in\omega_j}\varphi(\cdot)=n_jV_{R,n}\,f_n(\bx|\omega_j)\).</li>
+        <li><strong>Matiz sobre las priors.</strong> Esa suma lleva el factor \(n_j\): es proporcional a \(n_j\,f_n(\bx|\omega_j)\propto\hat\Pr(\omega_j)f_n(\bx|\omega_j)\) con \(\hat\Pr(\omega_j)=n_j/n\). Es decir, sin hacer nada ya incluye las priors estimadas como frecuencias. Si se quiere usar otras priors, hay que dividir por \(n_j\) y multiplicar por la prior deseada; eso es «ponderar los enlaces».</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>Con \(\bx^T\mathbf w_i=0{,}8\) (vectores a unos 37° de separación) y \(\sigma^2=0{,}5\): activación \(e^{(0{,}8-1)/0{,}5}=e^{-0{,}4}=0{,}670\). Si \(\bx=\mathbf w_i\), vale \(e^0=1\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note trap"><span class="lab">Error habitual</span><p>Leer la normalización como un detalle cosmético. Sin ella, \(\bx^T\bx\) y \(\mathbf w_i^T\mathbf w_i\) no se cancelan y la activación ya no es función del producto escalar. Con ella, dos vectores proporcionales (\(\bx\) y \(2\bx\)) son indistinguibles.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b3"></div>
+  <div class="pager"></div>
+</section>

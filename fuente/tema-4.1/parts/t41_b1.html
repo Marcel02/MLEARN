@@ -1,0 +1,102 @@
+<section class="view" id="v-b1" data-sec="b1">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 1 · Apartado 4.1.1 del PDF</div>
+    <h1>Estimar una densidad sin modelo</h1>
+    <p class="lede">Si no podemos suponer que \(f_{\bx}(\bx|\omega_i)\) es gaussiana, la estimamos contando muestras: de la binomial al histograma, y de ahí a las dos estrategias del tema, Parzen y KNN.</p>
+    <div class="meta"><span class="chip">Diap. 1–7</span><span class="chip">PDF p. 1–8</span><span class="chip">incluye manuscrita p. 5</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b1-1">
+    <header><h3>Dónde encaja: clasificadores supervisados sin modelo de densidad</h3><span class="ref">Diap. 1–3 · PDF p. 1–3</span></header>
+    <div class="summary">
+      <p>En el <em>course overview</em>, el tema 4.1 es la fila «Non-parametric» de los métodos supervisados: <strong>k vecinos más cercanos</strong> (y lógica difusa). En los temas anteriores la densidad de cada clase era una gaussiana con parámetros \(\bmu_i,\bC_i\) (discriminante lineal o cuadrático). Ahora no se supone ninguna forma: la densidad se estima directamente a partir de las muestras.</p>
+      <p>El índice tiene ocho apartados: estimación no paramétrica de la pdf, ventanas de Parzen, clasificador neuronal probabilístico, estimación por k vecinos, regla de los k vecinos, distancias, organización de una competición de ML y conclusiones.</p>
+      <figure class="fig slide" data-fig="t41-p2"><div class="frame"><img src="img/t41-p2.webp" width="1200" height="903" loading="lazy" alt="Course overview de la asignatura"></div><figcaption><span class="src">Diap. 2 · PDF p. 2</span>El tema 4.1 es la fila «Non-parametric» de los métodos supervisados (recuadro rojo): k vecinos más cercanos y lógica difusa. La nota 2 dice que KNN es útil incluso con más características que vectores.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Qué significa «no paramétrico».</strong> No que no haya parámetros, sino que no hay un número fijo y pequeño de ellos que resuma los datos. El «modelo» es el propio conjunto de entrenamiento: para clasificar un vector nuevo hay que consultar las muestras guardadas.</li>
+        <li><strong>La nota 2 del <em>overview</em>.</strong> Dice que KNN es útil cuando el número de características es muy grande, incluso mayor que el de vectores de entrenamiento. El motivo: no hay que estimar ni invertir matrices de covarianza, que en ese caso serían singulares (tema 3). Pero ojo con la maldición de la dimensionalidad (bloque 8).</li>
+        <li><strong>Qué se mantiene.</strong> La regla de decisión sigue siendo la bayesiana del tema 2 (MAP o riesgo mínimo); lo único que cambia es cómo se obtiene \(f_{\bx}(\bx|\omega_i)\), o directamente \(\Pr(\omega_i|\bx)\).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 5</span><p>Empieza la pizarra recordando el punto de partida: «<em>In MAP, MBR we assumed gaussianity for</em> \(f(\bx|\omega)\)», con \(\Pr(\omega_i|\bx)=f_{\bx|\omega}(\bx|\omega_i)\Pr(\omega_i)/f_{\bx}(\bx)\), \(i=1,\dots,c\). La «estrategia 1» es estimar \(f(\bx|\omega)\) con histogramas.</p></div>
+      <div class="note link"><span class="lab">Conexión con el tema 2</span><p>MAP decide \(\arg\max_i f(\bx|\omega_i)\Pr(\omega_i)\). Este tema da otra forma de rellenar esa fórmula, sin suponer que \(f\) es gaussiana.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b1-2">
+    <header><h3>Probabilidad de caer en una región: la binomial</h3><span class="ref">Diap. 4–5 · PDF p. 4, 6 + manuscrita p. 5</span></header>
+    <div class="summary">
+      <p>La probabilidad de que un vector caiga en una región \(R\) es</p>
+      \[P=\int_Rf_{\bx}(\bx')\,d\bx'.\]
+      <p>Con \(n\) observaciones independientes \(D=\{\bx_1,\dots,\bx_n\}\), el número \(k\) de ellas que caen en \(R\) sigue una binomial:</p>
+      \[P_k=\binom nkP^k(1-P)^{n-k}\quad\Rightarrow\quad E\{k\}=nP,\qquad \hat P_{ML}=\frac kn.\]
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Por qué binomial.</strong> Cada muestra, de forma independiente, cae en \(R\) con probabilidad \(P\) o fuera con probabilidad \(1-P\). Contar cuántas caen dentro es contar éxitos en \(n\) ensayos de Bernoulli. \(\binom nk\) cuenta las formas de elegir cuáles \(k\) caen dentro.</li>
+        <li><strong>Media.</strong> \(k=\sum_{j=1}^nb_j\) con \(b_j=1\) si \(\bx_j\in R\). Como \(E\{b_j\}=P\), \(E\{k\}=nP\).</li>
+        <li><strong>Estimador ML de \(P\).</strong> \(\ln P_k=\text{cte}+k\ln P+(n-k)\ln(1-P)\). Derivando: \(\frac kP-\frac{n-k}{1-P}=0\Rightarrow\hat P=\frac kn\), la frecuencia relativa (como el \(\hat p\) de Bernoulli del tema 2).</li>
+        <li><strong>Precisión.</strong> \(\mathrm{Var}\{k\}=nP(1-P)\), así que \(\mathrm{Var}\{k/n\}=P(1-P)/n\): la estimación mejora al crecer \(n\). En términos relativos, \(\sqrt{\mathrm{Var}\{k\}}/E\{k\}=\sqrt{(1-P)/(nP)}\approx1/\sqrt k\): hacen falta muchos puntos <em>dentro</em> de la región.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(n=100\) muestras y una región con \(P=0{,}05\): se esperan \(E\{k\}=5\) dentro, con desviación típica \(\sqrt{100\cdot0{,}05\cdot0{,}95}=2{,}18\). Error relativo de \(\hat P\): unos \(2{,}18/5\approx44\,\%\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 5</span><p>«<em>Definition of HISTOGRAM</em>»: \(R\) en \(\mathbb{R}^d\), \(P=\int_Rf_{\bx}(\bx)d\bx'\) («<em>prob. of</em> \(\bx\in R\)»), \(D=\{\bx_1\dots\bx_n\}\) y «<em>prob. of having k vectors in the region R</em>». Bajo \((1-P)^{n-k}\) anota «<em>vectors outside the region</em>». En azul, una analogía: \(k\) como monedas que caen en una baldosa. Arriba a la derecha dibuja la binomial y escribe \(\hat P_{ML}=k/n\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b1-3">
+    <header><h3>Del conteo a la densidad: el histograma</h3><span class="ref">Diap. 5 · PDF p. 6 + manuscrita p. 5</span></header>
+    <div class="summary">
+      <p>Si \(f_{\bx}\) es continua y \(R\) es lo bastante pequeña como para que \(f_{\bx}\) apenas cambie dentro,</p>
+      \[\int_Rf_{\bx}(\bx')d\bx'\cong f_{\bx}(\bx)\,V_R.\]
+      <p>Igualando con \(\hat P=k/n\) sale el <strong>histograma</strong>:</p>
+      \[f_{\bx}(\bx)=\frac{\int_Rf_{\bx}(\bx')d\bx'}{\int_Rd\bx'}\cong\frac{k/n}{V_R}.\]
+      <figure class="fig slide" data-fig="t41-p5"><div class="frame"><img src="img/t41-p5.webp" width="1200" height="665" loading="lazy" alt="Apuntes de pizarra del profesor"></div><figcaption><span class="src">Manuscrita · PDF p. 5</span>La pizarra del 16/10: la binomial, \(\hat P_{ML}=k/n\), la aproximación \(\int_Rf\approx f(\bx)V_R\), el histograma \(\hat f=k/(nV_R)\) en un recuadro y las dos estrategias (① Parzen: fijar \(V_R\) y contar; ② KNN: fijar \(k\) y variar \(V_R\)). Pulsa para ampliarla.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Primera aproximación.</strong> Si \(f\) es casi constante en \(R\), sale de la integral: \(\int_Rf\,d\bx'\approx f(\bx)\int_Rd\bx'=f(\bx)V_R\). El error es tanto menor cuanto más pequeña es \(R\).</li>
+        <li><strong>Segunda aproximación.</strong> \(P\) es desconocida y se sustituye por su estimación \(k/n\). El error es tanto menor cuanto más puntos caen dentro.</li>
+        <li><strong>Combinación.</strong> \(f(\bx)V_R\approx k/n\Rightarrow f(\bx)\approx\frac{k}{nV_R}\). Es «densidad = probabilidad / volumen»: la fracción de muestras que hay en la región, repartida en su volumen.</li>
+        <li><strong>El conflicto.</strong> La primera aproximación pide \(R\) pequeña y la segunda pide \(R\) grande (para que \(k\) no sea tan pequeño). Las dos estrategias del tema son dos maneras de resolverlo.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>En una región de volumen \(V_R=0{,}5\) caen \(k=5\) de \(n=100\) muestras: \(f(\bx)\approx\frac{5}{100\cdot0{,}5}=0{,}1\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 5</span><p>«<em>If R is small enough</em>: \(\int_Rf_{\bx}(\bx')d\bx'\simeq f_{\bx}(\bx)\cdot V_R\) <em>for a value</em> \(\bx\in R\)». «<em>Combination of expressions</em>: \(k/n=\hat f_{\bx}(\bx)\cdot V_R\)», y en un recuadro: «<em>Histogram</em> → \(\hat f_{\bx}(\bx)=\frac{k}{n\cdot V_R}\)», que «<em>converges to</em> \(f_{\bx}(\bx)\) <em>as</em> \(n\to\infty\)». Dibuja un histograma con «<em>bins of volume 1</em> (\(V_R=1\))».</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b1-4">
+    <header><h3>Condiciones de convergencia: Parzen y KNN</h3><span class="ref">Diap. 6–7 · PDF p. 7–8 + manuscrita p. 5</span></header>
+    <div class="summary">
+      <p>El histograma promedia en una región, así que da una versión <strong>distorsionada</strong> de \(f_{\bx}\). Para reducir la distorsión interesa \(V_R\to0\), pero con \(n\) finito eso implica \(k\to0\). Con la estimación \(f_n(\bx)=\frac{k_n/n}{V_{R,n}}\), \(\lim_{n\to\infty}f_n(\bx)=f(\bx)\) exige</p>
+      \[\lim_{n\to\infty}V_{R,n}=0,\qquad\lim_{n\to\infty}k_n=\infty,\qquad\lim_{n\to\infty}\frac{k_n}{n}=0.\]
+      <p>Dos maneras de garantizarlo: <strong>ventanas de Parzen</strong> (se fija \(V_{R,n}\) como función de \(n\) y se cuenta \(k\)) y <strong>k vecinos más cercanos</strong> (se fija \(k_n\) y \(V_{R,n}\) se adapta en cada zona, de modo que \(k\) crezca más despacio que \(n\)).</p>
+      <figure class="fig dgf" data-fig="t41_ventanas"><div class="frame"><svg class="dg" viewBox="0 0 700 300" role="img" aria-label="Parzen fija el volumen y cuenta muestras; KNN fija el número de vecinos y deja crecer el volumen: en la zona escasa la ventana de KNN se hace grande"><text x="30" y="26" font-size="13" font-weight="600">Parzen: V fija (aquí V = 1), se cuenta cuántos caen dentro</text><line x1="30" y1="70" x2="680" y2="70" class="s-axis"/><rect x="160" y="54" width="65" height="32" class="fa-c1 s-c1" rx="4"/><line x1="192.5" y1="48" x2="192.5" y2="92" class="s-c1 w2"/><text x="192.5" y="110" text-anchor="middle" class="t-c1" font-size="12">k = 5, V = 1,0 → f̂ = 5/(12·1,0) = 0,417</text><rect x="491.5" y="54" width="65" height="32" class="fa-c2 s-c2" rx="4"/><line x1="524" y1="48" x2="524" y2="92" class="s-c2 w2"/><text x="524" y="110" text-anchor="middle" class="t-c2" font-size="12">k = 1, V = 1,0 → f̂ = 1/(12·1,0) = 0,083</text><circle cx="134" cy="70" r="3.6" class="f-ink"/><circle cx="160" cy="70" r="3.6" class="f-ink"/><circle cx="173" cy="70" r="3.6" class="f-ink"/><circle cx="186" cy="70" r="3.6" class="f-ink"/><circle cx="199" cy="70" r="3.6" class="f-ink"/><circle cx="212" cy="70" r="3.6" class="f-ink"/><circle cx="231.5" cy="70" r="3.6" class="f-ink"/><circle cx="257.5" cy="70" r="3.6" class="f-ink"/><circle cx="407" cy="70" r="3.6" class="f-ink"/><circle cx="498" cy="70" r="3.6" class="f-ink"/><circle cx="608.5" cy="70" r="3.6" class="f-ink"/><circle cx="654" cy="70" r="3.6" class="f-ink"/><text x="192.5" y="44" text-anchor="middle" class="t-c1" font-size="11">x zona densa</text><text x="524" y="44" text-anchor="middle" class="t-c2" font-size="11">x zona escasa</text><text x="30" y="156" font-size="13" font-weight="600">KNN: k fijo (aquí k = 3), V crece hasta incluir k vecinos</text><line x1="30" y1="200" x2="680" y2="200" class="s-axis"/><rect x="173" y="184" width="39" height="32" class="fa-c1 s-c1" rx="4"/><line x1="192.5" y1="178" x2="192.5" y2="222" class="s-c1 w2"/><text x="192.5" y="240" text-anchor="middle" class="t-c1" font-size="12">k = 3, V = 0,6 → f̂ = 3/(12·0,6) = 0,417</text><rect x="407" y="184" width="234" height="32" class="fa-c2 s-c2" rx="4"/><line x1="524" y1="178" x2="524" y2="222" class="s-c2 w2"/><text x="524" y="240" text-anchor="middle" class="t-c2" font-size="12">k = 3, V = 3,6 → f̂ = 3/(12·3,6) = 0,069</text><circle cx="134" cy="200" r="3.6" class="f-ink"/><circle cx="160" cy="200" r="3.6" class="f-ink"/><circle cx="173" cy="200" r="3.6" class="f-ink"/><circle cx="186" cy="200" r="3.6" class="f-ink"/><circle cx="199" cy="200" r="3.6" class="f-ink"/><circle cx="212" cy="200" r="3.6" class="f-ink"/><circle cx="231.5" cy="200" r="3.6" class="f-ink"/><circle cx="257.5" cy="200" r="3.6" class="f-ink"/><circle cx="407" cy="200" r="3.6" class="f-ink"/><circle cx="498" cy="200" r="3.6" class="f-ink"/><circle cx="608.5" cy="200" r="3.6" class="f-ink"/><circle cx="654" cy="200" r="3.6" class="f-ink"/><text x="350" y="292" text-anchor="middle" class="t-mut" font-size="12">n = 12 muestras (puntos negros) · f̂(x) = k / (n·V)</text></svg></div><figcaption><span class="src">Esquema propio</span>Las mismas 12 muestras con las dos estrategias. Parzen usa la misma ventana en la zona densa (5 muestras) y en la escasa (1). KNN con \(k=3\) usa una ventana estrecha en la zona densa y una seis veces más ancha en la escasa. Las dos dan \(\hat f=k/(nV)\), pero KNN nunca deja una zona sin muestras.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo: por qué cada condición</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>\(V_{R,n}\to0\)</strong> elimina el promediado: en el límite, \(f\) es constante en la región y la primera aproximación se vuelve exacta (sin sesgo).</li>
+        <li><strong>\(k_n\to\infty\)</strong> hace fiable el conteo: el error relativo de \(k/n\) es del orden de \(1/\sqrt k\) (tarjeta anterior), así que hacen falta cada vez más puntos dentro (varianza nula).</li>
+        <li><strong>\(k_n/n\to0\)</strong> es necesaria para que la región pueda encogerse: como \(k/n\approx P\approx f(\bx)V_R\), si \(V_R\to0\) entonces \(k/n\to0\). Que \(k\) crezca pero más despacio que \(n\).</li>
+        <li><strong>Ejemplos que las cumplen</strong> (Duda): Parzen con \(V_n=V_1/\sqrt n\), que da \(k_n\approx nfV_1/\sqrt n\propto\sqrt n\); KNN con \(k_n=\sqrt n\), que da \(V_n\approx\sqrt n/(nf)\to0\).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note prof"><span class="lab">Apuntes del profesor · PDF p. 5</span><p>Resume las dos estrategias con dos dibujos: «① <em>Parzen windows</em>: <em>fix</em> \(V_R\) <em>for all domain, and count k</em> (# <em>samples in</em> \(V_R(\bx)\))», con una ventana del mismo ancho en todas partes; «② KNN: <em>fix k and vary</em> \(V_R(\bx)\)», con ventanas que se estiran donde hay pocos datos.</p></div>
+      <div class="note trap"><span class="lab">Error habitual</span><p>Pensar que basta con \(V_R\to0\). Con \(n\) fijo, encoger la región hace que casi nunca caiga ningún punto dentro: la estimación vale 0 en casi todas partes y es enorme en unos pocos puntos. Las tres condiciones van juntas.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b1"></div>
+  <div class="pager"></div>
+</section>

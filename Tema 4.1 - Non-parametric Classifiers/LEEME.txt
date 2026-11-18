@@ -1,0 +1,42 @@
+MLEARN · Tema 4.1 · Non-parametric classifiers
+Plataforma de estudio (histograma, ventanas de Parzen, k vecinos, distancias, elegir k)
+=======================================================================================
+
+CÓMO ABRIRLA
+- Haz doble clic en index.html. Se abre en el navegador (Chrome, Edge, Firefox o Safari).
+- Funciona sin internet: las fórmulas, las tipografías, las figuras y los gráficos van
+  dentro del archivo.
+- Está pensada para el ordenador. En el móvil depende de si el visor de archivos
+  permite páginas interactivas; si no, ábrela en el ordenador.
+
+QUÉ HAY EN LA CARPETA
+- index.html
+    Teoría de los 9 bloques (diapositivas 1–41 y la página de apuntes de pizarra del
+    profesor), con derivaciones paso a paso, figuras de las diapositivas y esquemas
+    propios, 4 laboratorios interactivos (densidad 1D con Parzen y KNN, clasificador
+    KNN en 2D, forma de la distancia y elección de k), un test por bloque con modo
+    «Repasar falladas», los 2 ejercicios de la hoja con pistas y solución, 32
+    flashcards y la hoja resumen.
+- hoja-resumen.pdf
+    Todas las fórmulas del tema en 2 páginas A4, lista para imprimir.
+- hoja-resumen.html
+    La misma hoja en formato web (se abre sin internet).
+
+EL PROGRESO
+- Se guarda en el navegador de cada persona: conceptos marcados, tests, ejercicios
+  y flashcards. Al compartir la carpeta, cada compañero empieza de cero; tu progreso
+  no viaja con ella.
+- Si borras los datos del navegador, cambias de navegador o mueves o renombras la
+  carpeta, el progreso puede volver a empezar.
+
+IMPRIMIR
+- Hoja resumen: abre hoja-resumen.pdf, o en la página ve a «Hoja resumen» y pulsa
+  «Imprimir hoja resumen».
+- Cualquier otra sección: ábrela y usa Imprimir del navegador (Ctrl+P o Cmd+P).
+  Las explicaciones desplegables se abren solas al imprimir.
+
+SOBRE EL CONTENIDO
+- Basado en las diapositivas del tema 4.1 (ML_Chapter4_1_KNN_Go.pdf) y en la hoja de
+  ejercicios (ExercisesChapter4.1MLEARN.pdf). No es material oficial de la asignatura.
+- Las erratas y dudas detectadas en ese material están en la página de inicio
+  («Erratas y dudas detectadas en el material») y señaladas en cada tarjeta.

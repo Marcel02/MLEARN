@@ -1,0 +1,93 @@
+<section class="view" id="v-b4" data-sec="b4">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 4 · Apartado 4.1.4 del PDF</div>
+    <h1>Estimación por k vecinos</h1>
+    <p class="lede">En lugar de buscar la mejor ventana, se fija cuántas muestras debe contener y se deja que el volumen se adapte a los datos. De ahí salen también las posteriores \(k_i/k\).</p>
+    <div class="meta"><span class="chip">Diap. 18–20</span><span class="chip">PDF p. 19–21</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b4-1">
+    <header><h3>Fijar \(k\) y adaptar el volumen</h3><span class="ref">Diap. 18 · PDF p. 19</span></header>
+    <div class="summary">
+      <p>Para estimar \(f(\bx)\) se agranda el volumen \(V_R(\bx)\) alrededor de \(\bx\) hasta incluir \(k_n\) vectores: los \(k_n\) <strong>vecinos más cercanos</strong>.</p>
+      \[f_n(\bx)=\frac{k_n/n}{V_R(\bx)}.\]
+      <p>La convergencia está garantizada si \(\lim_{n\to\infty}k_n/n=0\). Ejemplo 4: \(k_n\le\sqrt n\), \(k_n\le\ln(n)\).</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Misma fórmula, otra incógnita.</strong> Es el histograma \(\frac{k/n}{V}\) del bloque 1, pero ahora \(k\) está fijado y lo que se mide es \(V_R(\bx)\): el volumen de la bola (en la distancia elegida) cuyo radio es la distancia al \(k\)-ésimo vecino, \(r_k(\bx)\). En \(d\) dimensiones, \(V_R(\bx)\propto r_k(\bx)^d\).</li>
+        <li><strong>Se adapta solo.</strong> Donde hay muchos datos, los \(k\) vecinos están cerca: \(V\) pequeño y estimación con mucho detalle. Donde hay pocos, \(V\) crece: no quedan huecos con densidad cero. Es la «ventana variable» que pedía la observación de la diap. 14.</li>
+        <li><strong>Las tres condiciones.</strong> \(k_n/n\to0\) hace que \(V_R(\bx)\approx\frac{k_n}{nf(\bx)}\to0\); \(k_n\to\infty\) hace fiable el conteo. Por ejemplo, \(k_n=\sqrt n\) cumple las dos.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>En 1D, con \(n=100\) y \(k=10\): si el décimo vecino de \(x\) está a distancia \(r_{10}=0{,}25\), la región es el intervalo \([x-0{,}25,\ x+0{,}25]\), \(V=0{,}5\), y \(f_n(x)=\frac{10}{100\cdot0{,}5}=0{,}2\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Matiz sobre la condición y el ejemplo 4</span><p>La diapositiva solo exige \(k_n/n\to0\), pero hace falta también \(k_n\to\infty\) (diap. 7). Con «\(k_n\le\sqrt n\)» valdría incluso \(k_n=1\), que no converge (ver la figura siguiente: con \(k=1\) salen picos que no desaparecen). Lo correcto es \(k_n=\sqrt n\) o \(k_n=\ln n\): crecer, pero más despacio que \(n\).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b4-2">
+    <header><h3>Ejemplo 5: KNN frente a Parzen</h3><span class="ref">Diap. 19 · PDF p. 20</span></header>
+    <div class="summary">
+      <p>Estimaciones KNN con \(n=1,16,256,\infty\) y \(k_n=\sqrt n\) (1, 4, 16, ∞) para dos pdf (una gaussiana y la de triángulo más rectángulo). La diapositiva pide compararlas con las de Parzen de la diap. 13: con pocos datos KNN da picos en las muestras, y con muchos converge igual.</p>
+      <figure class="fig slide" data-fig="t41-p20"><div class="frame"><img src="img/t41-p20.webp" width="997" height="1109" loading="lazy" alt="Estimaciones KNN"></div><figcaption><span class="src">Diap. 19 · PDF p. 20</span>Ejemplo 5: estimaciones KNN con \(k_n=\sqrt n\) para \(n=1,16,256,\infty\). Con \(k=1\) hay picos que tienden a infinito en las muestras; con \(n\) grande converge a la pdf.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Picos con \(k=1\).</strong> En 1D, con una sola muestra \(x_1\), \(V=2|x-x_1|\) y \(f_n(x)=\frac{1}{2|x-x_1|}\): tiende a infinito en la muestra y decae lentamente lejos de ella.</li>
+        <li><strong>KNN no da una pdf de verdad.</strong> Esa estimación no integra 1: con \(k=1\), \(\int\frac{dx}{2|x-x_1|}\) diverge. Sirve para comparar densidades (clasificar), pero no es una densidad normalizada. Parzen, en cambio, integra 1 por construcción.</li>
+        <li><strong>Colas pesadas.</strong> Lejos de los datos, \(V\) crece linealmente con la distancia (en 1D) y \(f_n\) cae como \(1/|x|\), mucho más despacio que una gaussiana.</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note trap"><span class="lab">Error habitual</span><p>Pensar que KNN y Parzen solo se diferencian en la forma de la ventana. La diferencia de fondo es qué se fija: Parzen fija \(V\) (la misma en todo el espacio) y KNN fija \(k\) (y \(V\) cambia de un punto a otro).</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="dens" data-mode="knn">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Estimar una densidad en 1D: KNN y Parzen</h3></div><span class="ref small">Diap. 13 y 18–19</span></div>
+    <p class="small">El mismo laboratorio del bloque 2, empezando por KNN. Compara con Parzen cambiando el método. Fíjate en el «área bajo la estimación»: con Parzen vale 1; con KNN no.</p>
+    <div class="controls">
+      <div class="ctl"><label><span>Método</span></label><select data-k="method"><option value="knn">k vecinos (KNN)</option><option value="pg">Parzen, ventana gaussiana</option><option value="pb">Parzen, ventana rectangular</option></select></div>
+      <div class="ctl"><label><span>Muestras \(n\)</span><output data-o="n"></output></label><input type="range" data-k="n" min="0" max="5" step="1" value="2"></div>
+      <div class="ctl" data-show="parzen"><label><span>Anchura \(h_1\) (\(h_n=h_1/\sqrt n\))</span><output data-o="h"></output></label><input type="range" data-k="h" min="0.1" max="3" step="0.05" value="1"></div>
+      <div class="ctl" data-show="knn"><label><span>Vecinos \(k\)</span><output data-o="k"></output></label><input type="range" data-k="k" min="1" max="64" step="1" value="4"></div>
+      <div class="ctl chk" data-show="knn"><label><input type="checkbox" data-k="ksqrt" checked> <span>usar \(k_n=\sqrt n\)</span></label></div>
+      <div class="ctl"><label><span>Punto \(x_0\)</span><output data-o="x0"></output></label><input type="range" data-k="x0" min="-0.5" max="4.5" step="0.05" value="2.6"></div>
+      <div class="ctl chk"><label><input type="checkbox" data-k="mc"> <span>media ± 1σ (repitiendo el muestreo)</span></label></div>
+      <div class="ctl"><button class="btn" data-k="re">Nueva muestra</button></div>
+    </div>
+    <div class="plots">
+      <div class="plot wide"><canvas data-c="1" height="270" aria-label="Densidad verdadera y estimación"></canvas><div class="legend"><span><i style="background:var(--ink)"></i>pdf verdadera</span><span><i style="background:var(--accent)"></i>estimación \(f_n\)</span><span><i style="background:var(--cmda)"></i>región en \(x_0\)</span><span>puntos grises: las \(n\) muestras</span></div></div>
+    </div>
+    <div class="readout" data-o="out"></div>
+  </div>
+
+  <article class="concept" data-cid="t41b4-3">
+    <header><h3>Las posteriores: la fracción de vecinos de cada clase</h3><span class="ref">Diap. 20 · PDF p. 21</span></header>
+    <div class="summary">
+      <p>Con la región que contiene los \(k\) vecinos de \(\bx\) (de todas las clases), \(k_i\) de ellos son de la clase \(\omega_i\):</p>
+      \[f_{\bx}(\bx|\omega_i)\Pr(\omega_i)\simeq\frac{k_i/n_i}{V_R(\bx)}\,\frac{n_i}{n}=\frac{k_i}{nV_R(\bx)}\quad\Rightarrow\quad\Pr(\omega_i|\bx)=\frac{f_{\bx}(\bx|\omega_i)\Pr(\omega_i)}{\sum_jf_{\bx}(\bx|\omega_j)\Pr(\omega_j)}=\frac{k_i/(nV_R(\bx))}{k/(nV_R(\bx))}=\frac{k_i}{k}.\]
+      <p>La posterior es la <strong>fracción de vectores de la clase \(\omega_i\) entre los \(k\) vecinos de \(\bx\)</strong>.</p>
+      <figure class="fig dgf" data-fig="t41_post"><div class="frame"><svg class="dg" viewBox="0 0 620 330" role="img" aria-label="KNN: el círculo alrededor de x contiene los 7 vecinos más cercanos; la posterior de cada clase es la fracción de vecinos de esa clase"><circle cx="250" cy="161.1" r="67.8" class="fa-k s-k"/><circle cx="277.3" cy="122.1" r="6" class="f-c1"/><circle cx="207.1" cy="137.7" r="6" class="f-c1"/><rect x="290.8" y="170.7" width="12" height="12" class="f-c2"/><circle cx="234.4" cy="110.4" r="6" class="f-c1"/><circle cx="199.3" cy="184.5" r="6" class="f-c1"/><rect x="255.7" y="209.7" width="12" height="12" class="f-c2"/><rect x="286.9" y="110.6" width="12" height="12" class="f-c2"/><circle cx="140.8" cy="149.4" r="6" class="fa-c1 s-c1"/><circle cx="156.4" cy="258.6" r="6" class="fa-c1 s-c1"/><rect x="345.4" y="49.8" width="12" height="12" class="fa-c2 s-c2"/><rect x="329.8" y="276" width="12" height="12" class="fa-c2 s-c2"/><rect x="392.2" y="135.6" width="12" height="12" class="fa-c2 s-c2"/><rect x="376.6" y="229.2" width="12" height="12" class="fa-c2 s-c2"/><circle cx="101.8" cy="196.2" r="6" class="fa-c1 s-c1"/><circle cx="125.2" cy="63.6" r="6" class="fa-c1 s-c1"/><rect x="415.6" y="174.6" width="12" height="12" class="fa-c2 s-c2"/><circle cx="86.2" cy="102.6" r="6" class="fa-c1 s-c1"/><line x1="243" y1="154.1" x2="257" y2="168.1" class="s-ink w2"/><line x1="243" y1="168.1" x2="257" y2="154.1" class="s-ink w2"/><text x="260" y="153.1" font-weight="600">x</text><text x="470" y="70" font-size="13" font-weight="600">k = 7 vecinos</text><circle cx="476" cy="96" r="6" class="f-c1"/><text x="490" y="100" class="t-c1" font-size="13">k₁ = 4 de ω₁</text><rect x="470" y="116" width="12" height="12" class="f-c2"/><text x="490" y="126" class="t-c2" font-size="13">k₂ = 3 de ω₂</text><text x="470" y="162" class="t-c1" font-size="13">Pr(ω₁|x) ≈ 4/7 = 0,57</text><text x="470" y="184" class="t-c2" font-size="13">Pr(ω₂|x) ≈ 3/7 = 0,43</text><text x="470" y="216" class="t-k" font-size="12" font-weight="600">se decide ω₁ (mayoría)</text><text x="470" y="248" class="t-mut" font-size="12">el círculo es V_R(x):</text><text x="470" y="264" class="t-mut" font-size="12">se cancela en k₁/k</text><text x="20" y="320" class="t-mut" font-size="12">rellenos: los k vecinos · huecos: el resto de muestras</text></svg></div><figcaption><span class="src">Esquema propio</span>Los \(k=7\) vecinos más cercanos de \(\bx\) (rellenos): 4 de \(\omega_1\) y 3 de \(\omega_2\). La posterior estimada es la fracción de cada clase, \(4/7\) y \(3/7\). El volumen del círculo aparece en las dos densidades y se cancela.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Verosimilitud de cada clase.</strong> En la misma región de volumen \(V_R(\bx)\) hay \(k_i\) de los \(n_i\) vectores de \(\omega_i\): por la fórmula del histograma, \(f(\bx|\omega_i)\approx\frac{k_i}{n_iV_R(\bx)}\).</li>
+        <li><strong>Prior estimada.</strong> \(\Pr(\omega_i)\approx n_i/n\), la frecuencia de la clase en el entrenamiento (el ML del ejercicio 9 del tema 2).</li>
+        <li><strong>Producto.</strong> Las \(n_i\) se cancelan: \(f(\bx|\omega_i)\Pr(\omega_i)\approx\frac{k_i}{nV_R(\bx)}\), que es la densidad conjunta \(f_{\bx}(\bx,\omega_i)\).</li>
+        <li><strong>Normalización.</strong> Sumando sobre las clases, \(\sum_jk_j=k\). En el cociente se van \(n\) y \(V_R(\bx)\): no hace falta calcular el volumen para clasificar.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(k=7\) vecinos, 4 de \(\omega_1\) y 3 de \(\omega_2\): \(\Pr(\omega_1|\bx)\approx4/7=0{,}57\) y \(\Pr(\omega_2|\bx)\approx3/7=0{,}43\). MAP decide \(\omega_1\).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Errata menor de notación</span><p>En el denominador, el sumatorio usa el mismo índice \(i\) que la clase del numerador: debería ser \(\sum_{j=1}^c\). Y la fórmula supone que las priors son las proporciones del entrenamiento, \(n_i/n\); si las priors reales son otras, \(k_i/k\) ya no es la posterior.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b4"></div>
+  <div class="pager"></div>
+</section>

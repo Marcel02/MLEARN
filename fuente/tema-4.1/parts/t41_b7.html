@@ -1,0 +1,109 @@
+<section class="view" id="v-b7" data-sec="b7">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 7 · «7 Choosing K» en las diapositivas</div>
+    <h1>Elegir \(k\), estandarizar y combinar etiquetas</h1>
+    <p class="lede">Las decisiones prácticas de KNN: cuántos vecinos (sobreajuste frente a infraajuste), por qué hay que estandarizar las características y cómo combinar las etiquetas de los vecinos.</p>
+    <div class="meta"><span class="chip">Diap. 25–29</span><span class="chip">PDF p. 26–30</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b7-1">
+    <header><h3>Elegir \(k\): sobreajuste e infraajuste</h3><span class="ref">Diap. 25–26 · PDF p. 26–27</span></header>
+    <div class="summary">
+      <p>El vecino más cercano es muy sensible al valor de \(k\):</p>
+      <ul>
+        <li>si \(k\) es pequeño, el clasificador <strong>sobreajusta</strong>;</li>
+        <li>si \(k\) es grande, <strong>infraajusta</strong>.</li>
+      </ul>
+      <p>\(k\) es un hiperparámetro que se elige por <strong>validación cruzada</strong>. Las fronteras se suavizan al crecer \(k\). Ejemplo 7: iris (\(c=3\), \(d=2\): anchura y longitud del sépalo) con \(k=1\), 12 y 50.</p>
+      <figure class="fig slide" data-fig="t41-p27"><div class="frame"><img src="img/t41-p27.webp" width="1200" height="397" loading="lazy" alt="Fronteras KNN con tres valores de k"></div><figcaption><span class="src">Diap. 26 · PDF p. 27</span>Iris (sépalo) con \(k=1\) (sobreajuste: islas y fronteras irregulares), \(k=12\) y \(k=50\) (infraajuste: las fronteras pierden detalle).</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <figure class="fig slide" data-fig="t41-p26"><div class="frame"><img src="img/t41-p26.webp" width="884" height="510" loading="lazy" alt="Fotografías de las tres especies de iris"></div><figcaption><span class="src">Diap. 25 · PDF p. 26</span>El conjunto iris: tres especies (virginica, versicolor, setosa) y las dos partes de la flor que dan las características, pétalo y sépalo.</figcaption></figure>
+      <ol class="steps">
+        <li><strong>\(k=1\) engaña en entrenamiento.</strong> Cada muestra es su propio vecino más cercano, así que el error de entrenamiento es 0 por construcción. Por eso no se puede elegir \(k\) con el error de entrenamiento: siempre ganaría \(k=1\).</li>
+        <li><strong>\(k\) muy grande.</strong> Con \(k=n\), todos los vectores votan siempre: se decide en todas partes la clase con más muestras (la prior mayor). Las fronteras desaparecen.</li>
+        <li><strong>Validación cruzada.</strong> Se divide el entrenamiento en \(K\) partes; para cada \(k\) candidato se entrena con \(K-1\) partes y se mide el error en la restante, rotando. Se elige el \(k\) de menor error medio. En KNN, «entrenar» es solo guardar los datos, así que es barato (incluso dejando fuera una sola muestra cada vez).</li>
+        <li><strong>Lo que se espera ver.</strong> El error de validación tiene forma de U frente a \(k\), igual que la curva en U del tema 3 frente al número de características.</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 3</span><p>Es el mismo dilema de la curva en U de \(P(E|m,n)\): un modelo demasiado flexible para los datos disponibles generaliza mal.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="lab-card" data-viz="kcv">
+    <div class="hd"><div><div class="eyebrow">Laboratorio</div><h3>Error de entrenamiento y de validación frente a \(k\)</h3></div><span class="ref small">Diap. 25–27</span></div>
+    <p class="small">Dos clases solapadas, 200 muestras de entrenamiento y 1000 de validación independientes. A la izquierda, las regiones con el \(k\) elegido; a la derecha, los dos errores para \(k=1,\dots,99\). El de entrenamiento con \(k=1\) siempre es 0.</p>
+    <div class="controls">
+      <div class="ctl"><label><span>Vecinos \(k\)</span><output data-o="k"></output></label><input type="range" data-k="k" min="1" max="99" step="2" value="1"></div>
+      <div class="ctl"><label><span>Separación entre las clases</span><output data-o="sep"></output></label><input type="range" data-k="sep" min="0.6" max="3" step="0.1" value="1.4"></div>
+      <div class="ctl"><button class="btn" data-k="re">Nueva muestra</button></div>
+    </div>
+    <div class="plots">
+      <div class="plot"><canvas data-c="1" height="300" aria-label="Regiones de decisión"></canvas></div>
+      <div class="plot"><canvas data-c="2" height="300" aria-label="Error frente a k"></canvas><div class="legend"><span><i style="background:var(--c2)"></i>entrenamiento</span><span><i style="background:var(--c1)"></i>validación</span><span><i style="background:var(--muted)"></i>error de Bayes</span></div></div>
+    </div>
+    <div class="readout" data-o="out"></div>
+  </div>
+
+  <article class="concept" data-cid="t41b7-2">
+    <header><h3>La importancia de estandarizar</h3><span class="ref">Diap. 27 · PDF p. 28</span></header>
+    <div class="summary">
+      <p>Arriba, los dos ejes están bien escalados y con \(k=5\) se encuentran las fronteras correctas. Abajo, la escala del eje vertical se ha multiplicado por 100: la distancia la decide casi solo esa característica y las fronteras se convierten en franjas horizontales sin sentido.</p>
+      <p>Solución: <strong>estandarizar</strong> cada característica antes de medir distancias, \(\ x_j'=\dfrac{x_j-\mu_j}{\sigma_j}\), con \(\mu_j\) y \(\sigma_j\) calculadas en el entrenamiento.</p>
+      <figure class="fig slide" data-fig="t41-p28"><div class="frame"><img src="img/t41-p28.webp" width="1200" height="666" loading="lazy" alt="Efecto de no estandarizar"></div><figcaption><span class="src">Diap. 27 · PDF p. 28</span>Arriba, ejes bien escalados: con \(k=5\) las fronteras separan los tres grupos verticales. Abajo, el eje vertical multiplicado por 100: las fronteras se vuelven franjas horizontales.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Por qué pasa.</strong> \(\|\bx-\mathbf z\|_2^2=\sum_j(x_j-z_j)^2\): si una característica tiene diferencias del orden de 100 y otra del orden de 1, la segunda apenas cambia la distancia. Medir una longitud en milímetros en lugar de metros la hace 1000 veces más importante.</li>
+        <li><strong>Con los datos de test,</strong> se aplican la media y la desviación del entrenamiento (no las del test), igual que cualquier otro parámetro aprendido.</li>
+        <li><strong>LDA y QDA no lo necesitan:</strong> usan \(\bC^{-1}\), que compensa las escalas (diap. 29, última fila). Estandarizar equivale a usar Mahalanobis con una covarianza diagonal.</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note trap"><span class="lab">Error habitual</span><p>Estandarizar con la media y la desviación de todo el conjunto (entrenamiento más test). Es una fuga de información del test al entrenamiento; con pocos datos puede dar resultados optimistas.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b7-3">
+    <header><h3>Combinar las etiquetas de los vecinos</h3><span class="ref">Diap. 28 · PDF p. 29</span></header>
+    <div class="summary">
+      <p><strong>Clasificación:</strong> voto por mayoría (empates rotos al azar), o voto ponderado por la distancia, con pesos mayores para los puntos cercanos, por ejemplo la inversa de la distancia o de su cuadrado. «¡Pero ese es el principio de la ventana de Parzen!».</p>
+      <p><strong>Regresión:</strong> media de los valores objetivo de los \(k\) vecinos, o media ponderada (inversa de la distancia o de su cuadrado).</p>
+      <p>Si se usan pesos, se puede relajar la restricción de usar solo \(k\) muestras y usar todo el entrenamiento.</p>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Por qué ponderar.</strong> Con voto por mayoría, el vecino más lejano de los \(k\) pesa lo mismo que el más cercano, aunque esté mucho más lejos. Ponderar suaviza esa discontinuidad y reduce los empates.</li>
+        <li><strong>Todo el entrenamiento con pesos</strong> es exactamente Parzen: cada muestra vota con un peso que depende de su distancia a \(\bx\). En regresión se conoce como el estimador de Nadaraya-Watson (nombre fuera de las diapositivas).</li>
+        <li><strong>Cuidado con \(d=0\):</strong> si \(\bx\) coincide con una muestra, \(1/d\) es infinito; en la práctica se toma su etiqueta directamente.</li>
+      </ul>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>\(k=3\): un vecino de \(\omega_1\) a distancia 0,5 y dos de \(\omega_2\) a distancia 1. Mayoría: \(\omega_2\) (2 a 1). Con pesos \(1/d\): \(\omega_1\) suma 2 y \(\omega_2\) suma \(1+1=2\), empate. Con \(1/d^2\): \(\omega_1\) suma 4 y \(\omega_2\) suma 2, gana \(\omega_1\).</p></div>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b7-4">
+    <header><h3>Comparación en conjuntos de juguete</h3><span class="ref">Diap. 29 · PDF p. 30</span></header>
+    <div class="summary">
+      <p>Cinco conjuntos de datos (lunas, círculos concéntricos, cuatro grupos, clases solapadas y uno con el eje vertical estirado) clasificados con 3-NN, 25-NN, 50-NN, LDA y QDA. KNN se adapta a cualquier forma de frontera; LDA solo da rectas y QDA, cónicas. En la última fila, sin estandarizar, KNN produce franjas horizontales mientras que LDA y QDA no se inmutan.</p>
+      <figure class="fig slide" data-fig="t41-p30"><div class="frame"><img src="img/t41-p30.webp" width="1200" height="903" loading="lazy" alt="Comparación de KNN, LDA y QDA en datos de juguete"></div><figcaption><span class="src">Diap. 29 · PDF p. 30</span>Filas: lunas, círculos, cuatro grupos, solapados y eje estirado. Columnas: datos, 3-NN, 25-NN, 50-NN, LDA y QDA. KNN se adapta a cualquier forma; en la última fila, sin estandarizar, da franjas horizontales.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Lunas y círculos:</strong> fronteras no lineales que LDA no puede representar. QDA sí acierta con los círculos (una frontera elíptica), pero no con las lunas. KNN con \(k\) moderado acierta en ambos.</li>
+        <li><strong>\(k\) grande</strong> (50-NN) ya empieza a emborronar las formas: infraajuste.</li>
+        <li><strong>Lección:</strong> la flexibilidad de KNN se paga con sensibilidad a la escala, a las características irrelevantes y a la elección de \(k\) (bloque 8).</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2</span><p>LDA da hiperplanos porque supone una covarianza común; QDA da cuádricas. KNN no supone nada sobre la forma de las densidades.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b7"></div>
+  <div class="pager"></div>
+</section>

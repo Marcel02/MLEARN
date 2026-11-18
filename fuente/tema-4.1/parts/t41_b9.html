@@ -1,0 +1,75 @@
+<section class="view" id="v-b9" data-sec="b9">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 9 · Apartado 4.1.7 del PDF</div>
+    <h1>Competiciones y proyectos de ML</h1>
+    <p class="lede">Cómo se organiza una competición para que el ranking mida de verdad la generalización, la competición de Kaggle de la asignatura y las fases de un proyecto real (con el 80 % del tiempo en los datos).</p>
+    <div class="meta"><span class="chip">Diap. 36–41</span><span class="chip">PDF p. 37–42</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b9-1">
+    <header><h3>Una competición en dos fases</h3><span class="ref">Diap. 36–38 · PDF p. 37–39</span></header>
+    <div class="summary">
+      <ol>
+        <li><strong>Base de datos 1</strong>, con vectores y etiquetas \((\bx_i,y_i)\), \(i=1,\dots,N\): se entrena el clasificador.</li>
+        <li><strong>Base de datos 2</strong>, solo con vectores \(\bx_i\), \(i=N+1,\dots,M\): se clasifica, se envían las \(\Pr(\omega_k|\bx_i)\) y el organizador, que sí tiene las \(y_i\), evalúa y publica un <strong>ranking público</strong>. Se puede reentrenar y reenviar tantas veces como se quiera.</li>
+        <li><strong>Fase 2: base de datos 3</strong>, \(i=M+1,\dots,P\): un <strong>único envío</strong>, evaluado por el organizador, que da el <strong>ranking final</strong>.</li>
+      </ol>
+      <p>Organizar en dos fases impide usar la base de datos del ranking para validar el clasificador.</p>
+      <figure class="fig slide" data-fig="t41-p39"><div class="frame"><img src="img/t41-p39.webp" width="1200" height="622" loading="lazy" alt="Organización de una competición en dos fases"></div><figcaption><span class="src">Diap. 38 · PDF p. 39</span>Fase 1: entrenar con la base 1 y enviar tantas veces como se quiera predicciones de la base 2 (ranking público). Fase 2: un único envío con la base 3 (ranking final, en rojo).</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>El problema del ranking público.</strong> Si se puede enviar muchas veces y ver la puntuación, se acaba eligiendo el modelo que mejor puntúa en la base de datos 2 por casualidad: se sobreajusta a ella aunque nunca se vean sus etiquetas. Su puntuación deja de ser una estimación honesta del error.</li>
+        <li><strong>La base de datos 3</strong> solo se usa una vez, al final. Es el papel del conjunto de test: se toca cuando ya no se va a cambiar nada.</li>
+        <li><strong>Lo mismo dentro de casa.</strong> Para elegir \(k\), la distancia o el escalado se usa validación (o validación cruzada) sobre la base de datos 1; nunca el test.</li>
+      </ul>
+    </div></details>
+    <div class="inner">
+      <div class="note link"><span class="lab">Conexión con el tema 2</span><p>Son las etapas de diseño de la diap. 11 del tema 2 (entrenamiento y test), con un paso más: una validación pública que no puede sustituir al test final.</p></div>
+      <div class="note errata"><span class="lab">Numeración</span><p>Estas diapositivas se titulan «7 Organization…», el mismo número que «7 Choosing K». En el índice es el apartado 4.1.7.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b9-2">
+    <header><h3>La competición de MLEARN</h3><span class="ref">Diap. 39 · PDF p. 40</span></header>
+    <div class="summary">
+      <p>Competición InClass de Kaggle propuesta en la asignatura: <strong>detección de anomalías en redes celulares 4G</strong>, con equipos de dos personas que intentan conseguir la máxima puntuación aplicando las técnicas del curso (análisis exploratorio, selección de características y clasificación).</p>
+      <figure class="fig slide" data-fig="t41-p40"><div class="frame"><img src="img/t41-p40.webp" width="1200" height="793" loading="lazy" alt="Página de la competición de Kaggle"></div><figcaption><span class="src">Diap. 39 · PDF p. 40</span>La competición InClass de Kaggle de la asignatura: detección de anomalías en redes celulares 4G.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Lo que se pone en práctica:</strong> todo lo de los temas 2, 3 y 4.1. Selección de características (PCA o MDA) para combatir la dimensionalidad, estandarización, elección de \(k\) y de la distancia por validación cruzada, y la métrica de la competición.</li>
+        <li><strong>Cuidado con el ranking público</strong> (tarjeta anterior): conviene fiarse más de la validación cruzada propia que de las subidas y bajadas del ranking.</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b9-3">
+    <header><h3>Lanzar un proyecto de ML</h3><span class="ref">Diap. 40–41 · PDF p. 41–42</span></header>
+    <div class="summary">
+      <ol>
+        <li><strong>Definir el problema:</strong> descripción informal y formal, supuestos, datos disponibles (restricciones, atributos), motivación y solución manual.</li>
+        <li><strong>Analizar los datos:</strong> resumir (estructura, distribuciones) y visualizar (histogramas, diagramas de dispersión por pares).</li>
+        <li><strong>Preparar los datos:</strong> seleccionar, preprocesar (formato, limpieza, muestreo) y transformar (escalado, descomposición, agregación).</li>
+        <li><strong>Evaluar algoritmos:</strong> banco de pruebas, explorar y seleccionar, interpretar y comunicar resultados.</li>
+        <li><strong>Mejorar resultados:</strong> ajuste de hiperparámetros, conjuntos de modelos (<em>bagging</em>, <em>boosting</em>, <em>blending</em>) e ingeniería de características.</li>
+        <li><strong>Presentar resultados</strong> y poner el algoritmo en producción.</li>
+      </ol>
+      <p>Según un estudio citado en <em>The Economist</em> (2020), el tiempo se reparte así: limpieza 25 %, etiquetado 25 %, aumento de datos 15 %, agregación 10 %, identificación 5 %, entrenamiento 10 %, ajuste 5 %, desarrollo del algoritmo 3 % y puesta en producción 2 %.</p>
+      <figure class="fig slide" data-fig="t41-p41"><div class="frame"><img src="img/t41-p41.webp" width="1200" height="771" loading="lazy" alt="Mapa mental de un proyecto de ML"></div><figcaption><span class="src">Diap. 40 · PDF p. 41</span>Las seis fases de un proyecto de ML aplicado, con sus tareas.</figcaption></figure>
+      <figure class="fig slide" data-fig="t41-p42"><div class="frame"><img src="img/t41-p42.webp" width="1200" height="356" loading="lazy" alt="Reparto del tiempo en proyectos de ML"></div><figcaption><span class="src">Diap. 41 · PDF p. 42</span>Tiempo medio dedicado a cada tarea (enero de 2020): limpieza, etiquetado y aumento de datos se llevan el 65 %; entrenar y ajustar modelos, el 15 %.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>El 80 % es preparar datos:</strong> \(25+25+15+10+5=80\,\%\). Elegir y entrenar el modelo es la parte pequeña.</li>
+        <li><strong>Dónde encaja este tema.</strong> El escalado (estandarizar) está en «preparar los datos»; la elección de \(k\) y de la distancia, en «evaluar» y «mejorar»; los ensembles llegarán con <em>random forest</em> (tema 5).</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b9"></div>
+  <div class="pager"></div>
+</section>

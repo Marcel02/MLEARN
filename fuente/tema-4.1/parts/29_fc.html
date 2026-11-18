@@ -1,0 +1,29 @@
+<section class="view" id="v-flashcards" data-sec="flashcards">
+  <div class="sec-head">
+    <div class="eyebrow">Repaso activo</div>
+    <h1>Flashcards</h1>
+    <p class="lede">Delante, el nombre o la pregunta; detrás, la fórmula y cuándo se usa. Intenta responder antes de girar y marca con sinceridad.</p>
+  </div>
+  <div class="fc-bar">
+    <div class="seg" role="group" aria-label="Qué tarjetas mostrar" id="fcFilter">
+      <button data-f="all" aria-pressed="true">Todas</button><button data-f="again" aria-pressed="false">Por repasar</button><button data-f="new" aria-pressed="false">Sin marcar</button><button data-f="known" aria-pressed="false">Sabidas</button>
+    </div>
+    <div class="ctl" style="min-width:180px"><select id="fcCat" aria-label="Categoría"><option value="">Todas las categorías</option></select></div>
+    <button class="btn" id="fcShuffle">Barajar</button>
+  </div>
+  <div class="fc-stage">
+    <button class="fc-card" id="fcCard" aria-label="Girar tarjeta">
+      <span class="fc-face fc-front"><span class="fc-cat" id="fcCatF"></span><span class="fc-q" id="fcQ"></span><span class="fc-hint">Pulsa o usa la barra espaciadora para ver la respuesta</span></span>
+      <span class="fc-face fc-back" hidden><span class="fc-cat" id="fcCatB"></span><span class="fc-a" id="fcA"></span><span class="fc-use" id="fcUse"></span></span>
+    </button>
+  </div>
+  <div class="fc-ctl">
+    <button class="btn" id="fcPrev" aria-label="Tarjeta anterior">← Anterior</button>
+    <button class="btn fc-again" id="fcAgain">Repasar</button>
+    <button class="btn fc-known" id="fcKnown">La sé</button>
+    <button class="btn" id="fcNext" aria-label="Tarjeta siguiente">Siguiente →</button>
+    <span class="small" id="fcPos"></span>
+  </div>
+  <p class="small">Atajos: <kbd>Espacio</kbd> girar · <kbd>←</kbd> <kbd>→</kbd> moverse · <kbd>1</kbd> repasar · <kbd>2</kbd> la sé.</p>
+  <div class="pager"></div>
+</section>

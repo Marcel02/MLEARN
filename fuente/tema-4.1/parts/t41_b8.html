@@ -1,0 +1,76 @@
+<section class="view" id="v-b8" data-sec="b8">
+  <div class="sec-head">
+    <div class="eyebrow">Bloque 8 · Apartado 4.1.8 del PDF y ejemplo 8</div>
+    <h1>Conclusiones y un ejemplo real</h1>
+    <p class="lede">Cuándo conviene un método no paramétrico y qué problemas tiene, y el ejemplo de la predicción de crímenes en San Francisco: densidades por clase sobre el mapa y una métrica, la pérdida logarítmica.</p>
+    <div class="meta"><span class="chip">Diap. 30–35</span><span class="chip">PDF p. 31–36</span></div>
+  </div>
+
+  <article class="concept" data-cid="t41b8-1">
+    <header><h3>Conclusiones sobre los métodos no paramétricos</h3><span class="ref">Diap. 30 · PDF p. 31</span></header>
+    <div class="summary">
+      <ul>
+        <li>Son los únicos métodos adecuados cuando \(d\) es grande comparado con el número de vectores de entrenamiento.</li>
+        <li>La predicción puede ser <strong>lenta</strong>, sobre todo con un entrenamiento grande. Hay formas de mitigarlo (prototipos, <em>hashing</em>).</li>
+        <li>Son propensos al <strong>sobreajuste</strong>: conviene quitar del entrenamiento las muestras «ruidosas» (las que tienen vecinos de otra clase) y elegir un \(k\) adecuado.</li>
+        <li>Sufren la <strong>maldición de la dimensionalidad</strong>: al crecer \(d\), todo parece estar cerca.</li>
+        <li>Sufren la presencia de características <strong>irrelevantes</strong>.</li>
+        <li>La <strong>estandarización</strong> de las características es crucial para evitar que pesen demasiado las de valores absolutos grandes.</li>
+      </ul>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Lento al predecir.</strong> Cada clasificación compara \(\bx\) con los \(n\) vectores (\(O(nd)\)). Prototipos: sustituir el entrenamiento por unos pocos representantes por clase. <em>Hashing</em>: agrupar los vectores parecidos para buscar vecinos solo en el grupo de \(\bx\).</li>
+        <li><strong>Quitar muestras ruidosas</strong> (una muestra rodeada de otra clase) elimina las «islas» de la figura con \(k=1\): es como suavizar las fronteras sin subir \(k\).</li>
+        <li><strong>Maldición de la dimensionalidad.</strong> Con datos uniformes en un hipercubo unidad, para que un cubo alrededor de \(\bx\) contenga una fracción \(r\) de los datos su lado debe ser \(r^{1/d}\). Para el 1 % de los datos: lado 0,1 en \(d=1\), 0,63 en \(d=10\) y 0,955 en \(d=100\). El «vecindario» abarca casi todo el rango de cada variable: los vecinos ya no son locales y las distancias se parecen todas.</li>
+        <li><strong>Características irrelevantes.</strong> Suman ruido a todas las distancias por igual, así que el vecino más cercano pasa a depender de ellas. LDA podría darles peso casi nulo; KNN, no (salvo que se seleccionen antes, tema 3).</li>
+      </ol>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Duda: «únicos adecuados cuando \(d\) es grande»</span><p>Choca con la maldición de la dimensionalidad de la misma diapositiva. La idea de fondo es la nota 2 del <em>course overview</em>: cuando \(d\) supera al número de vectores, los métodos paramétricos no pueden estimar (ni invertir) las covarianzas (tema 3), y KNN no lo necesita. Pero eso no evita que, con \(d\) grande, las distancias pierdan contraste: para que KNN funcione hay que reducir antes la dimensión o elegir bien la distancia.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b8-2">
+    <header><h3>Ejemplo 8: predicción de crímenes en San Francisco</h3><span class="ref">Diap. 31–33 · PDF p. 32–34</span></header>
+    <div class="summary">
+      <p><strong>Problema:</strong> predecir el tipo de crimen, entre 38, a partir de una base de datos etiquetada. <strong>Datos:</strong> 800 000 crímenes registrados entre 2003 y 2015, con fecha y hora, categoría (la variable objetivo), descripción, día de la semana, distrito policial, resolución, dirección y coordenadas (longitud X, latitud Y).</p>
+      <p><strong>Evaluación:</strong> pérdida logarítmica multiclase (mejor cuanto menor), validando con una fracción de la base de datos:</p>
+      \[\text{logloss}=-\frac1N\sum_{i=1}^{N_{test}}\sum_{j=1}^cy_{ij}\log\Pr(\omega_j|\bx_i),\qquad y_{ij}\in\{0,1\}.\]
+      <figure class="fig slide" data-fig="t41-p33"><div class="frame"><img src="img/t41-p33.webp" width="1200" height="881" loading="lazy" alt="Mapa de crímenes en San Francisco"></div><figcaption><span class="src">Diap. 32 · PDF p. 33</span>Los crímenes de la base de datos sobre el mapa de San Francisco, coloreados por tipo.</figcaption></figure>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ol class="steps">
+        <li><strong>Solo cuenta la clase verdadera.</strong> Como \(y_{ij}\) vale 1 solo para la clase real, cada muestra aporta \(-\log\Pr(\omega_{\text{real}}|\bx_i)\): cuánta probabilidad dio el clasificador a lo que pasó de verdad.</li>
+        <li><strong>Premia las probabilidades bien calibradas.</strong> Dar 0,9 a la clase correcta cuesta 0,105; dar 0,1 cuesta 2,30. Equivocarse con mucha seguridad se castiga muchísimo.</li>
+        <li><strong>Con KNN.</strong> Las posteriores \(k_i/k\) pueden valer 0, y \(-\log0=\infty\). Hay que suavizarlas, por ejemplo \(\frac{k_i+1}{k+c}\) o recortando a un mínimo \(\varepsilon\) (matiz práctico, no está en la diapositiva).</li>
+        <li><strong>Por qué no basta la exactitud.</strong> Con 38 clases muy desequilibradas, acertar la clase más frecuente da una exactitud engañosa (tema 2, diap. 83); la pérdida logarítmica mira toda la distribución.</li>
+      </ol>
+      <div class="numex"><span class="lab">Ejemplo numérico</span><p>Tres muestras de test a las que el clasificador da probabilidad 0,7, 0,5 y 0,9 en su clase real: \(\text{logloss}=-\frac13(\ln0{,}7+\ln0{,}5+\ln0{,}9)=\frac{0{,}357+0{,}693+0{,}105}{3}=0{,}385\) (con logaritmo natural, el habitual en Kaggle).</p></div>
+    </div></details>
+    <div class="inner">
+      <div class="note errata"><span class="lab">Detalles de notación</span><p>Se divide por \(N\) pero se suma hasta \(N_{test}\): el \(N\) del denominador es \(N_{test}\). La base del logaritmo no se indica; cambiarla solo multiplica la pérdida por una constante.</p></div>
+    </div>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <article class="concept" data-cid="t41b8-3">
+    <header><h3>Densidades por clase sobre el mapa</h3><span class="ref">Diap. 34–35 · PDF p. 35–36</span></header>
+    <div class="summary">
+      <p>Con las coordenadas (longitud, latitud) de cada crimen se estima \(f(\bx|\omega_j)\) para cada categoría: son estimaciones tipo Parzen en 2D, dibujadas como curvas de nivel sobre el mapa (incendio provocado, agresión, embriaguez y juego). Para el robo de vehículos se muestra además cómo cambia con el año y el día de la semana, y su serie mensual (con una caída brusca en 2006).</p>
+      <div class="fig-row"><figure class="fig slide" data-fig="t41-p35"><div class="frame"><img src="img/t41-p35.webp" width="1200" height="844" loading="lazy" alt="Densidades de cuatro tipos de crimen"></div><figcaption><span class="src">Diap. 34 · PDF p. 35</span>Estimación de \(f(\bx|\omega_j)\) sobre el mapa para cuatro categorías: cada una tiene sus propios focos.</figcaption></figure><figure class="fig slide" data-fig="t41-p36"><div class="frame"><img src="img/t41-p36.webp" width="1200" height="928" loading="lazy" alt="Robo de vehículos en el espacio y el tiempo"></div><figcaption><span class="src">Diap. 35 · PDF p. 36</span>Robo de vehículos: densidad sobre el mapa, intensidad por año y día de la semana, y serie mensual 2003–2015.</figcaption></figure></div>
+    </div>
+    <details class="deep"><summary>Explicación a fondo</summary><div class="deep-body">
+      <ul>
+        <li><strong>Del mapa a la decisión.</strong> Con \(\hat f(\bx|\omega_j)\) y la frecuencia de cada categoría como prior, la regla bayesiana da \(\Pr(\omega_j|\bx)\) en cada punto de la ciudad, que es lo que pide la pérdida logarítmica.</li>
+        <li><strong>Por qué no paramétrico.</strong> Las densidades tienen varios focos con formas irregulares, que una gaussiana no puede representar.</li>
+        <li><strong>Otras variables.</strong> La hora, el día o el año también cambian las probabilidades (el mapa de calor y la serie temporal), y se pueden añadir como características, estandarizadas.</li>
+      </ul>
+    </div></details>
+    <footer><button class="mark" aria-pressed="false">Marcar como entendido</button></footer>
+  </article>
+
+  <div class="quiz" data-quiz="b8"></div>
+  <div class="pager"></div>
+</section>
